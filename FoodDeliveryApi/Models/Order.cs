@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodDeliveryApi.Models
 {
-    class Order
+    public class Order
     {
         [Key]
         public Guid Id{get;set;}
 
-        public string OwnerId{get;set;} = string.Empty;
+        public string CustomerId{get;set;} = string.Empty;
         public AppUser? Customer {get;set;}
         public Guid RestaurantId{get;set;}
         public Restaurant? Restaurant { get; set; }

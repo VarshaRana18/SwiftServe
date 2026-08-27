@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace FoodDeliveryApi.Models{
-    class Restaurant
+    public class Restaurant
     {
         [Key]
         public Guid Id{get;set;}

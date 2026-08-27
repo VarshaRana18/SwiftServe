@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodDeliveryApi.Models
 {
-    class MenuItem
+    public class MenuItem
     {
         [Key]
         public Guid Id{get;set;}
@@ -22,6 +22,6 @@ namespace FoodDeliveryApi.Models
         public int? StockQuantity { get; set; } // Null means Unlimited
 
         [Timestamp]
-        public byte[] RowVersion {get;set;} = Array.Empty<byte>();
+        public uint Version { get; set; }
     }
 }

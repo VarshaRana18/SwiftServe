@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodDeliveryApi.Models
 {
-    class OrderItem
+    public class OrderItem
     {
         [Key]
         public Guid Id { get; set; }
