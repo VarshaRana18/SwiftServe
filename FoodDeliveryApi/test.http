@@ -30,3 +30,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYThhZTFkM
   "name": "The Royal Gordon Ramsay Hotel",
   "address": "Las Vegas Blvd"
 }
+
+### Add a Menu Item (Requires Gordon's JWT)
+POST {{host}}/api/menuitem
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYThhZTFkMi1kNDI4LTRmMmUtOGRiMS0xZDQ2MGIxMTIxOTUiLCJlbWFpbCI6ImdvcmRvbkBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlZlbmRvciIsImV4cCI6MTc4OTMxMDk3OCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.YO5pQUo_NAvb5fbxlC0MG7UpFnyhsCmDTowKCn0Oz5U
+
+{
+  "name": "Beef Wellington",
+  "description": "A prime fillet of beef wrapped in puff pastry.",
+  "price": 45.99,
+  "restaurantId": "01a07732-7714-7f3d-892e-1d143b063f43"
+}
+
+
+### Get all restaurants and their menus (Public)
+GET {{host}}/api/restaurant

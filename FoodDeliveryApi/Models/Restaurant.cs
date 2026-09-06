@@ -18,7 +18,7 @@ namespace FoodDeliveryApi.Models{
         public bool isActive {get;set;} = true;// Admin control
         public bool isOpen {get;set;} = true;// Vendor control
 
-        public ICollection<MenuItem> MenuItems = new List<MenuItem>();
+        public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
         public ICollection<Order> Orders= new List<Order>();
     }
 

@@ -22,7 +22,7 @@ namespace FoodDeliveryApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllRestaurants()
         {
-            var restaurants = await _context.Restaurants.ToListAsync();
+            var restaurants = await _context.Restaurants.Include(r => r.MenuItems).ToListAsync();
             return Ok(restaurants);
         }
 

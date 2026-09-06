@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using FoodDeliveryApi.Data;
 using FoodDeliveryApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,7 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options => 
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
