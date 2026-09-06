@@ -6,8 +6,27 @@ POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "password": "Password123!",
-  "fullName": "Varsha Rana",
-  "role": 0
+  "email": "gordon@example.com",
+  "password": "Gordon@123",
+  "fullName": "Gordon Ramsay",
+  "role": 1
+}
+
+### Login as Gordon to get the JWT
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "gordon@example.com",
+  "password": "Gordon@123"
+}
+
+### Create a Restaurant (Requires Vendor JWT)
+POST {{host}}/api/restaurant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYThhZTFkMi1kNDI4LTRmMmUtOGRiMS0xZDQ2MGIxMTIxOTUiLCJlbWFpbCI6ImdvcmRvbkBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlZlbmRvciIsImV4cCI6MTc4OTMxMDk3OCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.YO5pQUo_NAvb5fbxlC0MG7UpFnyhsCmDTowKCn0Oz5U
+
+{
+  "name": "The Royal Gordon Ramsay Hotel",
+  "address": "Las Vegas Blvd"
 }
