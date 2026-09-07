@@ -1,11 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
+import { redirect,useNavigate } from "react-router-dom";
 
 export default function Login(){
 
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const [status,setStatus] = useState({type:"",message:""});
+
+    const navigate = useNavigate();
 
     const handleLogin = async(e) => {
         e.preventDefault();
@@ -22,8 +25,10 @@ export default function Login(){
                 // Save the JWT token and user role to LocalStorage
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('role', data.role);
+                setStatus({ type: 'success', message: `Welcome back, ${data.fullName}!` });
 
-                setStatus({type:"success",message:`Welcome back, ${data.fullName}!`})
+                setTimeout(()=>{navigate('/home')},1000)
+                
             } else {
                 setStatus({ type: 'error', message: 'Invalid email or password.' });
             }
