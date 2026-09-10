@@ -15,7 +15,7 @@ namespace FoodDeliveryApi.Models
         public string? DriverId{get;set;}
         public AppUser? Driver{get;set;}
 
-        public OrderStatus status{get;set;} = OrderStatus.Pending; 
+        public OrderStatus Status{get;set;} = OrderStatus.Pending; 
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
