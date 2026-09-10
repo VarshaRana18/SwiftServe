@@ -1,7 +1,16 @@
 @port = 5121
 @host = http://localhost:{{port}}
 
-### Register a new Customer
+### Login as Customer
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Register a new Vendor
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
@@ -12,7 +21,7 @@ Content-Type: application/json
   "role": 1
 }
 
-### Login as Gordon to get the JWT
+### Login as Vendor to get the JWT
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
@@ -46,3 +55,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlYThhZTFkM
 
 ### Get all restaurants and their menus (Public)
 GET {{host}}/api/restaurant
+
+
+### Place an Order (Requires Customer JWT)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYTEyZjAyNi1iMTYxLTQwMGEtODQ0Mi01ZjBlZGQ0NzgyMTgiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJDdXN0b21lciIsImV4cCI6MTc4OTY2MjA2MiwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.hqIq_q5oDB6pixe4c8kGqDJdlGF0A8NNx14njL1h6yU
+
+{
+  "restaurantId": "01a07732-7714-7f3d-892e-1d143b063f43",
+  "items": [
+    {
+      "menuItemId": "01a0775a-0285-7b27-8b4b-0e511bf85b2b",
+      "quantity": 2
+    }
+  ]
+}
