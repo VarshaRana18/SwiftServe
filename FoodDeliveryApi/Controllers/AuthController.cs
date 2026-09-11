@@ -37,7 +37,7 @@ namespace FoodDeliveryApi.Controllers
                 UserName = dto.Email,
                 Email = dto.Email,
                 FullName = dto.FullName,
-                Role = dto.Role
+                Roles = dto.Roles
             };
 
             // 3. Save to databse with hashed password
@@ -72,19 +72,27 @@ namespace FoodDeliveryApi.Controllers
                 Token = token,
                 Email = user.Email!,
                 FullName = user.FullName,
-                Role = user.Role.ToString()
+                Roles = user.Roles
             });
         }
 
         private string GenerateJwtToken(AppUser user)
         {
             // Create the claims (the data/payload stored inside the token)
-            var claims = new[]
+            var claims = new List<Claim>
             {
               new Claim(JwtRegisteredClaimNames.Sub,user.Id),  
               new Claim(JwtRegisteredClaimNames.Email,user.Email!),  
-              new Claim(ClaimTypes.Role,user.Role.ToString())  
             };
+
+            if(user.Roles != null)
+            {
+                foreach(var role in user.Roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+            }
+            
 
             // Get the secret key
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
