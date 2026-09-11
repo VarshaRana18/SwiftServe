@@ -4,10 +4,7 @@ namespace FoodDeliveryApi.Models
 {
     public class AppUser : IdentityUser{
         public string FullName {get;set;} = string.Empty;
-        public UserRole Role{get;set;}
+        public List<string> Roles{get;set;} = new List<string>();
         public DateTime CreatedAt{get;set;} = DateTime.UtcNow;
-    }
-    public enum UserRole{
-        Customer,Vendor,Driver,SuperAdmin
     }
 }
