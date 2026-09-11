@@ -92,5 +92,32 @@ namespace FoodDeliveryApi.Controllers
             return Ok(orders);
         }
 
+        // PUT: api/order/{id}/status
+        [HttpPut("{id}/status")]
+        [Authorize(Roles="Vendor")]
+        public async Task<IActionResult> UpdateOrderStatus(Guid id, UpdateOrderStatusDto dto)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // 1. Fetch the order and include the Restaurant to verify ownership
+            var order = await _context.Orders.Include(o => o.Restaurant).FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound("Order not found.");
+
+            // 2. SECURITY CHECK: Does this Vendor own the restaurant fulfilling this order?
+            if(order.Restaurant!.OwnerId != vendorId) return Forbid();
+            
+            // 3. Update the data
+            order.Status = dto.Status;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new {
+                message = "Order status updated successfully", 
+                orderId = order.Id, 
+                newStatus = order.Status.ToString()
+            });
+        }
     }
 }

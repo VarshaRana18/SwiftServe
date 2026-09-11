@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FoodDeliveryApi.Models;
 
 namespace FoodDeliveryApi.DTOs
 {
@@ -19,5 +20,11 @@ namespace FoodDeliveryApi.DTOs
         [Required]
         [Range(1,100,ErrorMessage ="Quantity must be between 1 and 100.")]
         public int Quantity {get;set;}
+    }
+
+    public class UpdateOrderStatusDto
+    {
+        [Required]
+        public OrderStatus Status { get; set; }
     }
 }
