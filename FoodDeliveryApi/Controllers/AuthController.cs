@@ -26,9 +26,40 @@ namespace FoodDeliveryApi.Controllers
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             // 1. Check if user exists
-            if (await _userManager.FindByEmailAsync(dto.Email) != null)
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+
+            if(existingUser != null)
             {
-                return BadRequest("User with this email already exists.");
+                // SECURITY CHECK: Prove they own this account before adding roles!
+                var isPasswordValid = await _userManager.CheckPasswordAsync(existingUser, dto.Password);
+
+                if (!isPasswordValid)
+                {
+                    return BadRequest("An account with this email exists, but the password provided is incorrect.");
+                }
+
+                // 2. Merge new roles, ignoring duplicates
+                bool rolesAdded = false;
+
+                foreach(var role in dto.Roles)
+                {
+                    if (!existingUser.Roles.Contains(role))
+                    {
+                        existingUser.Roles.Add(role);
+                        rolesAdded = true;
+                    }
+                }
+
+                // 3. Save changes if any new roles were actually added
+                if (rolesAdded)
+                {
+                    var updateResult = await _userManager.UpdateAsync(existingUser);
+                    if (!updateResult.Succeeded) return BadRequest(updateResult.Errors);
+
+                    return Ok("New role(s) successfully added to your existing account.");
+                }
+
+                return Ok("Your account already has these roles.");
             }
 
             // 2. Map DTO to User Model

@@ -1,7 +1,7 @@
 @port = 5121
 @host = http://localhost:{{port}}
 
-### Register Multi-Role User
+### Register Multi-Role User for Gordon
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
@@ -11,6 +11,18 @@ Content-Type: application/json
   "fullName": "Gordon Ramsay",
   "roles": ["Vendor", "Customer"]
 }
+
+### Register Multi-Role User for Varsha
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "varsha@rana.com",
+  "password": "Password321!",
+  "fullName": "Varsha Rana",
+  "roles": ["Vendor"] 
+}
+### Pehle Customer add kiya tha , ab Vendor kiya
 
 ### Login as gordon
 POST {{host}}/api/auth/login
@@ -26,8 +38,8 @@ POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "password": "Password123!"
+  "email": "varsha@rana.com",
+  "password": "Password321!"
 }
 
 
