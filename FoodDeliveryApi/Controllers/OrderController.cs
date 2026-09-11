@@ -4,6 +4,7 @@ using FoodDeliveryApi.DTOs;
 using FoodDeliveryApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliveryApi.Controllers
 {
@@ -65,5 +66,31 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok(order);
         }    
+
+        // GET: api/order/customer
+        [HttpGet("customer")]
+        [Authorize(Roles="Customer")]
+        public async Task<IActionResult> GetCustomerOrders()
+        {
+            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var orders = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.MenuItem).Include(o => o.Restaurant).Where(o => o.CustomerId == customerId).OrderByDescending(o => o.CreatedAt).ToListAsync();
+
+            return Ok(orders);
+        }
+
+        // GET: api/order/vendor
+        [HttpGet("vendor")]
+        [Authorize(Roles="Vendor")]
+        public async Task<IActionResult> GetVendorOrders()
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var orders = await _context.Orders.Include(o => o.OrderItems).ThenInclude(oi => oi.MenuItem).Include(o => o.Customer).Where(o=>o.Restaurant!.OwnerId == vendorId ).OrderByDescending(o => o.CreatedAt)
+        .ToListAsync();
+
+            return Ok(orders);
+        }
+
     }
 }
