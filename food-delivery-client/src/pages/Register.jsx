@@ -1,16 +1,58 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 export default function Register() {
     const navigate = useNavigate();
+    const location = useLocation();
 
-    // Grouping state to keep the form clean
+    // Determine Role based on URL path
+    const isVendor = location.pathname.includes('/vendor');
+    const isDriver = location.pathname.includes('/driver');
+    const currentRole = isVendor ? 'Vendor' : isDriver ? 'Driver' : 'Customer';
+
+    // Dynamic Theme Configuration
+    const themeConfig = {
+        Customer: {
+            text: "text-orange-500",
+            bg: "bg-orange-500",
+            bgHover: "hover:bg-orange-600",
+            ring: "focus:ring-orange-500",
+            borderFocus: "focus:border-orange-500",
+            shadow: "shadow-orange-200",
+            linkHover: "hover:text-orange-600",
+            title: "Create an Account",
+            subtitle: "Join us to start ordering your favorite meals"
+        },
+        Vendor: {
+            text: "text-teal-600",
+            bg: "bg-teal-600",
+            bgHover: "hover:bg-teal-700",
+            ring: "focus:ring-teal-600",
+            borderFocus: "focus:border-teal-600",
+            shadow: "shadow-teal-200",
+            linkHover: "hover:text-teal-700",
+            title: "Become a Partner",
+            subtitle: "Grow your restaurant business with us"
+        },
+        Driver: {
+            text: "text-blue-600",
+            bg: "bg-blue-600",
+            bgHover: "hover:bg-blue-700",
+            ring: "focus:ring-blue-600",
+            borderFocus: "focus:border-blue-600",
+            shadow: "shadow-blue-200",
+            linkHover: "hover:text-blue-700",
+            title: "Drive with Us",
+            subtitle: "Deliver smiles and earn on your schedule"
+        }
+    };
+    const activeTheme = themeConfig[currentRole];
+
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
         password: "",
-        confirmPassword: "",
-        role: "Customer"
+        confirmPassword: ""
     });
 
     const [status, setStatus] = useState({ type: "", message: "" });
@@ -25,7 +67,6 @@ export default function Register() {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        // Frontend validation
         if (formData.password !== formData.confirmPassword) {
             setStatus({ type: 'error', message: 'Passwords do not match.' });
             return;
@@ -34,12 +75,9 @@ export default function Register() {
         setStatus({ type: 'loading', message: 'Creating your account...' });
 
         try {
-            const roleMap = {
-                'Customer': 0,
-                'Vendor': 1,
-                'Driver': 2
-            };
-            const roleInt = roleMap[formData.role];
+            const roleMap = { 'Customer': 0, 'Vendor': 1, 'Driver': 2 };
+            const roleInt = roleMap[currentRole];
+
             const response = await fetch("http://localhost:5121/api/auth/register", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
@@ -53,7 +91,10 @@ export default function Register() {
 
             if (response.ok) {
                 setStatus({ type: 'success', message: 'Account created successfully! Redirecting to login...' });
-                setTimeout(() => { navigate('/login') }, 2000);
+                
+                // Redirect to the correct portal login
+                const loginPath = currentRole === 'Customer' ? '/login' : `/${currentRole.toLowerCase()}/login`;
+                setTimeout(() => { navigate(loginPath, { state: { email: formData.email } }) }, 2000);
             } else {
                 setStatus({ type: 'error', message: 'Registration failed. Email might already be in use.' });
             }
@@ -61,9 +102,11 @@ export default function Register() {
             setStatus({ type: 'error', message: 'Network error. Is the .NET API running?' });
         }
     }
+
     const isLengthValid = formData.password.length >= 6;
     const hasNumber = /\d/.test(formData.password);
     const doPasswordsMatch = formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
+
     return (
         <div
             className="flex items-center justify-center min-h-screen p-4 bg-cover bg-center bg-no-repeat relative"
@@ -71,24 +114,24 @@ export default function Register() {
                 backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop')`
             }}
         >
-            <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 relative z-10 my-8">
-                <div className="p-8">
+            <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 relative z-10 my-4 sm:my-auto">
+                <div className="px-8 py-6">
                     {/* Branding Header */}
-                    <div className="flex justify-center mb-6">
+                    <div className="flex justify-center mb-4">
                         <div className="flex items-center gap-2">
-                            <div className="bg-orange-500 p-2 rounded-xl shadow-lg shadow-orange-200">
+                            <div className={`${activeTheme.bg} p-2 rounded-xl shadow-lg transition-colors duration-500 ${activeTheme.shadow}`}>
                                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                             </div>
-                            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-                                Swift<span className="text-orange-500">Serve</span>
+                            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight transition-colors duration-500">
+                                Swift<span className={activeTheme.text}>Serve</span>
                             </h1>
                         </div>
                     </div>
 
-                    <h2 className="mb-2 text-2xl font-bold text-center text-slate-800">Create an Account</h2>
-                    <p className="mb-6 text-sm text-center text-slate-500">Join us to start ordering or selling</p>
+                    <h2 className="mb-2 text-2xl font-bold text-center text-slate-800 transition-colors duration-500">{activeTheme.title}</h2>
+                    <p className="mb-4 text-sm text-center text-slate-500 transition-colors duration-500">{activeTheme.subtitle}</p>
 
                     {status.message && (
                         <div className={`p-4 mb-6 text-sm font-medium rounded-xl border ${status.type === 'error' ? 'bg-red-50 text-red-700 border-red-200' :
@@ -99,28 +142,12 @@ export default function Register() {
                         </div>
                     )}
 
-                    <form onSubmit={handleRegister} className="space-y-4">
-                        {/* Role Selection */}
-                        <div className="flex gap-4 mb-2">
-                            <label className={`flex-1 flex justify-center items-center p-3 border rounded-xl cursor-pointer transition-all ${formData.role === 'Customer' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                                <input type="radio" name="role" value="Customer" checked={formData.role === 'Customer'} onChange={handleChange} className="hidden" />
-                                <span className="font-semibold text-sm">Customer</span>
-                            </label>
-                            <label className={`flex-1 flex justify-center items-center p-3 border rounded-xl cursor-pointer transition-all ${formData.role === 'Vendor' ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                                <input type="radio" name="role" value="Vendor" checked={formData.role === 'Vendor'} onChange={handleChange} className="hidden" />
-                                <span className="font-semibold text-sm">Vendor</span>
-                            </label>
-                            <label className={`flex-1 flex justify-center items-center p-3 border rounded-xl cursor-pointer transition-all ${formData.role === 'Driver' ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-                                <input type="radio" name="role" value="Driver" checked={formData.role === 'Driver'} onChange={handleChange} className="hidden" />
-                                <span className="font-semibold text-sm">Driver</span>
-                            </label>
-                        </div>
-
+                    <form onSubmit={handleRegister} className="space-y-3">
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-1">Full Name</label>
                             <input
                                 type="text" name="fullName" value={formData.fullName} onChange={handleChange}
-                                className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all outline-none bg-slate-50 focus:bg-white"
+                                className={`w-full p-3 border border-slate-200 rounded-xl focus:ring-2 ${activeTheme.ring} ${activeTheme.borderFocus} transition-all duration-500 outline-none bg-slate-50 focus:bg-white`}
                                 placeholder="John Doe" required
                             />
                         </div>
@@ -129,7 +156,7 @@ export default function Register() {
                             <label className="block text-sm font-semibold text-slate-700 mb-1">Email Address</label>
                             <input
                                 type="email" name="email" value={formData.email} onChange={handleChange}
-                                className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all outline-none bg-slate-50 focus:bg-white"
+                                className={`w-full p-3 border border-slate-200 rounded-xl focus:ring-2 ${activeTheme.ring} ${activeTheme.borderFocus} transition-all duration-500 outline-none bg-slate-50 focus:bg-white`}
                                 placeholder="name@example.com" required
                             />
                         </div>
@@ -142,12 +169,12 @@ export default function Register() {
                                     onChange={handleChange}
                                     onFocus={() => setIsFocused(true)}
                                     onBlur={() => setIsFocused(false)}
-                                    className="w-full p-3 pr-10 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all outline-none bg-slate-50 focus:bg-white"
+                                    className={`w-full p-3 pr-10 border border-slate-200 rounded-xl focus:ring-2 ${activeTheme.ring} ${activeTheme.borderFocus} transition-all duration-500 outline-none bg-slate-50 focus:bg-white`}
                                     placeholder="••••••••" required
                                 />
                                 <button
                                     type="button" onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-orange-500 transition-colors"
+                                    className={`absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 ${activeTheme.linkHover} transition-colors duration-500`}
                                 >
                                     {showPassword ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -159,10 +186,8 @@ export default function Register() {
                         </div>
 
                         {/* Dynamic Password Constraints */}
-                        {/* Only show if input is clicked OR user has typed something */}
                         {(isFocused || formData.password.length > 0) && (
                             <div className="flex flex-col gap-1.5 mt-2 mb-4 px-1 transition-opacity duration-300">
-                                {/* Length Check */}
                                 <div className={`flex items-center gap-2 text-xs font-medium transition-colors duration-300 ${isLengthValid ? 'text-green-600' : 'text-red-500'}`}>
                                     {isLengthValid ? (
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -171,8 +196,6 @@ export default function Register() {
                                     )}
                                     <span>At least 6 characters</span>
                                 </div>
-
-                                {/* Number Check */}
                                 <div className={`flex items-center gap-2 text-xs font-medium transition-colors duration-300 ${hasNumber ? 'text-green-600' : 'text-red-500'}`}>
                                     {hasNumber ? (
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
@@ -189,16 +212,16 @@ export default function Register() {
                             <div className="relative">
                                 <input
                                     type={showConfirmPassword ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-                                    className={`w-full p-3 pr-10 border rounded-xl focus:ring-2 transition-all outline-none bg-slate-50 focus:bg-white ${
+                                    className={`w-full p-3 pr-10 border rounded-xl focus:ring-2 transition-all duration-500 outline-none bg-slate-50 focus:bg-white ${
                                         formData.confirmPassword.length > 0 && !doPasswordsMatch
-                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-100' // Shows red ONLY if there's a mismatch
-                                            : 'border-slate-200 focus:border-orange-500 focus:ring-orange-500' // Returns to normal neutral/orange state when matching or empty
+                                            ? 'border-red-400 focus:border-red-500 focus:ring-red-100'
+                                            : `border-slate-200 ${activeTheme.borderFocus} ${activeTheme.ring}`
                                     }`}
                                     placeholder="••••••••" required
                                 />
                                 <button
                                     type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-orange-500 transition-colors"
+                                    className={`absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 ${activeTheme.linkHover} transition-colors duration-500`}
                                 >
                                     {showConfirmPassword ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -208,7 +231,6 @@ export default function Register() {
                                 </button>
                             </div>
                             
-                            {/* Dynamic Match Constraint */}
                             {formData.confirmPassword.length > 0 && (
                                 <div className="flex flex-col gap-1.5 mt-2 mb-1 px-1 transition-opacity duration-300">
                                     <div className={`flex items-center gap-2 text-xs font-medium transition-colors duration-300 ${doPasswordsMatch ? 'text-green-600' : 'text-red-500'}`}>
@@ -226,20 +248,48 @@ export default function Register() {
                         <button
                             type="submit"
                             disabled={status.type === 'loading' || !isLengthValid || !hasNumber || !doPasswordsMatch}
-                            className="w-full py-3.5 mt-2 text-white bg-orange-500 rounded-xl hover:bg-orange-600 font-bold shadow-lg shadow-orange-200 transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100"
+                            className={`w-full py-3.5 mt-2 text-white ${activeTheme.bg} rounded-xl ${activeTheme.bgHover} font-bold shadow-lg ${activeTheme.shadow} transition-all duration-500 active:scale-95 disabled:opacity-50 disabled:active:scale-100`}
                         >
-                            {status.type === 'loading' ? 'Creating account...' : 'Sign Up'}
+                            {status.type === 'loading' ? 'Creating account...' : `Sign Up as ${currentRole}`}
                         </button>
                     </form>
                 </div>
 
-                <div className="py-5 bg-slate-50 border-t border-slate-100 text-center">
+                {/* Dynamic Footer with Alternative Portal Links */}
+                <div className="py-5 bg-slate-50 border-t border-slate-100 flex flex-col gap-3 text-center transition-colors duration-500">
                     <p className="text-sm text-slate-600">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-bold text-orange-500 hover:text-orange-600 transition-colors">
+                        <Link 
+                            to={currentRole === 'Customer' ? '/login' : `/${currentRole.toLowerCase()}/login`} 
+                            className={`font-bold ${activeTheme.text} ${activeTheme.linkHover} transition-colors duration-500`}
+                        >
                             Sign in
                         </Link>
                     </p>
+
+                    <div className="text-xs text-slate-500 flex items-center justify-center gap-2 flex-wrap px-4 mt-1">
+                        {currentRole === 'Customer' && (
+                            <>
+                                <Link to="/vendor/register" className="hover:text-teal-600 transition-colors">Own a restaurant? Partner with us</Link>
+                                <span className="text-slate-300">|</span>
+                                <Link to="/driver/register" className="hover:text-blue-600 transition-colors">Want to deliver? Drive with us</Link>
+                            </>
+                        )}
+                        {currentRole === 'Vendor' && (
+                            <>
+                                <Link to="/register" className="hover:text-orange-500 transition-colors">Looking to order food? Sign up here</Link>
+                                <span className="text-slate-300">|</span>
+                                <Link to="/driver/register" className="hover:text-blue-600 transition-colors">Want to deliver? Drive with us</Link>
+                            </>
+                        )}
+                        {currentRole === 'Driver' && (
+                            <>
+                                <Link to="/register" className="hover:text-orange-500 transition-colors">Looking to order food? Sign up here</Link>
+                                <span className="text-slate-300">|</span>
+                                <Link to="/vendor/register" className="hover:text-teal-600 transition-colors">Own a restaurant? Partner with us</Link>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
