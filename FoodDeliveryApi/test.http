@@ -23,6 +23,25 @@ Content-Type: application/json
   "roles": ["Vendor"] 
 }
 ### Pehle Customer add kiya tha , ab Vendor kiya
+### Register Multi-Role User for Varsha
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "Sharon@Mas.com",
+  "password": "Shar_Mas1!",
+  "fullName": "SHaron Mascarenhas",
+  "roles": [] 
+}
+
+### Login as sharon
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "Sharon@Mas.com",
+  "password": "Shar_Mas1!"
+}
 
 ### Login as gordon
 POST {{host}}/api/auth/login
