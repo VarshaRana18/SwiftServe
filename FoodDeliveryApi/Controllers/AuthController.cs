@@ -25,6 +25,12 @@ namespace FoodDeliveryApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
+            // 0. Validate that at least one role is provided
+            if (dto.Roles == null || dto.Roles.Count == 0)
+            {
+                return BadRequest("At least one role must be provided to create or update an account.");
+            }
+
             // 1. Check if user exists
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
 
