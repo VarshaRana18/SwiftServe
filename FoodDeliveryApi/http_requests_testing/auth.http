@@ -1,0 +1,81 @@
+@port = 5121
+@host = http://localhost:{{port}}
+
+
+### Register Multi-Role User for Gordon
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "gordon.everywhere@example.com",
+  "password": "Password123!",
+  "fullName": "Gordon Ramsay",
+  "roles": ["Vendor", "Customer"]
+}
+
+
+### Register Multi-Role User for Varsha
+### Pehle Customer add kiya tha , ab Vendor kiya
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "varsha@rana.com",
+  "password": "Password321!",
+  "fullName": "Varsha Rana",
+  "roles": ["Vendor"] 
+}
+
+
+### Register Multi-Role User for Varsha
+### will not work
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "Sharon@Mas.com",
+  "password": "Shar_Mas1!",
+  "fullName": "SHaron Mascarenhas",
+  "roles": [] 
+}
+
+### Register as Driver
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "Sharon@Mas.com",
+  "password": "Shar_Mas1!",
+  "fullName": "SHaron Mascarenhas",
+  "roles": ["Driver"] 
+}
+
+
+
+
+### Login as sharon
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "Sharon@Mas.com",
+  "password": "Shar_Mas1!"
+}
+
+### Login as gordon
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "gordon.everywhere@example.com",
+  "password": "Password123!"
+}
+
+### Login as varsha
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "varsha@rana.com",
+  "password": "Password321!"
+}

@@ -1,0 +1,31 @@
+@port = 5121
+
+
+### Get all restaurants and their menus (Public)
+GET {{host}}/api/restaurant
+@host = http://localhost:{{port}}
+
+
+### Create a Restaurant (Requires Vendor JWT)
+POST {{host}}/api/restaurant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDEyOTM2OC02MjZiLTRmNmUtOGYzZS1lNmQzZTI2ZjA5YmUiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc4OTg4MjUwNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.2NLwnQOEKe-WB2tMz6x2ZiTkzV1qFNHmhYE9OGN7ZLw
+
+{
+  "name": "The Royal Gordon Ramsay Hotel",
+  "address": "Las Vegas Blvd"
+}
+
+
+### Add a Menu Item (Requires Vendor/Gordon's JWT)
+POST {{host}}/api/menuitem
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDEyOTM2OC02MjZiLTRmNmUtOGYzZS1lNmQzZTI2ZjA5YmUiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc4OTg4MjUwNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.2NLwnQOEKe-WB2tMz6x2ZiTkzV1qFNHmhYE9OGN7ZLw
+
+{
+  "name": "Beef Wellington",
+  "description": "A prime fillet of beef wrapped in puff pastry.",
+  "price": 45.99,
+  "restaurantId": "01a09943-ee7a-7d2d-ae56-68f20fda4173"
+}
+
