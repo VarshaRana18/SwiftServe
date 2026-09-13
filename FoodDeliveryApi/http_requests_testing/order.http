@@ -1,0 +1,39 @@
+@port = 5121
+@host = http://localhost:{{port}}
+
+
+### Place an Order (Requires Customer JWT)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGRhYWE3ZC1kMDYzLTQ5MWYtODNiOS1jZGY0ZjdhZjQ1MzgiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJDdXN0b21lciIsIlZlbmRvciJdLCJleHAiOjE3ODk4ODMxNDUsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.QZF-MgeBbbNXh8plukSHfQZGXEI5NsNECQ8KCMZ_LXQ
+
+{
+  "restaurantId": "01a09945-8ebc-7ed4-9dba-400e32559677",
+  "items": [
+    {
+      "menuItemId": "01a09947-80d1-7e8d-a346-61443f10a9b5",
+      "quantity": 2
+    }
+  ]
+}
+
+
+
+### Get Customer Order History (Requires Customer JWT)
+GET {{host}}/api/order/customer
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGRhYWE3ZC1kMDYzLTQ5MWYtODNiOS1jZGY0ZjdhZjQ1MzgiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJDdXN0b21lciIsIlZlbmRvciJdLCJleHAiOjE3ODk4ODMxNDUsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.QZF-MgeBbbNXh8plukSHfQZGXEI5NsNECQ8KCMZ_LXQ
+
+
+### Get Vendor Incoming Orders (Requires Vendor/Gordon JWT)
+GET {{host}}/api/order/vendor
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDEyOTM2OC02MjZiLTRmNmUtOGYzZS1lNmQzZTI2ZjA5YmUiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc4OTg4MjUwNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.2NLwnQOEKe-WB2tMz6x2ZiTkzV1qFNHmhYE9OGN7ZLw
+
+
+### Update Order Status to Accepted (Requires Vendor JWT)
+PUT {{host}}/api/order/01a0994d-af7e-7c47-be16-883cc20f35aa/status
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZDEyOTM2OC02MjZiLTRmNmUtOGYzZS1lNmQzZTI2ZjA5YmUiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc4OTg4MjUwNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.2NLwnQOEKe-WB2tMz6x2ZiTkzV1qFNHmhYE9OGN7ZLw
+
+{
+  "status": 1
+}
