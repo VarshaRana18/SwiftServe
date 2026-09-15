@@ -13,92 +13,227 @@ export const promotions = [
 ];
 
 export const restaurants = [
-    { 
-        id: 1, name: "Firehouse Grill", description: "Premium American diner serving legendary craft burgers.", address: "123 Main St, Vadodara", 
-        image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.8, time: "25-35 min", fee: "Free Delivery", tags: ["Burgers", "American"], isOpen: true 
-    },
-    { 
-        id: 2, name: "Sakura Sushi", description: "Authentic Japanese sushi and hot ramen bowls.", address: "45 Asian Ave, Vadodara", 
-        image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.9, time: "40-50 min", fee: "₹49 Delivery", tags: ["Japanese", "Sushi"], isOpen: true 
-    },
-    { 
-        id: 3, name: "Luigi's Oven", description: "Wood-fired Neapolitan pizzas.", address: "99 Italy Rd, Vadodara", 
-        image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.6, time: "30-45 min", fee: "₹35 Delivery", tags: ["Pizza", "Italian"], isOpen: false 
-    },
-    { 
-        id: 4, name: "Green Bowl", description: "Fresh, organic salads and protein-packed smoothie bowls.", address: "Alkapuri, Vadodara", 
-        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.7, time: "15-25 min", fee: "Free Delivery", tags: ["Healthy", "Vegan"], isOpen: true 
-    },
-    { 
-        id: 5, name: "Sugar Rush Bakery", description: "Decadent cakes, pastries, and artisanal coffee.", address: "Fatehgunj, Vadodara", 
-        image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.5, time: "20-30 min", fee: "₹20 Delivery", tags: ["Desserts", "Bakery"], isOpen: true 
-    },
-    { 
-        id: 6, name: "Burger Cartel", description: "Smashed patties with secret house sauces.", address: "Akota, Vadodara", 
-        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.3, time: "30-40 min", fee: "₹30 Delivery", tags: ["Burgers", "Fast Food"], isOpen: true 
-    },
-    { 
-        id: 7, name: "Spice Route", description: "Rich North Indian curries and tandoori specials.", address: "Gotri, Vadodara", 
-        image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.8, time: "45-55 min", fee: "Free Delivery", tags: ["Indian", "Curry"], isOpen: true 
-    },
-    { 
-        id: 8, name: "Slice Society", description: "New York style massive pizza slices.", address: "Karelibaug, Vadodara", 
-        image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.4, time: "25-35 min", fee: "₹40 Delivery", tags: ["Pizza", "Fast Food"], isOpen: true 
-    },
-    { 
-        id: 9, name: "Zen Noodles", description: "Pan-Asian wok bowls and handmade dim sum.", address: "Sama, Vadodara", 
-        image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.2, time: "35-45 min", fee: "₹25 Delivery", tags: ["Asian", "Noodles"], isOpen: false 
-    },
-    { 
-        id: 10, name: "The Cocoa Bean", description: "Artisanal chocolates, waffles, and thick shakes.", address: "Alkapuri, Vadodara", 
-        image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.9, time: "15-25 min", fee: "Free Delivery", tags: ["Desserts", "Cafe"], isOpen: true 
-    },
-    { 
-        id: 11, name: "FitBites", description: "Keto-friendly meals and grilled chicken wraps.", address: "Vadsar, Vadodara", 
-        image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.6, time: "30-40 min", fee: "₹15 Delivery", tags: ["Healthy", "Wraps"], isOpen: true 
-    },
-    { 
-        id: 12, name: "Tokyo Drift", description: "Premium sashimi platters and sushi boats.", address: "Fatehgunj, Vadodara", 
-        image: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.7, time: "40-50 min", fee: "₹60 Delivery", tags: ["Sushi", "Japanese"], isOpen: true 
-    },
-    { 
-        id: 13, name: "Crust & Co.", description: "Gourmet deep-dish pizzas with exotic toppings.", address: "Akota, Vadodara", 
-        image: "https://images.unsplash.com/photo-1604381536136-22462f0074df?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.5, time: "35-45 min", fee: "Free Delivery", tags: ["Pizza", "Italian"], isOpen: true 
-    },
-    { 
-        id: 14, name: "Smokey's BBQ", description: "Slow-cooked brisket and pulled pork sandwiches.", address: "Gotri, Vadodara", 
-        image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.8, time: "45-60 min", fee: "₹50 Delivery", tags: ["American", "Meat"], isOpen: false 
-    },
-    { 
-        id: 15, name: "Midnight Munchies", description: "Late-night sliders, fries, and greasy comfort food.", address: "Karelibaug, Vadodara", 
-        image: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1000&auto=format&fit=crop", 
-        rating: 4.1, time: "20-30 min", fee: "₹30 Delivery", tags: ["Burgers", "Fast Food"], isOpen: true 
-    }
+    { id: 1, name: "Firehouse Grill", description: "Premium American diner serving legendary craft burgers.", address: "123 Main St, Vadodara", image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1000&auto=format&fit=crop", rating: 4.8, time: "25-35 min", fee: "Free Delivery", tags: ["Burgers", "American"], isOpen: true },
+    { id: 2, name: "Sakura Sushi", description: "Authentic Japanese sushi and hot ramen bowls.", address: "45 Asian Ave, Vadodara", image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=1000&auto=format&fit=crop", rating: 4.9, time: "40-50 min", fee: "₹49 Delivery", tags: ["Japanese", "Sushi"], isOpen: true },
+    { id: 3, name: "Luigi's Oven", description: "Wood-fired Neapolitan pizzas.", address: "99 Italy Rd, Vadodara", image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000&auto=format&fit=crop", rating: 4.6, time: "30-45 min", fee: "₹35 Delivery", tags: ["Pizza", "Italian"], isOpen: false },
+    { id: 4, name: "Green Bowl", description: "Fresh, organic salads and protein-packed smoothie bowls.", address: "Alkapuri, Vadodara", image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop", rating: 4.7, time: "15-25 min", fee: "Free Delivery", tags: ["Healthy", "Vegan"], isOpen: true },
+    { id: 5, name: "Sugar Rush Bakery", description: "Decadent cakes, pastries, and artisanal coffee.", address: "Fatehgunj, Vadodara", image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=1000&auto=format&fit=crop", rating: 4.5, time: "20-30 min", fee: "₹20 Delivery", tags: ["Desserts", "Bakery"], isOpen: true },
+    { id: 6, name: "Burger Cartel", description: "Smashed patties with secret house sauces.", address: "Akota, Vadodara", image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1000&auto=format&fit=crop", rating: 4.3, time: "30-40 min", fee: "₹30 Delivery", tags: ["Burgers", "Fast Food"], isOpen: true },
+    { id: 7, name: "Spice Route", description: "Rich North Indian curries and tandoori specials.", address: "Gotri, Vadodara", image: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=1000&auto=format&fit=crop", rating: 4.8, time: "45-55 min", fee: "Free Delivery", tags: ["Indian", "Curry"], isOpen: true },
+    { id: 8, name: "Slice Society", description: "New York style massive pizza slices.", address: "Karelibaug, Vadodara", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1000&auto=format&fit=crop", rating: 4.4, time: "25-35 min", fee: "₹40 Delivery", tags: ["Pizza", "Fast Food"], isOpen: true },
+    { id: 9, name: "Zen Noodles", description: "Pan-Asian wok bowls and handmade dim sum.", address: "Sama, Vadodara", image: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=1000&auto=format&fit=crop", rating: 4.2, time: "35-45 min", fee: "₹25 Delivery", tags: ["Asian", "Noodles"], isOpen: false },
+    { id: 10, name: "The Cocoa Bean", description: "Artisanal chocolates, waffles, and thick shakes.", address: "Alkapuri, Vadodara", image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=1000&auto=format&fit=crop", rating: 4.9, time: "15-25 min", fee: "Free Delivery", tags: ["Desserts", "Cafe"], isOpen: true },
+    { id: 11, name: "FitBites", description: "Keto-friendly meals and grilled chicken wraps.", address: "Vadsar, Vadodara", image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1000&auto=format&fit=crop", rating: 4.6, time: "30-40 min", fee: "₹15 Delivery", tags: ["Healthy", "Wraps"], isOpen: true },
+    { id: 12, name: "Tokyo Drift", description: "Premium sashimi platters and sushi boats.", address: "Fatehgunj, Vadodara", image: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1000&auto=format&fit=crop", rating: 4.7, time: "40-50 min", fee: "₹60 Delivery", tags: ["Sushi", "Japanese"], isOpen: true },
+    { id: 13, name: "Crust & Co.", description: "Gourmet deep-dish pizzas with exotic toppings.", address: "Akota, Vadodara", image: "https://images.unsplash.com/photo-1604381536136-22462f0074df?q=80&w=1000&auto=format&fit=crop", rating: 4.5, time: "35-45 min", fee: "Free Delivery", tags: ["Pizza", "Italian"], isOpen: true },
+    { id: 14, name: "Smokey's BBQ", description: "Slow-cooked brisket and pulled pork sandwiches.", address: "Gotri, Vadodara", image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=1000&auto=format&fit=crop", rating: 4.8, time: "45-60 min", fee: "₹50 Delivery", tags: ["American", "Meat"], isOpen: false },
+    { id: 15, name: "Midnight Munchies", description: "Late-night sliders, fries, and greasy comfort food.", address: "Karelibaug, Vadodara", image: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1000&auto=format&fit=crop", rating: 4.1, time: "20-30 min", fee: "₹30 Delivery", tags: ["Burgers", "Fast Food"], isOpen: true },
+    { id: 16, name: "The Carnivore Club", description: "A meat-lover's paradise. Every dish is 100% non-veg.", address: "Old Padra Road, Vadodara", image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop", rating: 4.7, time: "35-45 min", fee: "₹45 Delivery", tags: ["BBQ", "Steakhouse", "Meat"], isOpen: true }
 ];
 
 export const mockMenus = {
-    1: [
-        { id: 101, name: "Classic Cheeseburger", description: "Premium beef patty, aged cheddar, secret sauce.", price: 199, imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Burgers" },
-        { id: 103, name: "Truffle Burger", description: "Mushroom duxelles, truffle mayo, swiss cheese.", price: 249, imageUrl: "https://images.unsplash.com/photo-1594212202875-86ac1c618b14?q=80&w=500&auto=format&fit=crop", isAvailable: false, stockQuantity: 0, category: "Burgers" },
-        { id: 105, name: "Classic Cheeseburger", description: "Premium beef patty, aged cheddar, secret sauce.", price: 199, imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Burgers" },
-        { id: 102, name: "Large Fries", description: "Golden crinkle-cut fries with sea salt.", price: 99, imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: 5, category: "Sides" },
-        { id: 104, name: "Oreo Shake", description: "Thick hand-spun milkshake.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages" }
+    1: [ // Firehouse Grill (Mixed) - 12 items
+        { id: 101, name: "Classic Cheeseburger", description: "Premium beef patty, aged cheddar, secret sauce.", price: 199, imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Burgers", isVeg: false },
+        { id: 102, name: "Truffle Mushroom Burger", description: "Mushroom duxelles, truffle mayo, swiss cheese.", price: 249, imageUrl: "https://images.unsplash.com/photo-1594212202875-86ac1c618b14?q=80&w=500&auto=format&fit=crop", isAvailable: false, stockQuantity: 0, category: "Burgers", isVeg: true },
+        { id: 103, name: "Bacon Double Smash", description: "Two smashed patties, crispy bacon, house BBQ.", price: 349, imageUrl: "https://images.unsplash.com/photo-1594212202875-86ac1c618b14?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: 10, category: "Burgers", isVeg: false },
+        { id: 104, name: "Spicy Paneer Burger", description: "Crispy paneer patty, jalapenos, spicy mayo.", price: 219, imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Burgers", isVeg: true },
+        { id: 105, name: "Large Fries", description: "Golden crinkle-cut fries with sea salt.", price: 99, imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 106, name: "Onion Rings", description: "Beer-battered crispy onion rings.", price: 129, imageUrl: "https://images.unsplash.com/photo-1639024471283-03518883512d?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 107, name: "Chicken Tenders", description: "Buttermilk fried chicken strips with ranch.", price: 179, imageUrl: "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 108, name: "Oreo Shake", description: "Thick hand-spun milkshake.", price: 149, imageUrl: "https://images.unsplash.com/photo-1572490122747-3968b75bf699?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 109, name: "Classic Lemonade", description: "Freshly squeezed lemon with mint.", price: 79, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 110, name: "Cold Coffee", description: "Rich espresso blended with ice cream.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 111, name: "BBQ Bacon Burger", description: "Smoky BBQ sauce, crispy bacon, cheddar, onion rings.", price: 329, imageUrl: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Burgers", isVeg: false },
+        { id: 112, name: "Veggie Black Bean Burger", description: "House-made black bean patty, avocado, chipotle mayo.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Burgers", isVeg: true }
     ],
-    2: [
-        { id: 201, name: "Spicy Tuna Roll", description: "Fresh tuna, spicy mayo, cucumber.", price: 349, imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sushi" }
-    ]
+    2: [ // Sakura Sushi (Mixed) - 12 items
+        { id: 201, name: "Spicy Tuna Roll", description: "Fresh tuna, spicy mayo, cucumber.", price: 349, imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: false },
+        { id: 202, name: "California Roll", description: "Crab stick, avocado, cucumber.", price: 299, imageUrl: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: false },
+        { id: 203, name: "Avocado Maki", description: "Simple avocado and rice roll.", price: 229, imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: true },
+        { id: 204, name: "Pork Tonkotsu Ramen", description: "Rich pork broth, chashu, soft egg, noodles.", price: 449, imageUrl: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Ramen", isVeg: false },
+        { id: 205, name: "Miso Veggie Ramen", description: "Miso broth, tofu, mushrooms, bok choy.", price: 349, imageUrl: "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Ramen", isVeg: true },
+        { id: 206, name: "Prawn Tempura", description: "Crispy fried prawns with dashi dip.", price: 289, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Appetizers", isVeg: false },
+        { id: 207, name: "Edamame", description: "Steamed soybeans with sea salt.", price: 149, imageUrl: "https://images.unsplash.com/photo-1615486171448-4fd17fb9b6a0?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Appetizers", isVeg: true },
+        { id: 208, name: "Matcha Iced Tea", description: "Refreshing Japanese green tea.", price: 119, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 209, name: "Salmon Nigiri (2 pcs)", description: "Fresh salmon slices over pressed sushi rice.", price: 279, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: false },
+        { id: 210, name: "Cucumber Roll", description: "Crisp cucumber, sesame seeds, nori.", price: 189, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: true },
+        { id: 211, name: "Chicken Gyoza (6 pcs)", description: "Pan-fried chicken dumplings with ponzu.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Appetizers", isVeg: false },
+        { id: 212, name: "Vegetable Tempura", description: "Assorted seasonal vegetables in light batter.", price: 219, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Appetizers", isVeg: true }
+    ],
+    3: [ // Luigi's Oven (Mixed) - 12 items
+        { id: 301, name: "Margherita Pizza", description: "Fresh basil, mozzarella, tomato sauce.", price: 299, imageUrl: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 302, name: "Pepperoni Passion", description: "Double pepperoni, extra cheese.", price: 399, imageUrl: "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 303, name: "Four Cheese", description: "Mozzarella, gorgonzola, parmesan, ricotta.", price: 349, imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 304, name: "BBQ Chicken Pizza", description: "Grilled chicken, red onions, BBQ drizzle.", price: 389, imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 305, name: "Penne Arrabbiata", description: "Spicy tomato garlic sauce with penne.", price: 279, imageUrl: "https://images.unsplash.com/photo-1608897013039-887f214ab018?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pasta", isVeg: true },
+        { id: 306, name: "Chicken Alfredo", description: "Creamy parmesan sauce, grilled chicken.", price: 329, imageUrl: "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?q=80&w=500&auto=format&fit=crop", isAvailable: false, stockQuantity: 0, category: "Pasta", isVeg: false },
+        { id: 307, name: "Garlic Bread", description: "Freshly baked with garlic butter.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 308, name: "Tiramisu", description: "Classic Italian coffee dessert.", price: 199, imageUrl: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true },
+        { id: 309, name: "Veggie Supreme Pizza", description: "Bell peppers, onions, mushrooms, olives, corn.", price: 349, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 310, name: "Meat Lovers Pizza", description: "Pepperoni, sausage, bacon, ham.", price: 449, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 311, name: "Spaghetti Bolognese", description: "Slow-cooked beef ragu over spaghetti.", price: 319, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pasta", isVeg: false },
+        { id: 312, name: "Caesar Salad", description: "Romaine, croutons, parmesan, Caesar dressing.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true }
+    ],
+    4: [ // Green Bowl (Pure Veg) - 12 items
+        { id: 401, name: "Avocado Quinoa Bowl", description: "Fresh avocado, roasted chickpeas, kale, tahini.", price: 249, imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: true },
+        { id: 402, name: "Berry Smoothie Bowl", description: "Acai, mixed berries, granola, chia seeds.", price: 199, imageUrl: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: true },
+        { id: 403, name: "Tofu Power Bowl", description: "Grilled tofu, edamame, brown rice, teriyaki.", price: 269, imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: true },
+        { id: 404, name: "Mediterranean Salad", description: "Feta, olives, cucumber, tomatoes, vinaigrette.", price: 219, imageUrl: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true },
+        { id: 405, name: "Kale Caesar Salad", description: "Fresh kale, vegan parmesan, croutons.", price: 229, imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true },
+        { id: 406, name: "Detox Green Juice", description: "Spinach, apple, celery, ginger.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Drinks", isVeg: true },
+        { id: 407, name: "Protein Peanut Butter Shake", description: "Banana, peanut butter, oat milk.", price: 179, imageUrl: "https://images.unsplash.com/photo-1556881286-fc6915169721?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Drinks", isVeg: true },
+        { id: 408, name: "Vegan Brownie", description: "Fudgy chocolate brownie made with almond flour.", price: 119, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Snacks", isVeg: true },
+        { id: 409, name: "Sweet Potato & Black Bean Bowl", description: "Roasted sweet potato, black beans, corn, lime crema.", price: 239, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: true },
+        { id: 410, name: "Asian Sesame Salad", description: "Napa cabbage, carrots, almonds, sesame ginger dressing.", price: 209, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true },
+        { id: 411, name: "Beetroot & Citrus Juice", description: "Beetroot, orange, carrot, lemon.", price: 139, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Drinks", isVeg: true },
+        { id: 412, name: "Overnight Oats Jar", description: "Rolled oats, almond milk, chia, berries.", price: 159, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Snacks", isVeg: true }
+    ],
+    5: [ // Sugar Rush Bakery (Pure Veg) - 12 items
+        { id: 501, name: "Chocolate Truffle Cake", description: "Rich, dense chocolate layer cake.", price: 499, imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: 5, category: "Cakes", isVeg: true },
+        { id: 502, name: "Red Velvet Slice", description: "Classic red velvet with cream cheese frosting.", price: 149, imageUrl: "https://images.unsplash.com/photo-1616541823729-00fe0aacd32c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Cakes", isVeg: true },
+        { id: 503, name: "Blueberry Cheesecake", description: "New York style cheesecake with blueberry compote.", price: 179, imageUrl: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Cakes", isVeg: true },
+        { id: 504, name: "Butter Croissant", description: "Flaky, buttery French pastry.", price: 89, imageUrl: "https://images.unsplash.com/photo-1555507036-ab1e4006aaeb?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pastries", isVeg: true },
+        { id: 505, name: "Almond Tart", description: "Sweet pastry crust filled with almond frangipane.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pastries", isVeg: true },
+        { id: 506, name: "Caramel Macchiato", description: "Espresso, steamed milk, and vanilla syrup.", price: 159, imageUrl: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Coffee", isVeg: true },
+        { id: 507, name: "Iced Americano", description: "Chilled espresso over water.", price: 99, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Coffee", isVeg: true },
+        { id: 508, name: "Lemon Drizzle Cake Slice", description: "Zesty lemon cake with sugar glaze.", price: 119, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Cakes", isVeg: true },
+        { id: 509, name: "Cinnamon Roll", description: "Warm, gooey cinnamon roll with cream cheese icing.", price: 109, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pastries", isVeg: true },
+        { id: 510, name: "Chocolate Chip Cookie (2 pcs)", description: "Freshly baked with dark chocolate chunks.", price: 79, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Cookies", isVeg: true },
+        { id: 511, name: "Vanilla Latte", description: "Smooth espresso with steamed milk and vanilla.", price: 139, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Coffee", isVeg: true },
+        { id: 512, name: "Raspberry Macaron (3 pcs)", description: "Delicate French almond cookies with raspberry filling.", price: 189, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pastries", isVeg: true }
+    ],
+    6: [ // Burger Cartel (Mixed) - 10 items
+        { id: 601, name: "The Godfather Burger", description: "Triple beef patty, onion rings, bacon jam.", price: 449, imageUrl: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Signatures", isVeg: false },
+        { id: 602, name: "Cartel Veggie Burger", description: "Spiced potato patty, mint mayo.", price: 169, imageUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Signatures", isVeg: true },
+        { id: 603, name: "Chicken Nashville", description: "Spicy fried chicken, pickles, slaw.", price: 289, imageUrl: "https://images.unsplash.com/photo-1625869016774-3a92be23759e?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Signatures", isVeg: false },
+        { id: 604, name: "Loaded Cheese Fries", description: "Fries topped with liquid cheese and jalapenos.", price: 149, imageUrl: "https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 605, name: "Bacon Loaded Fries", description: "Cheese fries topped with crispy bacon bits.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 606, name: "Diet Coke", description: "330ml Can.", price: 59, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 607, name: "Mushroom Swiss Burger", description: "Beef patty, sauteed mushrooms, swiss cheese.", price: 299, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Signatures", isVeg: false },
+        { id: 608, name: "Paneer Makhani Burger", description: "Paneer patty, makhani sauce, onions.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Signatures", isVeg: true },
+        { id: 609, name: "Chicken Popcorn Bucket", description: "Bite-sized crispy chicken pieces.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 610, name: "Chocolate Thick Shake", description: "Rich chocolate shake with ice cream.", price: 159, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true }
+    ],
+    7: [ // Spice Route (Mixed) - 10 items
+        { id: 701, name: "Butter Chicken", description: "Tender chicken in a rich, creamy tomato gravy.", price: 349, imageUrl: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Curries", isVeg: false },
+        { id: 702, name: "Paneer Tikka Masala", description: "Grilled cottage cheese in spicy gravy.", price: 299, imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Curries", isVeg: true },
+        { id: 703, name: "Dal Makhani", description: "Slow-cooked black lentils with butter and cream.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Curries", isVeg: true },
+        { id: 704, name: "Garlic Naan", description: "Soft Indian bread topped with garlic.", price: 69, imageUrl: "https://images.unsplash.com/photo-1626074353765-517a681e40be?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Breads", isVeg: true },
+        { id: 705, name: "Butter Naan", description: "Classic tandoori bread brushed with butter.", price: 59, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Breads", isVeg: true },
+        { id: 706, name: "Chicken Biryani", description: "Aromatic basmati rice cooked with spiced chicken.", price: 329, imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Rice", isVeg: false },
+        { id: 707, name: "Jeera Rice", description: "Basmati rice tempered with cumin seeds.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Rice", isVeg: true },
+        { id: 708, name: "Chicken Tikka (6 pcs)", description: "Spiced yogurt-marinated grilled chicken.", price: 279, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: false },
+        { id: 709, name: "Veg Samosa (2 pcs)", description: "Crispy pastry filled with spiced potatoes and peas.", price: 99, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: true },
+        { id: 710, name: "Mango Lassi", description: "Sweet yogurt drink with mango pulp.", price: 89, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true }
+    ],
+    10: [ // The Cocoa Bean (Pure Veg) - 10 items
+        { id: 1001, name: "Belgian Waffle", description: "Crispy waffle topped with melted milk chocolate.", price: 229, imageUrl: "https://images.unsplash.com/photo-1503485838016-53579610c389?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Waffles", isVeg: true },
+        { id: 1002, name: "Nutella Banana Pancake", description: "Fluffy pancakes loaded with Nutella.", price: 249, imageUrl: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pancakes", isVeg: true },
+        { id: 1003, name: "Dark Chocolate Fondue", description: "Melted dark chocolate with strawberries and marshmallows.", price: 399, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Specials", isVeg: true },
+        { id: 1004, name: "Hazelnut Frappe", description: "Blended iced coffee with hazelnut syrup.", price: 189, imageUrl: "https://images.unsplash.com/photo-1572490122747-3968b75bf699?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Shakes", isVeg: true },
+        { id: 1005, name: "Chocolate Lava Cake", description: "Warm cake with a gooey chocolate center.", price: 179, imageUrl: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true },
+        { id: 1006, name: "Red Velvet Waffle", description: "Red velvet waffle with cream cheese drizzle.", price: 259, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Waffles", isVeg: true },
+        { id: 1007, name: "Salted Caramel Milkshake", description: "Thick shake with salted caramel and whipped cream.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Shakes", isVeg: true },
+        { id: 1008, name: "Brownie Sundae", description: "Warm brownie topped with vanilla ice cream.", price: 219, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true },
+        { id: 1009, name: "Strawberry Cheesecake Jar", description: "Layered cheesecake with fresh strawberry compote.", price: 169, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true },
+        { id: 1010, name: "Iced Mocha", description: "Espresso, chocolate, milk, served over ice.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Coffee", isVeg: true }
+    ],
+        8: [ // Slice Society (Mixed) - 10 items
+        { id: 801, name: "NY Giant Cheese Slice", description: "Massive foldable slice with mozzarella and tomato sauce.", price: 149, imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 802, name: "Pepperoni Party Slice", description: "Loaded with crispy pepperoni cups.", price: 189, imageUrl: "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 803, name: "Buffalo Chicken Slice", description: "Spicy buffalo chicken, ranch drizzle, celery.", price: 209, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 804, name: "Veggie Supreme Slice", description: "Bell peppers, olives, mushrooms, onions.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 805, name: "Whole Margherita Pie", description: "18-inch whole pizza with fresh basil and mozzarella.", price: 799, imageUrl: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 806, name: "Garlic Knots (6 pcs)", description: "Soft baked knots brushed with garlic butter.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 807, name: "Mozzarella Sticks", description: "Crispy breaded mozzarella with marinara dip.", price: 169, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 808, name: "Chicken Wings (6 pcs)", description: "Buffalo or BBQ glazed wings.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 809, name: "Italian Soda", description: "Sparkling soda with fruit syrup.", price: 99, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 810, name: "Cannoli (2 pcs)", description: "Crispy shell filled with sweet ricotta.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true }
+    ],
+    9: [ // Zen Noodles (Mixed) - 10 items
+        { id: 901, name: "Chicken Chow Mein", description: "Stir-fried noodles with chicken and vegetables.", price: 249, imageUrl: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Noodles", isVeg: false },
+        { id: 902, name: "Veg Hakka Noodles", description: "Classic Indo-Chinese noodles with veggies.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Noodles", isVeg: true },
+        { id: 903, name: "Prawn Pad Thai", description: "Rice noodles, tamarind, peanuts, prawns.", price: 329, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Noodles", isVeg: false },
+        { id: 904, name: "Chicken Dim Sum (6 pcs)", description: "Steamed dumplings with chicken filling.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Dim Sum", isVeg: false },
+        { id: 905, name: "Veg Momos (6 pcs)", description: "Steamed dumplings with cabbage and carrot.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Dim Sum", isVeg: true },
+        { id: 906, name: "Chicken Fried Rice", description: "Wok-tossed rice with egg and chicken.", price: 239, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Rice", isVeg: false },
+        { id: 907, name: "Veg Fried Rice", description: "Classic fried rice with mixed vegetables.", price: 189, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Rice", isVeg: true },
+        { id: 908, name: "Chilli Chicken (Dry)", description: "Crispy chicken tossed in spicy chilli sauce.", price: 279, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: false },
+        { id: 909, name: "Chilli Paneer (Dry)", description: "Paneer cubes in spicy Indo-Chinese sauce.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: true },
+        { id: 910, name: "Jasmine Green Tea", description: "Fragrant hot tea.", price: 89, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true }
+    ],
+    11: [ // FitBites (Mixed) - 10 items
+        { id: 1101, name: "Grilled Chicken Wrap", description: "Whole wheat wrap with grilled chicken, lettuce, yogurt sauce.", price: 229, imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Wraps", isVeg: false },
+        { id: 1102, name: "Paneer Tikka Wrap", description: "Whole wheat wrap with grilled paneer and mint chutney.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Wraps", isVeg: true },
+        { id: 1103, name: "Keto Chicken Bowl", description: "Grilled chicken, avocado, broccoli, cauliflower rice.", price: 319, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: false },
+        { id: 1104, name: "Quinoa Veg Bowl", description: "Quinoa, roasted veggies, chickpeas, tahini.", price: 269, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Bowls", isVeg: true },
+        { id: 1105, name: "Grilled Salmon Salad", description: "Grilled salmon fillet over mixed greens.", price: 399, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: false },
+        { id: 1106, name: "Greek Salad", description: "Cucumber, tomato, olives, feta, olive oil.", price: 219, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true },
+        { id: 1107, name: "Egg White Omelette", description: "Three egg whites with spinach and mushrooms.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Breakfast", isVeg: true },
+        { id: 1108, name: "Protein Pancakes", description: "Oat and banana pancakes with whey protein.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Breakfast", isVeg: true },
+        { id: 1109, name: "Cold Pressed Juice", description: "Daily fresh cold-pressed vegetable juice.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Drinks", isVeg: true },
+        { id: 1110, name: "Whey Protein Shake", description: "Chocolate or vanilla whey shake.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Drinks", isVeg: true }
+    ],
+    12: [ // Tokyo Drift (Mixed) - 10 items
+        { id: 1201, name: "Premium Sashimi Platter", description: "Chef's selection of 12 assorted sashimi slices.", price: 899, imageUrl: "https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sashimi", isVeg: false },
+        { id: 1202, name: "Salmon Sashimi (8 pcs)", description: "Fresh Norwegian salmon slices.", price: 549, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sashimi", isVeg: false },
+        { id: 1203, name: "Tuna Sashimi (8 pcs)", description: "Premium bluefin tuna slices.", price: 649, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sashimi", isVeg: false },
+        { id: 1204, name: "Dragon Roll", description: "Eel, cucumber, topped with avocado and tobiko.", price: 449, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: false },
+        { id: 1205, name: "Rainbow Roll", description: "California roll topped with assorted sashimi.", price: 499, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: false },
+        { id: 1206, name: "Veggie Dragon Roll", description: "Avocado, cucumber, asparagus, mango.", price: 349, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sushi", isVeg: true },
+        { id: 1207, name: "Sushi Boat for 2", description: "Chef's selection of 20 sushi pieces and 2 rolls.", price: 1299, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Specials", isVeg: false },
+        { id: 1208, name: "Miso Soup", description: "Traditional Japanese soybean soup with tofu.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Soups", isVeg: true },
+        { id: 1209, name: "Seaweed Salad", description: "Wakame seaweed with sesame dressing.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: true },
+        { id: 1210, name: "Green Tea Ice Cream", description: "Matcha flavored ice cream.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true }
+    ],
+    13: [ // Crust & Co. (Mixed) - 10 items
+        { id: 1301, name: "Chicago Deep Dish Cheese", description: "Thick buttery crust with layers of mozzarella.", price: 449, imageUrl: "https://images.unsplash.com/photo-1604381536136-22462f0074df?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Deep Dish", isVeg: true },
+        { id: 1302, name: "Meat Lovers Deep Dish", description: "Pepperoni, sausage, bacon, ham in deep dish crust.", price: 599, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Deep Dish", isVeg: false },
+        { id: 1303, name: "Spinach & Ricotta Deep Dish", description: "Creamy ricotta, spinach, garlic.", price: 499, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Deep Dish", isVeg: true },
+        { id: 1304, name: "BBQ Pulled Pork Pizza", description: "Slow-cooked pork, BBQ sauce, red onions.", price: 549, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 1305, name: "Truffle Mushroom Pizza", description: "Wild mushrooms, truffle oil, fontina cheese.", price: 579, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: true },
+        { id: 1306, name: "Buffalo Chicken Pizza", description: "Spicy buffalo chicken, blue cheese, celery.", price: 529, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Pizza", isVeg: false },
+        { id: 1307, name: "Garlic Parmesan Breadsticks", description: "Fresh baked breadsticks with garlic parmesan.", price: 159, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1308, name: "Antipasto Salad", description: "Salami, provolone, olives, peppers, greens.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Salads", isVeg: false },
+        { id: 1309, name: "Craft Root Beer", description: "Bottled artisan root beer.", price: 99, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true },
+        { id: 1310, name: "Chocolate Chip Skillet Cookie", description: "Warm cookie skillet with vanilla ice cream.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Desserts", isVeg: true }
+    ],
+    14: [ // Smokey's BBQ (Mixed) - 10 items
+        { id: 1401, name: "Texas Brisket Plate", description: "12-hour slow-smoked brisket with two sides.", price: 549, imageUrl: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Plates", isVeg: false },
+        { id: 1402, name: "Pulled Pork Sandwich", description: "Slow-cooked pulled pork with coleslaw and pickles.", price: 299, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sandwiches", isVeg: false },
+        { id: 1403, name: "BBQ Chicken Half", description: "Half smoked chicken with house BBQ sauce.", price: 399, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Plates", isVeg: false },
+        { id: 1404, name: "Smoked Sausage Link", description: "Andouille sausage with mustard and pickles.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Plates", isVeg: false },
+        { id: 1405, name: "BBQ Jackfruit Sandwich", description: "Smoky pulled jackfruit with vegan slaw.", price: 269, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sandwiches", isVeg: true },
+        { id: 1406, name: "Mac & Cheese", description: "Creamy three-cheese macaroni.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1407, name: "Smoked Baked Beans", description: "Slow-cooked beans with bacon and molasses.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 1408, name: "Coleslaw", description: "Creamy cabbage slaw.", price: 99, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1409, name: "Cornbread (2 pcs)", description: "Sweet Southern cornbread with honey butter.", price: 129, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1410, name: "Sweet Tea", description: "Classic Southern sweet iced tea.", price: 79, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true }
+    ],
+    15: [ // Midnight Munchies (Mixed) - 10 items
+        { id: 1501, name: "Classic Slider Trio", description: "Three mini beef burgers with pickles and sauce.", price: 249, imageUrl: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Sliders", isVeg: false },
+        { id: 1502, name: "Veggie Slider Trio", description: "Three mini veggie patty sliders.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sliders", isVeg: true },
+        { id: 1503, name: "Chicken Slider Trio", description: "Three crispy chicken sliders.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sliders", isVeg: false },
+        { id: 1504, name: "Loaded Nachos", description: "Tortilla chips with cheese, jalapenos, salsa, sour cream.", price: 229, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1505, name: "Chicken Quesadilla", description: "Grilled tortilla with chicken and melted cheese.", price: 249, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 1506, name: "Cheese Quesadilla", description: "Grilled tortilla with three-cheese blend.", price: 199, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1507, name: "Buffalo Wings (6 pcs)", description: "Spicy buffalo wings with ranch.", price: 279, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 1508, name: "Chilli Cheese Fries", description: "Fries topped with beef chilli and cheese.", price: 219, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: false },
+        { id: 1509, name: "Onion Rings", description: "Crispy battered onion rings.", price: 149, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Sides", isVeg: true },
+        { id: 1510, name: "Midnight Milkshake", description: "Cookies and cream thick shake.", price: 179, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Beverages", isVeg: true }
+    ],
+        16: [ // The Carnivore Club (Pure Non-Veg) - 12 items
+        { id: 1601, name: "Ribeye Steak", description: "12oz prime ribeye grilled to your preference.", price: 899, imageUrl: "https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "Steaks", isVeg: false },
+        { id: 1602, name: "Filet Mignon", description: "8oz tenderloin with red wine reduction.", price: 1099, imageUrl: null, isAvailable: true, stockQuantity: 5, category: "Steaks", isVeg: false },
+        { id: 1603, name: "T-Bone Steak", description: "Classic T-bone with herb butter.", price: 999, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Steaks", isVeg: false },
+        { id: 1604, name: "BBQ Pork Ribs (Half Rack)", description: "Slow-smoked ribs glazed with house BBQ sauce.", price: 649, imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=500&auto=format&fit=crop", isAvailable: true, stockQuantity: null, category: "BBQ", isVeg: false },
+        { id: 1605, name: "Smoked Beef Brisket", description: "12-hour smoked brisket with pickles and slaw.", price: 599, imageUrl: null, isAvailable: true, stockQuantity: null, category: "BBQ", isVeg: false },
+        { id: 1606, name: "Grilled Lamb Chops (4 pcs)", description: "Herb-marinated lamb chops with mint chutney.", price: 749, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Grills", isVeg: false },
+        { id: 1607, name: "Peri Peri Chicken Half", description: "Flame-grilled half chicken with peri peri glaze.", price: 449, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Grills", isVeg: false },
+        { id: 1608, name: "Chicken Wings Bucket (10 pcs)", description: "Assorted wings: buffalo, BBQ, and lemon pepper.", price: 499, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: false },
+        { id: 1609, name: "Beef Meatballs (6 pcs)", description: "Italian-style beef meatballs in marinara.", price: 349, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: false },
+        { id: 1610, name: "Prawn Skewers (6 pcs)", description: "Garlic butter grilled prawns.", price: 529, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Seafood", isVeg: false },
+        { id: 1611, name: "Fish & Chips", description: "Beer-battered cod with thick-cut fries.", price: 419, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Seafood", isVeg: false },
+        { id: 1612, name: "Bone Marrow Butter Toast", description: "Toasted sourdough with roasted bone marrow butter.", price: 329, imageUrl: null, isAvailable: true, stockQuantity: null, category: "Starters", isVeg: false }
+    ],
 };

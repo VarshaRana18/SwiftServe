@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { restaurants, mockMenus } from "../data/mockData";
 import { useCart } from "../context/CartContext";
 
@@ -14,6 +14,38 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
     }, [activeRestaurantId, menuItems]);
 
     const [activeTab, setActiveTab] = useState(activeMenuCategories[0]);
+
+    // NEW: Scrollspy engine using Intersection Observer
+    useEffect(() => {
+        // If there are no categories, do nothing
+        if (activeMenuCategories.length === 0) return;
+
+        const observerOptions = {
+            root: null,
+            // Triggers exactly when the section hits the area just below your sticky nav
+            rootMargin: "-120px 0px -70% 0px", 
+            threshold: 0
+        };
+
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setActiveTab(entry.target.id);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        // Observe every category div
+        activeMenuCategories.forEach(category => {
+            const element = document.getElementById(category);
+            if (element) observer.observe(element);
+        });
+
+        // Cleanup observer on unmount
+        return () => observer.disconnect();
+    }, [activeMenuCategories]);
 
     const scrollToCategory = (category) => {
         setActiveTab(category);
@@ -36,7 +68,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </button>
 
-                {/* Hero Container: max-w-7xl with p-4 sm:p-8 */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">{activeRest.name}</h1>
                     <p className="text-slate-300 text-sm md:text-base mb-4 max-w-2xl">{activeRest.description}</p>
@@ -63,7 +94,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                 </div>
             </div>
 
-            {/* Layout Split Container: matched to max-w-7xl and px-4 sm:px-8 */}
+            {/* Layout Split Container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
                 
                 {/* DESKTOP ONLY: Vertical Sticky Sidebar */}
@@ -87,7 +118,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     {activeMenuCategories.map(category => (
                         <div key={category} id={category}>
                             <h3 className="text-2xl font-bold text-slate-800 mb-6">{category}</h3>
-                            {/* FIX: Changed md:grid-cols-2 to lg:grid-cols-2 to prevent tablet squishing */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {menuItems.filter(item => item.category === category).map(item => {
                                     const qtyInCart = getItemQtyInCart(activeRestaurantId, item.id);
@@ -96,7 +126,13 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                     return (
                                         <div key={item.id} className={`bg-white rounded-2xl p-4 border flex gap-4 transition-all ${!item.isAvailable ? 'opacity-60 grayscale border-slate-100' : 'border-slate-200 hover:shadow-md hover:border-orange-200'}`}>
                                             <div className="flex-1">
-                                                <div className="flex items-center gap-2 mb-1"><h4 className="text-lg font-bold text-slate-800">{item.name}</h4></div>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 ${item.isVeg ? 'text-green-600' : 'text-red-700'}`}>
+                                                        <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1"/>
+                                                        <circle cx="8" cy="8" r="3.5" fill="currentColor"/>
+                                                    </svg>
+                                                    <h4 className="text-lg font-bold text-slate-800">{item.name}</h4>
+                                                </div>
                                                 <p className="text-lg font-semibold text-slate-700 mb-2">₹{item.price}</p>
                                                 <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
                                             </div>
