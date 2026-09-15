@@ -5,7 +5,8 @@ export default function CartDrawer() {
     const { 
         isCartOpen, setIsCartOpen, activeCartView, setActiveCartView, 
         globalCarts, updateQuantity, deleteCart, confirmDeleteId, setConfirmDeleteId, 
-        confirmItemDeleteId, setConfirmItemDeleteId, getCartTotal, getGrandTotal 
+        confirmItemDeleteId, setConfirmItemDeleteId, getCartTotal, getGrandTotal ,
+        setIsOrdersOpen, checkoutCart 
     } = useCart();
 
     // Local state for payment screen and tipping
@@ -23,29 +24,30 @@ export default function CartDrawer() {
     const totalToPay = subtotal + platformFee + selectedTip;
 
     const handlePlaceOrder = () => {
-        setIsPlacingOrder(true);
+    setIsPlacingOrder(true);
+    
+    setTimeout(() => {
+        setIsPlacingOrder(false);
         
-        setTimeout(() => {
-            setIsPlacingOrder(false);
-            
-            // If checking out all, loop and delete every active cart
-            if (isMultiCheckout) {
-                Object.keys(globalCarts).forEach(id => deleteCart(id));
-            } else {
-                deleteCart(activeCartView);
-            }
+        // NEW: Convert carts into tracked orders
+        if (isMultiCheckout) {
+            Object.keys(globalCarts).forEach(id => checkoutCart(id, selectedTip));
+        } else {
+            checkoutCart(activeCartView, selectedTip);
+        }
 
-            // Reset all checkout states
-            setIsCheckoutMode(false);
-            setActiveCartView(null);
-            setIsCartOpen(false);
-            setSelectedTip(0);
-            setIsCustomTip(false);
-            setCustomTipAmount("");
-            
-            alert("Order Placed Successfully!"); 
-        }, 1500);
-    };
+        // Reset checkout states
+        setIsCheckoutMode(false);
+        setActiveCartView(null);
+        setIsCartOpen(false);
+        setSelectedTip(0);
+        setIsCustomTip(false);
+        setCustomTipAmount("");
+        
+        // NEW: Automatically open the Orders Tracking Drawer!
+        setIsOrdersOpen(true); 
+    }, 1500);
+};
 
     return (
         <div className={`fixed inset-0 z-50 flex justify-end overflow-hidden ${isCartOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>

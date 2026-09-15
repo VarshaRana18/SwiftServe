@@ -6,11 +6,17 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+    // 1. Cart Drawer State
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [activeCartView, setActiveCartView] = useState(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
     const [confirmItemDeleteId, setConfirmItemDeleteId] = useState(null);
 
+    // 2. NEW: Order Tracking State
+    const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+    const [orderHistory, setOrderHistory] = useState([]);
+
+    // 3. Cart Data State
     const [globalCarts, setGlobalCarts] = useState({
         "1": {
             restaurantId: 1,
@@ -85,12 +91,36 @@ export const CartProvider = ({ children }) => {
         return cart?.items.find(i => i.id === itemId)?.qty || 0;
     };
 
+    // NEW: The engine that converts a Cart into a tracked Order
+    const checkoutCart = (cartId, tipAmount) => {
+        const cartToOrder = globalCarts[cartId];
+        if (!cartToOrder) return;
+
+        const orderTotal = getCartTotal(cartId) + 10 + tipAmount; // Items + Platform Fee + Tip
+        
+        const newOrder = {
+            orderId: `ORD-${Math.floor(Math.random() * 1000000)}`,
+            timestamp: new Date().toISOString(),
+            restaurantId: cartToOrder.restaurantId,
+            restaurantName: cartToOrder.restaurantName,
+            image: cartToOrder.image,
+            items: [...cartToOrder.items],
+            totalAmount: orderTotal,
+            status: "Preparing" // Default status for a new order
+        };
+
+        // Push to order history, then delete the cart
+        setOrderHistory(prev => [newOrder, ...prev]);
+        deleteCart(cartId);
+    };
+
     return (
         <CartContext.Provider value={{
             isCartOpen, setIsCartOpen, activeCartView, setActiveCartView,
             confirmDeleteId, setConfirmDeleteId, confirmItemDeleteId, setConfirmItemDeleteId,
             globalCarts, updateQuantity, addToCart, deleteCart,
-            getCartTotal, getGrandTotal, getItemQtyInCart
+            getCartTotal, getGrandTotal, getItemQtyInCart,
+            isOrdersOpen, setIsOrdersOpen, orderHistory, checkoutCart
         }}>
             {children}
         </CartContext.Provider>

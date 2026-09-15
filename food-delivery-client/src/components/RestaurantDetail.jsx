@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { restaurants, mockMenus } from "../data/mockData";
 import { useCart } from "../context/CartContext";
 
@@ -13,8 +13,21 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
         return [...new Set(menuItems.map(item => item.category))];
     }, [activeRestaurantId, menuItems]);
 
+    const [activeTab, setActiveTab] = useState(activeMenuCategories[0]);
+
+    const scrollToCategory = (category) => {
+        setActiveTab(category);
+        const element = document.getElementById(category);
+        if (element) {
+            // Offset for the Global Header
+            const y = element.getBoundingClientRect().top + window.scrollY - 100;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="animate-slide-in-right pb-32">
+            {/* Hero Header */}
             <div className="relative h-64 md:h-80 w-full bg-slate-900">
                 <img src={activeRest.image} alt={activeRest.name} className="w-full h-full object-cover opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
@@ -23,6 +36,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </button>
 
+                {/* Hero Container: max-w-7xl with p-4 sm:p-8 */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">{activeRest.name}</h1>
                     <p className="text-slate-300 text-sm md:text-base mb-4 max-w-2xl">{activeRest.description}</p>
@@ -34,57 +48,82 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                 </div>
             </div>
 
-            <div className="sticky top-20 z-30 bg-white border-b border-slate-200 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex gap-6 overflow-x-auto py-4 scrollbar-hide text-sm font-bold text-slate-500">
-                        {activeMenuCategories.map((cat, idx) => (
-                            <button key={cat} className={`whitespace-nowrap transition-colors hover:text-orange-500 ${idx === 0 ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>
+            {/* MOBILE ONLY: Horizontal Sticky Nav */}
+            <div className="md:hidden sticky top-20 z-30 bg-white border-b border-slate-200 shadow-sm">
+                <div className="px-4 sm:px-8 flex gap-6 overflow-x-auto py-4 scrollbar-hide text-sm font-bold text-slate-500">
+                    {activeMenuCategories.map((cat) => (
+                        <button 
+                            key={cat} 
+                            onClick={() => scrollToCategory(cat)}
+                            className={`whitespace-nowrap transition-colors hover:text-orange-500 ${activeTab === cat ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Layout Split Container: matched to max-w-7xl and px-4 sm:px-8 */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
+                
+                {/* DESKTOP ONLY: Vertical Sticky Sidebar */}
+                <div className="hidden md:block w-56 shrink-0 sticky top-28">
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-3">Menu Categories</h3>
+                    <div className="flex flex-col space-y-1 border-r border-slate-100 pr-4">
+                        {activeMenuCategories.map((cat) => (
+                            <button 
+                                key={cat} 
+                                onClick={() => scrollToCategory(cat)}
+                                className={`text-left px-4 py-3 rounded-xl transition-all font-bold ${activeTab === cat ? 'bg-orange-50 text-orange-600 border-r-2 border-orange-500' : 'text-slate-500 hover:bg-slate-50 hover:text-orange-500'}`}
+                            >
                                 {cat}
                             </button>
                         ))}
                     </div>
                 </div>
-            </div>
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-                {activeMenuCategories.map(category => (
-                    <div key={category} id={category}>
-                        <h3 className="text-2xl font-bold text-slate-800 mb-6">{category}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {menuItems.filter(item => item.category === category).map(item => {
-                                const qtyInCart = getItemQtyInCart(activeRestaurantId, item.id);
-                                const hitStockLimit = item.stockQuantity !== null && qtyInCart >= item.stockQuantity;
-                                
-                                return (
-                                    <div key={item.id} className={`bg-white rounded-2xl p-4 border flex gap-4 transition-all ${!item.isAvailable ? 'opacity-60 grayscale border-slate-100' : 'border-slate-200 hover:shadow-md hover:border-orange-200'}`}>
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1"><h4 className="text-lg font-bold text-slate-800">{item.name}</h4></div>
-                                            <p className="text-lg font-semibold text-slate-700 mb-2">₹{item.price}</p>
-                                            <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
-                                        </div>
-                                        <div className="w-32 flex flex-col items-center justify-between shrink-0">
-                                            <div className="w-full h-24 bg-slate-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-100">
-                                                {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>}
+                {/* Menu Item Rendering */}
+                <div className="flex-1 space-y-12">
+                    {activeMenuCategories.map(category => (
+                        <div key={category} id={category}>
+                            <h3 className="text-2xl font-bold text-slate-800 mb-6">{category}</h3>
+                            {/* FIX: Changed md:grid-cols-2 to lg:grid-cols-2 to prevent tablet squishing */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {menuItems.filter(item => item.category === category).map(item => {
+                                    const qtyInCart = getItemQtyInCart(activeRestaurantId, item.id);
+                                    const hitStockLimit = item.stockQuantity !== null && qtyInCart >= item.stockQuantity;
+                                    
+                                    return (
+                                        <div key={item.id} className={`bg-white rounded-2xl p-4 border flex gap-4 transition-all ${!item.isAvailable ? 'opacity-60 grayscale border-slate-100' : 'border-slate-200 hover:shadow-md hover:border-orange-200'}`}>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1"><h4 className="text-lg font-bold text-slate-800">{item.name}</h4></div>
+                                                <p className="text-lg font-semibold text-slate-700 mb-2">₹{item.price}</p>
+                                                <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
                                             </div>
-                                            {!item.isAvailable ? (
-                                                <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase tracking-wider text-center w-full">Unavailable</span>
-                                            ) : qtyInCart > 0 ? (
-                                                <div className="flex items-center justify-between bg-orange-50 rounded-lg p-1 w-full border border-orange-200">
-                                                    <button onClick={() => updateQuantity(activeRestaurantId, item.id, -1)} className="w-7 h-7 flex items-center justify-center text-orange-600 bg-white rounded-md shadow-sm font-bold">-</button>
-                                                    <span className="font-bold text-sm text-orange-700">{qtyInCart}</span>
-                                                    <button onClick={() => updateQuantity(activeRestaurantId, item.id, 1)} disabled={hitStockLimit} className={`w-7 h-7 flex items-center justify-center rounded-md font-bold transition-all ${hitStockLimit ? 'text-slate-300 bg-slate-100 cursor-not-allowed' : 'text-orange-600 bg-white shadow-sm hover:bg-orange-500 hover:text-white'}`}>+</button>
+                                            <div className="w-32 flex flex-col items-center justify-between shrink-0">
+                                                <div className="w-full h-24 bg-slate-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-100">
+                                                    {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>}
                                                 </div>
-                                            ) : (
-                                                <button onClick={() => addToCart(activeRestaurantId, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">ADD</button>
-                                            )}
-                                            {hitStockLimit && qtyInCart > 0 && <span className="text-[10px] text-red-500 mt-1 font-semibold text-center leading-none">Max Stock Reached</span>}
+                                                {!item.isAvailable ? (
+                                                    <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase tracking-wider text-center w-full">Unavailable</span>
+                                                ) : qtyInCart > 0 ? (
+                                                    <div className="flex items-center justify-between bg-orange-50 rounded-lg p-1 w-full border border-orange-200">
+                                                        <button onClick={() => updateQuantity(activeRestaurantId, item.id, -1)} className="w-7 h-7 flex items-center justify-center text-orange-600 bg-white rounded-md shadow-sm font-bold">-</button>
+                                                        <span className="font-bold text-sm text-orange-700">{qtyInCart}</span>
+                                                        <button onClick={() => updateQuantity(activeRestaurantId, item.id, 1)} disabled={hitStockLimit} className={`w-7 h-7 flex items-center justify-center rounded-md font-bold transition-all ${hitStockLimit ? 'text-slate-300 bg-slate-100 cursor-not-allowed' : 'text-orange-600 bg-white shadow-sm hover:bg-orange-500 hover:text-white'}`}>+</button>
+                                                    </div>
+                                                ) : (
+                                                    <button onClick={() => addToCart(activeRestaurantId, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">ADD</button>
+                                                )}
+                                                {hitStockLimit && qtyInCart > 0 && <span className="text-[10px] text-red-500 mt-1 font-semibold text-center leading-none">Max Stock Reached</span>}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );
