@@ -1,28 +1,45 @@
 import { useMemo, useState, useEffect } from "react";
-import { restaurants, mockMenus } from "../data/mockData";
 import { useCart } from "../context/CartContext";
+import { fetchRestaurantDetails } from "../api/mockApi"; // NEW: The API service
 
 export default function RestaurantDetail({ activeRestaurantId, setActiveRestaurantId }) {
     const { updateQuantity, addToCart, getItemQtyInCart } = useCart();
     
-    const activeRest = restaurants.find(r => r.id === activeRestaurantId);
-    const menuItems = mockMenus[activeRestaurantId] || [];
+    // NEW: API States
+    const [isLoading, setIsLoading] = useState(true);
+    const [activeRest, setActiveRest] = useState(null);
+    const [menuItems, setMenuItems] = useState([]);
+
+    // NEW: Fetch Data on Mount
+    useEffect(() => {
+        setIsLoading(true);
+        fetchRestaurantDetails(activeRestaurantId).then((data) => {
+            setActiveRest(data.restaurant);
+            setMenuItems(data.menu);
+            setIsLoading(false);
+        });
+    }, [activeRestaurantId]);
 
     const activeMenuCategories = useMemo(() => {
-        if (!activeRestaurantId || !mockMenus[activeRestaurantId]) return [];
+        if (!menuItems || menuItems.length === 0) return [];
         return [...new Set(menuItems.map(item => item.category))];
-    }, [activeRestaurantId, menuItems]);
+    }, [menuItems]);
 
-    const [activeTab, setActiveTab] = useState(activeMenuCategories[0]);
+    const [activeTab, setActiveTab] = useState("");
 
-    // NEW: Scrollspy engine using Intersection Observer
+    // Set initial active tab once categories load
     useEffect(() => {
-        // If there are no categories, do nothing
-        if (activeMenuCategories.length === 0) return;
+        if (activeMenuCategories.length > 0 && !activeTab) {
+            setActiveTab(activeMenuCategories[0]);
+        }
+    }, [activeMenuCategories, activeTab]);
+
+    // Scrollspy Engine
+    useEffect(() => {
+        if (activeMenuCategories.length === 0 || isLoading) return;
 
         const observerOptions = {
             root: null,
-            // Triggers exactly when the section hits the area just below your sticky nav
             rootMargin: "-120px 0px -70% 0px", 
             threshold: 0
         };
@@ -37,25 +54,83 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
         const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-        // Observe every category div
         activeMenuCategories.forEach(category => {
             const element = document.getElementById(category);
             if (element) observer.observe(element);
         });
 
-        // Cleanup observer on unmount
         return () => observer.disconnect();
-    }, [activeMenuCategories]);
+    }, [activeMenuCategories, isLoading]);
 
     const scrollToCategory = (category) => {
         setActiveTab(category);
         const element = document.getElementById(category);
         if (element) {
-            // Offset for the Global Header
             const y = element.getBoundingClientRect().top + window.scrollY - 100;
             window.scrollTo({ top: y, behavior: 'smooth' });
         }
     };
+
+    // --- THE SKELETON UI ---
+    if (isLoading) {
+        return (
+            <div className="animate-slide-in-right pb-32">
+                {/* Hero Skeleton */}
+                <div className="relative h-64 md:h-80 w-full bg-slate-200 animate-pulse">
+                    <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-slate-300 p-2 rounded-full text-white z-10">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    </button>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
+                        <div className="w-2/3 h-10 bg-slate-300 rounded-lg mb-4"></div>
+                        <div className="w-1/2 h-4 bg-slate-300 rounded mb-4"></div>
+                        <div className="flex gap-4">
+                            <div className="w-16 h-6 bg-slate-300 rounded-md"></div>
+                            <div className="w-24 h-6 bg-slate-300 rounded-md"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Body Skeleton */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
+                    {/* Sidebar Skeleton */}
+                    <div className="hidden md:block w-56 shrink-0 sticky top-28">
+                        <div className="w-32 h-4 bg-slate-200 rounded mb-6 animate-pulse"></div>
+                        <div className="space-y-4">
+                            {[1, 2, 3, 4].map(n => <div key={n} className="w-full h-10 bg-slate-200 rounded-xl animate-pulse"></div>)}
+                        </div>
+                    </div>
+
+                    {/* Menu Items Skeleton */}
+                    <div className="flex-1 space-y-12">
+                        {[1, 2].map(section => (
+                            <div key={section}>
+                                <div className="w-40 h-8 bg-slate-200 rounded-lg mb-6 animate-pulse"></div>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {[1, 2, 3, 4].map(item => (
+                                        <div key={item} className="bg-white rounded-2xl p-4 border border-slate-100 flex gap-4">
+                                            <div className="flex-1">
+                                                <div className="w-3/4 h-5 bg-slate-200 rounded mb-2 animate-pulse"></div>
+                                                <div className="w-16 h-4 bg-slate-200 rounded mb-4 animate-pulse"></div>
+                                                <div className="w-full h-3 bg-slate-100 rounded mb-1 animate-pulse"></div>
+                                                <div className="w-5/6 h-3 bg-slate-100 rounded animate-pulse"></div>
+                                            </div>
+                                            <div className="w-32 shrink-0">
+                                                <div className="w-full h-24 bg-slate-200 rounded-xl mb-3 animate-pulse"></div>
+                                                <div className="w-full h-8 bg-slate-200 rounded-lg animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // --- THE REAL UI ---
+    if (!activeRest) return null; // Safety catch
 
     return (
         <div className="animate-slide-in-right pb-32">
