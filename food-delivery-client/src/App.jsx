@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import CustomerHome from './pages/CustomerHome';
 import VendorDashboard from './pages/VendorDashboard';
+import DriverDashboard from "./pages/DriverDashboard";
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
 
         {/* Vendor Home Page */}
         <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+
+        {/* Driver Home Page*/}
+        <Route path="/driver/dashboard" element={<DriverDashboard />} />
 
         {/* --- CUSTOMER PORTAL --- */}
         <Route path="/register" element={<Register />} />
