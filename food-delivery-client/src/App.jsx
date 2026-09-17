@@ -3,6 +3,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import CustomerHome from './pages/CustomerHome';
+import VendorDashboard from './pages/VendorDashboard';
 
 function App() {
   return (
@@ -13,6 +14,9 @@ function App() {
 
         {/* Customer Home Page */}
         <Route path="/home" element={<CustomerHome />} />
+
+        {/* Vendor Home Page */}
+        <Route path="/vendor/dashboard" element={<VendorDashboard />} />
 
         {/* --- CUSTOMER PORTAL --- */}
         <Route path="/register" element={<Register />} />
@@ -28,7 +32,7 @@ function App() {
         <Route path="/driver/register" element={<Register />} />
         <Route path="/driver/login" element={<Login />} />
         <Route path="/driver/forgot-password" element={<ForgotPassword />} />
-        
+
         {/* Fallback Route for 404s */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
