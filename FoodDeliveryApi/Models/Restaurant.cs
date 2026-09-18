@@ -13,7 +13,16 @@ namespace FoodDeliveryApi.Models{
         [Required]
         public string Name{get;set;} = string.Empty;
         public string Description{get;set;} = string.Empty;
-        public string Address{get;set;} = string.Empty;  
+
+
+        [Required]
+        public string FullAddress { get; set; } = string.Empty; 
+        
+        [Required]
+        public string City { get; set; } = string.Empty;
+        
+        [Required]
+        public string PinCode { get; set; } = string.Empty;
         
         public bool isActive {get;set;} = true;// Admin control
         public bool isOpen {get;set;} = true;// Vendor control
