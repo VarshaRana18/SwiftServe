@@ -6,6 +6,7 @@ import HomeFeed from "../components/HomeFeed";
 import RestaurantDetail from "../components/RestaurantDetail";
 import CartDrawer from "../components/CartDrawer";
 import SettingsModal from "../components/SettingsModal"; 
+import OrdersDrawer from "../components/OrdersDrawer";
 
 export default function CustomerHome() {
     // Completely removed the mock isLoggedIn state
@@ -55,7 +56,7 @@ export default function CustomerHome() {
                 )}
                 
                 <CartDrawer />
-                {/* Notice we no longer need to pass setIsLoggedIn down */}
+                <OrdersDrawer />
                 <SettingsModal /> 
             </div>
         </CartProvider>
