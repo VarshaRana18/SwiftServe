@@ -8,9 +8,6 @@ namespace FoodDeliveryApi.DTOs
         public String Name {get;set;} = String.Empty;
 
         [Required]
-        public String Address {get;set;} = String.Empty;
-
-        [Required]
         public string FullAddress { get; set; } = string.Empty;
         
         [Required]

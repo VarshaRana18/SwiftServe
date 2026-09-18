@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FoodDeliveryApi.Models;
 
 namespace FoodDeliveryApi.DTOs
 {
@@ -14,5 +15,9 @@ namespace FoodDeliveryApi.DTOs
 
         [Required]
         public Guid RestaurantId { get; set; }
+
+        [Required]
+        public string Category { get; set; } = string.Empty;
+        public DietPreference DietaryPreference { get; set; } = DietPreference.Veg;
     }
 }
