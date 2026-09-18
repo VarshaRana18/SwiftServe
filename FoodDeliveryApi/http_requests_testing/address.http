@@ -1,0 +1,21 @@
+@port = 5121
+@host = http://localhost:{{port}}
+
+### 1. Add a New Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZDBhNDU5Zi00M2ZjLTQyM2ItOTgyOS00YjJmYjYzMGY5NjUiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJDdXN0b21lciJdLCJleHAiOjE3OTAzNTA1NjEsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.BS9CHH3v2Si_pcHVLr-aXJn755F7pda5iOh9qlQumqk
+
+{
+  "label": "Home",
+  "fullAddress": "D-503 Darshanam Crest, Tarsali",
+  "pinCode": "390004"
+}
+
+### 2. Get My Addresses
+GET {{host}}/api/address
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZDBhNDU5Zi00M2ZjLTQyM2ItOTgyOS00YjJmYjYzMGY5NjUiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJDdXN0b21lciJdLCJleHAiOjE3OTAzNTA1NjEsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.BS9CHH3v2Si_pcHVLr-aXJn755F7pda5iOh9qlQumqk
+
+### 3. Delete an Address (Replace ID with one generated from the POST request)
+DELETE {{host}}/api/address/01a0b4d6-5a9d-778e-b0f1-73d1856e4a1b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZDBhNDU5Zi00M2ZjLTQyM2ItOTgyOS00YjJmYjYzMGY5NjUiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJDdXN0b21lciJdLCJleHAiOjE3OTAzNTA1NjEsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.BS9CHH3v2Si_pcHVLr-aXJn755F7pda5iOh9qlQumqk

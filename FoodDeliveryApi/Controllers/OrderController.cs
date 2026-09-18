@@ -30,11 +30,16 @@ namespace FoodDeliveryApi.Controllers
             var restaurant = await _context.Restaurants.FindAsync(dto.RestaurantId);
             if (restaurant == null) return NotFound("Restaurant not found.");
 
+            var address = await _context.Addresses
+            .FirstOrDefaultAsync(a => a.id == dto.AddressId && a.AppUserId == customerId);
+            if (address == null) return BadRequest("Invalid delivery address or address does not belong to you.");
+
             var order = new Order
             {
                 CustomerId = customerId,
                 RestaurantId = dto.RestaurantId,
                 Status = OrderStatus.Pending,
+                AddressId = dto.AddressId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 TotalAmount = 0 

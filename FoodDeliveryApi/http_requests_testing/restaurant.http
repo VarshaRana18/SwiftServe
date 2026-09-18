@@ -1,9 +1,9 @@
 @port = 5121
 
+@host = http://localhost:{{port}}
 
 ### Get all restaurants and their menus (Public)
 GET {{host}}/api/restaurant
-@host = http://localhost:{{port}}
 
 
 ### Create a Restaurant (Requires Vendor JWT)
