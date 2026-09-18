@@ -40,7 +40,7 @@ namespace FoodDeliveryApi.Controllers
             {
                 OwnerId = vendorId,
                 Name = dto.Name,
-                FullAddress = dto.Address,
+                FullAddress = dto.FullAddress,
                 City = dto.City,
                 PinCode = dto.PinCode
             };

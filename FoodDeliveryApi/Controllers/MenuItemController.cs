@@ -47,6 +47,8 @@ namespace FoodDeliveryApi.Controllers
                 Name = dto.Name,
                 Description = dto.Description,
                 Price = dto.Price,
+                Category = dto.Category, 
+                DietaryPreference = dto.DietaryPreference,
                 RestaurantId = dto.RestaurantId
             };
 
