@@ -23,5 +23,14 @@ namespace FoodDeliveryApi.Models
 
         [Timestamp]
         public uint Version { get; set; }
+
+        public string Category { get; set; } = string.Empty;
+        [Required]
+        public DietPreference DietaryPreference { get; set; } = DietPreference.Veg;
+    }
+    public enum DietPreference
+    {
+        Veg,
+        NonVeg
     }
 }

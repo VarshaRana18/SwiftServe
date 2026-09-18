@@ -6,5 +6,7 @@ namespace FoodDeliveryApi.Models
         public string FullName {get;set;} = string.Empty;
         public List<string> Roles{get;set;} = new List<string>();
         public DateTime CreatedAt{get;set;} = DateTime.UtcNow;
+
+        public ICollection<Address> Addresses { get; set; } = new List<Address>();
     }
 }
