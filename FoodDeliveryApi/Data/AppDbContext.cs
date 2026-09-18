@@ -12,6 +12,7 @@ namespace FoodDeliveryApi.Data
         public DbSet<MenuItem> MenuItems{get;set;}
         public DbSet<Order> Orders{get;set;}
         public DbSet<OrderItem> OrderItems{get;set;}
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
