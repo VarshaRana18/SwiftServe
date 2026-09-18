@@ -9,6 +9,9 @@ namespace FoodDeliveryApi.DTOs
         public Guid RestaurantId { get; set; }
 
         [Required]
+        public Guid AddressId {get;set;}
+
+        [Required]
         [MinLength(1, ErrorMessage = "Order must contain at least one item.")]
         public List<CreateOrderItemDto> Items { get; set; } = new List<CreateOrderItemDto>();
     }

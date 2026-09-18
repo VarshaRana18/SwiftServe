@@ -12,8 +12,11 @@ namespace FoodDeliveryApi.Models
         public AppUser? Customer {get;set;}
         public Guid RestaurantId{get;set;}
         public Restaurant? Restaurant { get; set; }
-        public string? DriverId{get;set;}
+        public string? DriverId { get; set; }
         public AppUser? Driver{get;set;}
+
+        public Guid AddressId { get; set; }
+        public Address? Address { get; set; }
 
         public OrderStatus Status{get;set;} = OrderStatus.Pending; 
 

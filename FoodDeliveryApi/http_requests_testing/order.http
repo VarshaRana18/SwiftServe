@@ -5,13 +5,14 @@
 ### Place an Order (Requires Customer JWT)
 POST {{host}}/api/order
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGRhYWE3ZC1kMDYzLTQ5MWYtODNiOS1jZGY0ZjdhZjQ1MzgiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJDdXN0b21lciIsIlZlbmRvciJdLCJleHAiOjE3ODk4ODMxNDUsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.QZF-MgeBbbNXh8plukSHfQZGXEI5NsNECQ8KCMZ_LXQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZDBhNDU5Zi00M2ZjLTQyM2ItOTgyOS00YjJmYjYzMGY5NjUiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJDdXN0b21lciJdLCJleHAiOjE3OTAzNTQyNzEsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.7cNKqDCLHk99XtCm-oEMjdqN7bSnloMKkCNTLXBvF3A
 
 {
-  "restaurantId": "01a09945-8ebc-7ed4-9dba-400e32559677",
+  "restaurantId": "01a0b4ce-5993-74aa-84f1-e2159ca68238",
+  "addressId":"01a0b529-9801-76bc-9dad-bdfe5b73c4fc",
   "items": [
     {
-      "menuItemId": "01a09947-80d1-7e8d-a346-61443f10a9b5",
+      "menuItemId": "01a0b4ce-936f-7381-b88b-11bd945aab90",
       "quantity": 2
     }
   ]
@@ -21,7 +22,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGRhYWE3Z
 
 ### Get Customer Order History (Requires Customer JWT)
 GET {{host}}/api/order/customer
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MGRhYWE3ZC1kMDYzLTQ5MWYtODNiOS1jZGY0ZjdhZjQ1MzgiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJDdXN0b21lciIsIlZlbmRvciJdLCJleHAiOjE3ODk4ODMxNDUsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.QZF-MgeBbbNXh8plukSHfQZGXEI5NsNECQ8KCMZ_LXQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZDBhNDU5Zi00M2ZjLTQyM2ItOTgyOS00YjJmYjYzMGY5NjUiLCJlbWFpbCI6InZhcnNoYUByYW5hLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJDdXN0b21lciJdLCJleHAiOjE3OTAzNTE1NDYsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.H2iokYgJsdf7pL1aqMoALAP0VVLJwdE5CEGLtArQ_c0
 
 
 ### Get Vendor Incoming Orders (Requires Vendor/Gordon JWT)

@@ -12,6 +12,7 @@ namespace FoodDeliveryApi.Models
         [Required]
         public String AppUserId { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public AppUser? AppUser { get; set; }
 
         [Required]
