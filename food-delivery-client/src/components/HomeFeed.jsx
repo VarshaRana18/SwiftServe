@@ -1,22 +1,75 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { fetchHomeData } from "../api/mockApi"; // NEW: Importing our API service
 
 export default function HomeFeed({ setActiveRestaurantId }) {
     const { isVegOnly } = useCart();
     const [activeCategory, setActiveCategory] = useState("All");
     
-    // NEW: API States
+    // API States
     const [isLoading, setIsLoading] = useState(true);
-    const [feedData, setFeedData] = useState({ restaurants: [], categories: [], promotions: [], mockMenus: {} });
+    const [feedData, setFeedData] = useState({
+        restaurants: [],
+        categories: [],
+        promotions: [],
+        mockMenus: {}
+    });
 
-    // NEW: The Fetch Effect
+    // CONNECT TO BACKEND
     useEffect(() => {
         setIsLoading(true);
-        fetchHomeData().then((data) => {
-            setFeedData(data);
-            setIsLoading(false);
-        });
+
+        // UI Data that usually lives on the frontend
+        const hardcodedCategories = [
+            { id: 1, name: "All", emoji: "🍽️" },
+            { id: 2, name: "Burgers", emoji: "🍔" },
+            { id: 3, name: "Pizza", emoji: "🍕" },
+            { id: 4, name: "Dessert", emoji: "🍦" },
+            { id: 5, name: "Healthy", emoji: "🥗" }
+        ];
+
+        const hardcodedPromotions = [
+            { id: 1, title: "50% OFF", subtitle: "On your first order", bg: "bg-orange-500" },
+            { id: 2, title: "Free Delivery", subtitle: "On orders above ₹199", bg: "bg-blue-600" }
+        ];
+
+        // Fetch from your .NET API
+        fetch("http://localhost:5121/api/restaurant")
+            .then(res => res.json())
+            .then(apiRestaurants => {
+                const menusDict = {};
+                
+                // Map the C# backend data to what the React UI expects
+                const mappedRestaurants = apiRestaurants.map(rest => {
+                    // Extract menus. Note: mapping dietaryPreference (assuming 0 = Veg)
+                    menusDict[rest.id] = (rest.menuItems || []).map(item => ({
+                        ...item,
+                        isVeg: item.dietaryPreference === 0 
+                    }));
+
+                    return {
+                        id: rest.id,
+                        name: rest.name,
+                        address: rest.fullAddress || `${rest.city}, ${rest.pinCode}`,
+                        // Fallbacks for fields the backend might not have yet
+                        isOpen: true, 
+                        tags: rest.tags?.length > 0 ? rest.tags : ["Indian", "Fast Food"],
+                        image: rest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop",
+                        rating: rest.rating || "4.5"
+                    };
+                });
+
+                setFeedData({
+                    restaurants: mappedRestaurants,
+                    categories: hardcodedCategories,
+                    promotions: hardcodedPromotions,
+                    mockMenus: menusDict
+                });
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error("Failed to connect to backend API:", error);
+                setIsLoading(false);
+            });
     }, []);
 
     const openRestaurants = feedData.restaurants.filter(rest => rest.isOpen);
@@ -24,7 +77,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
     const categoryFilteredRestaurants = activeCategory === "All" 
         ? openRestaurants 
         : openRestaurants.filter(rest => rest.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase()));
-
+        
     const displayedRestaurants = isVegOnly 
         ? categoryFilteredRestaurants.filter(rest => {
             const restMenu = feedData.mockMenus[rest.id] || [];
@@ -37,45 +90,35 @@ export default function HomeFeed({ setActiveRestaurantId }) {
             {/* Promotions Section */}
             <section className="mb-8">
                 <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {isLoading 
-                        ? [1, 2].map(n => <div key={n} className="flex-none w-[85vw] sm:w-[380px] h-44 rounded-3xl bg-slate-200 animate-pulse snap-start"></div>)
-                        : feedData.promotions.map(promo => (
-                            <div key={promo.id} className={`flex-none w-[85vw] sm:w-[380px] h-44 rounded-3xl p-6 flex flex-col justify-center snap-start relative overflow-hidden ${promo.bg} text-white shadow-md hover:shadow-lg transition-shadow`}>
-                                <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
-                                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
-                                <h3 className="text-3xl font-extrabold mb-1 relative z-10 tracking-tight">{promo.title}</h3>
-                                <p className="text-white/90 font-medium relative z-10 text-sm">{promo.subtitle}</p>
-                                <button className="mt-5 bg-white text-slate-800 text-sm font-bold py-2.5 px-5 rounded-full w-max shadow-sm hover:scale-105 active:scale-95 transition-transform relative z-10">Claim Now</button>
-                            </div>
-                        ))
-                    }
+                    {isLoading ? [1, 2].map(n => <div key={n} className="flex-none w-[85vw] sm:w-[380px] h-44 rounded-3xl bg-slate-200 animate-pulse snap-start"></div>) : feedData.promotions.map(promo => (
+                        <div key={promo.id} className={`flex-none w-[85vw] sm:w-[380px] h-44 rounded-3xl p-6 flex flex-col justify-center snap-start relative overflow-hidden ${promo.bg} text-white shadow-md hover:shadow-lg transition-shadow`}>
+                            <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
+                            <h3 className="text-3xl font-extrabold mb-1 relative z-10 tracking-tight">{promo.title}</h3>
+                            <p className="text-white/90 font-medium relative z-10 text-sm">{promo.subtitle}</p>
+                            <button className="mt-5 bg-white text-slate-800 text-sm font-bold py-2.5 px-5 rounded-full w-max shadow-sm hover:scale-105 active:scale-95 transition-transform relative z-10">Claim Now</button>
+                        </div>
+                    ))}
                 </div>
             </section>
-            
+
             {/* Categories Section */}
             <section className="mb-10">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-slate-800">What are you craving?</h2>
                 </div>
                 <div className="flex gap-4 overflow-x-auto py-4 px-2 -mx-2 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {isLoading 
-                        ? [1, 2, 3, 4, 5, 6].map(n => (
-                            <div key={n} className="flex flex-col items-center gap-2 min-w-[72px] snap-start">
-                                <div className="w-16 h-16 rounded-2xl bg-slate-200 animate-pulse"></div>
-                                <div className="w-12 h-3 rounded bg-slate-200 animate-pulse"></div>
-                            </div>
-                        ))
-                        : feedData.categories.map(cat => (
-                            <button key={cat.id} onClick={() => setActiveCategory(cat.name)} className="flex flex-col items-center gap-2 min-w-[72px] snap-start group outline-none">
-                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 border ${activeCategory === cat.name ? 'bg-orange-50 border-orange-500 shadow-md shadow-orange-100 scale-105' : 'bg-white border-slate-100 shadow-sm group-hover:border-orange-500 group-hover:shadow-md'}`}>
-                                    {cat.emoji}
-                                </div>
-                                <span className={`text-sm transition-colors duration-300 ${activeCategory === cat.name ? 'text-orange-600 font-bold' : 'text-slate-500 font-medium group-hover:text-orange-500'}`}>
-                                    {cat.name}
-                                </span>
-                            </button>
-                        ))
-                    }
+                    {isLoading ? [1, 2, 3, 4, 5, 6].map(n => (
+                        <div key={n} className="flex flex-col items-center gap-2 min-w-[72px] snap-start">
+                            <div className="w-16 h-16 rounded-2xl bg-slate-200 animate-pulse"></div>
+                            <div className="w-12 h-3 rounded bg-slate-200 animate-pulse"></div>
+                        </div>
+                    )) : feedData.categories.map(cat => (
+                        <button key={cat.id} onClick={() => setActiveCategory(cat.name)} className="flex flex-col items-center gap-2 min-w-[72px] snap-start group outline-none">
+                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 border ${activeCategory === cat.name ? 'bg-orange-50 border-orange-500 shadow-md shadow-orange-100 scale-105' : 'bg-white border-slate-100 shadow-sm group-hover:border-orange-500 group-hover:shadow-md'}`}>{cat.emoji}</div>
+                            <span className={`text-sm transition-colors duration-300 ${activeCategory === cat.name ? 'text-orange-600 font-bold' : 'text-slate-500 font-medium group-hover:text-orange-500'}`}>{cat.name}</span>
+                        </button>
+                    ))}
                 </div>
             </section>
 
@@ -87,9 +130,8 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                         {activeCategory === "All" ? "Popular Near You" : `${activeCategory} Places`}
                     </h2>
                 </div>
-                
+
                 {isLoading ? (
-                    /* The Restaurant Skeleton Grid */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map(n => (
                             <div key={n} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
@@ -122,18 +164,8 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                                             <div className="flex items-center gap-2">
                                                 <h3 className="text-xl font-bold text-slate-800 truncate max-w-[180px]">{rest.name}</h3>
                                                 <div className="flex items-center gap-1 shrink-0">
-                                                    {hasVeg && (
-                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-green-600">
-                                                            <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1"/>
-                                                            <circle cx="8" cy="8" r="3.5" fill="currentColor"/>
-                                                        </svg>
-                                                    )}
-                                                    {hasNonVeg && (
-                                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-red-700">
-                                                            <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1"/>
-                                                            <circle cx="8" cy="8" r="3.5" fill="currentColor"/>
-                                                        </svg>
-                                                    )}
+                                                    {hasVeg && (<svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-green-600"><rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" /><circle cx="8" cy="8" r="3.5" fill="currentColor" /></svg>)}
+                                                    {hasNonVeg && (<svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-700"><rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" /><circle cx="8" cy="8" r="3.5" fill="currentColor" /></svg>)}
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100 shrink-0">
@@ -141,9 +173,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                                                 <span className="text-sm font-bold text-slate-700">{rest.rating}</span>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 font-medium">
-                                            {rest.tags.join(" • ")}
-                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 font-medium">{rest.tags.join(" • ")}</div>
                                     </div>
                                 </div>
                             );
@@ -152,7 +182,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                 ) : (
                     <div className="w-full py-16 flex flex-col items-center justify-center bg-white rounded-3xl border border-slate-100 border-dashed">
                         <span className="text-5xl mb-4">🍽️</span>
-                        <h3 className="text-lg font-bold text-slate-700 mb-1">No {isVegOnly && "Veg"} {activeCategory} places available</h3>
+                        <h3 className="text-lg font-bold text-slate-700 mb-1">No {isVegOnly && "Veg "}{activeCategory} places available</h3>
                         <p className="text-slate-500 text-sm">Try turning off the dietary filter or selecting a different category!</p>
                     </div>
                 )}

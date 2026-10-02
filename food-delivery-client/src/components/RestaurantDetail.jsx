@@ -1,21 +1,59 @@
 import { useMemo, useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { fetchRestaurantDetails } from "../api/mockApi"; // NEW: The API service
 
 export default function RestaurantDetail({ activeRestaurantId, setActiveRestaurantId }) {
     const { updateQuantity, addToCart, getItemQtyInCart } = useCart();
     
-    // NEW: API States
+    // API States
     const [isLoading, setIsLoading] = useState(true);
     const [activeRest, setActiveRest] = useState(null);
     const [menuItems, setMenuItems] = useState([]);
 
-    // NEW: Fetch Data on Mount
+    // CONNECT TO BACKEND
     useEffect(() => {
         setIsLoading(true);
-        fetchRestaurantDetails(activeRestaurantId).then((data) => {
-            setActiveRest(data.restaurant);
-            setMenuItems(data.menu);
+
+        // Fetch both the restaurant list and the specific menu items concurrently
+        Promise.all([
+            fetch(`http://localhost:5121/api/restaurant`),
+            fetch(`http://localhost:5121/api/menuitem/${activeRestaurantId}`)
+        ])
+        .then(async ([resRest, resMenu]) => {
+            const restaurantsList = await resRest.json();
+            const menuData = await resMenu.json();
+
+            // 1. Map the Restaurant Metadata
+            const apiRest = restaurantsList.find(r => r.id === activeRestaurantId);
+            if (apiRest) {
+                setActiveRest({
+                    id: apiRest.id,
+                    name: apiRest.name,
+                    description: apiRest.description || "Premium quality food delivered straight to your door.",
+                    rating: apiRest.rating || "4.5",
+                    time: "30-45 min",
+                    address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
+                    image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
+                });
+            }
+
+            // 2. Map the Menu Items
+            const mappedMenu = menuData.map(item => ({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                price: item.price,
+                category: item.category || "Recommended",
+                isVeg: item.dietaryPreference === 0, // 0 = Veg, 1 = NonVeg based on your payload
+                isAvailable: true, // Fallback until backend tracks availability
+                imageUrl: item.imageUrl || null, 
+                stockQuantity: item.stockQuantity || null
+            }));
+
+            setMenuItems(mappedMenu);
+            setIsLoading(false);
+        })
+        .catch(error => {
+            console.error("Failed to connect to backend API:", error);
             setIsLoading(false);
         });
     }, [activeRestaurantId]);
@@ -40,7 +78,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
         const observerOptions = {
             root: null,
-            rootMargin: "-120px 0px -70% 0px", 
+            rootMargin: "-120px 0px -70% 0px",
             threshold: 0
         };
 
@@ -78,7 +116,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                 {/* Hero Skeleton */}
                 <div className="relative h-64 md:h-80 w-full bg-slate-200 animate-pulse">
                     <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-slate-300 p-2 rounded-full text-white z-10">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l 7-7m-7 7h18" /></svg>
                     </button>
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                         <div className="w-2/3 h-10 bg-slate-300 rounded-lg mb-4"></div>
@@ -92,15 +130,12 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
                 {/* Body Skeleton */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
-                    {/* Sidebar Skeleton */}
                     <div className="hidden md:block w-56 shrink-0 sticky top-28">
                         <div className="w-32 h-4 bg-slate-200 rounded mb-6 animate-pulse"></div>
                         <div className="space-y-4">
                             {[1, 2, 3, 4].map(n => <div key={n} className="w-full h-10 bg-slate-200 rounded-xl animate-pulse"></div>)}
                         </div>
                     </div>
-
-                    {/* Menu Items Skeleton */}
                     <div className="flex-1 space-y-12">
                         {[1, 2].map(section => (
                             <div key={section}>
@@ -138,18 +173,25 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
             <div className="relative h-64 md:h-80 w-full bg-slate-900">
                 <img src={activeRest.image} alt={activeRest.name} className="w-full h-full object-cover opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-                
                 <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </button>
-
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">{activeRest.name}</h1>
                     <p className="text-slate-300 text-sm md:text-base mb-4 max-w-2xl">{activeRest.description}</p>
                     <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white">
-                        <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg"><svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>{activeRest.rating}</div>
-                        <div className="flex items-center gap-1.5"><svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>{activeRest.time}</div>
-                        <div className="flex items-center gap-1.5"><svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>{activeRest.address}</div>
+                        <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg">
+                            <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                            {activeRest.rating}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            {activeRest.time}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                            {activeRest.address}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -158,11 +200,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
             <div className="md:hidden sticky top-20 z-30 bg-white border-b border-slate-200 shadow-sm">
                 <div className="px-4 sm:px-8 flex gap-6 overflow-x-auto py-4 scrollbar-hide text-sm font-bold text-slate-500">
                     {activeMenuCategories.map((cat) => (
-                        <button 
-                            key={cat} 
-                            onClick={() => scrollToCategory(cat)}
-                            className={`whitespace-nowrap transition-colors hover:text-orange-500 ${activeTab === cat ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}
-                        >
+                        <button key={cat} onClick={() => scrollToCategory(cat)} className={`whitespace-nowrap transition-colors hover:text-orange-500 ${activeTab === cat ? 'text-orange-500 border-b-2 border-orange-500 pb-1' : ''}`}>
                             {cat}
                         </button>
                     ))}
@@ -177,11 +215,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-3">Menu Categories</h3>
                     <div className="flex flex-col space-y-1 border-r border-slate-100 pr-4">
                         {activeMenuCategories.map((cat) => (
-                            <button 
-                                key={cat} 
-                                onClick={() => scrollToCategory(cat)}
-                                className={`text-left px-4 py-3 rounded-xl transition-all font-bold ${activeTab === cat ? 'bg-orange-50 text-orange-600 border-r-2 border-orange-500' : 'text-slate-500 hover:bg-slate-50 hover:text-orange-500'}`}
-                            >
+                            <button key={cat} onClick={() => scrollToCategory(cat)} className={`text-left px-4 py-3 rounded-xl transition-all font-bold ${activeTab === cat ? 'bg-orange-50 text-orange-600 border-r-2 border-orange-500' : 'text-slate-500 hover:bg-slate-50 hover:text-orange-500'}`}>
                                 {cat}
                             </button>
                         ))}
@@ -197,24 +231,29 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                 {menuItems.filter(item => item.category === category).map(item => {
                                     const qtyInCart = getItemQtyInCart(activeRestaurantId, item.id);
                                     const hitStockLimit = item.stockQuantity !== null && qtyInCart >= item.stockQuantity;
-                                    
+
                                     return (
                                         <div key={item.id} className={`bg-white rounded-2xl p-4 border flex gap-4 transition-all ${!item.isAvailable ? 'opacity-60 grayscale border-slate-100' : 'border-slate-200 hover:shadow-md hover:border-orange-200'}`}>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 ${item.isVeg ? 'text-green-600' : 'text-red-700'}`}>
-                                                        <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1"/>
-                                                        <circle cx="8" cy="8" r="3.5" fill="currentColor"/>
+                                                        <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" />
+                                                        <circle cx="8" cy="8" r="3.5" fill="currentColor" />
                                                     </svg>
                                                     <h4 className="text-lg font-bold text-slate-800">{item.name}</h4>
                                                 </div>
                                                 <p className="text-lg font-semibold text-slate-700 mb-2">₹{item.price}</p>
                                                 <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
                                             </div>
+                                            
                                             <div className="w-32 flex flex-col items-center justify-between shrink-0">
                                                 <div className="w-full h-24 bg-slate-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-100">
-                                                    {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>}
+                                                    {item.imageUrl ? 
+                                                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : 
+                                                        <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>
+                                                    }
                                                 </div>
+
                                                 {!item.isAvailable ? (
                                                     <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase tracking-wider text-center w-full">Unavailable</span>
                                                 ) : qtyInCart > 0 ? (
@@ -224,7 +263,9 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                                         <button onClick={() => updateQuantity(activeRestaurantId, item.id, 1)} disabled={hitStockLimit} className={`w-7 h-7 flex items-center justify-center rounded-md font-bold transition-all ${hitStockLimit ? 'text-slate-300 bg-slate-100 cursor-not-allowed' : 'text-orange-600 bg-white shadow-sm hover:bg-orange-500 hover:text-white'}`}>+</button>
                                                     </div>
                                                 ) : (
-                                                    <button onClick={() => addToCart(activeRestaurantId, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">ADD</button>
+                                                    <button onClick={() => addToCart(activeRestaurantId, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">
+                                                        ADD
+                                                    </button>
                                                 )}
                                                 {hitStockLimit && qtyInCart > 0 && <span className="text-[10px] text-red-500 mt-1 font-semibold text-center leading-none">Max Stock Reached</span>}
                                             </div>
