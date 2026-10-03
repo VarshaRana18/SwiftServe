@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext";
 
 export default function RestaurantDetail({ activeRestaurantId, setActiveRestaurantId }) {
     const { updateQuantity, addToCart, getItemQtyInCart } = useCart();
-    
+
     // API States
     const [isLoading, setIsLoading] = useState(true);
     const [activeRest, setActiveRest] = useState(null);
@@ -18,44 +18,44 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
             fetch(`http://localhost:5121/api/restaurant`),
             fetch(`http://localhost:5121/api/menuitem/${activeRestaurantId}`)
         ])
-        .then(async ([resRest, resMenu]) => {
-            const restaurantsList = await resRest.json();
-            const menuData = await resMenu.json();
+            .then(async ([resRest, resMenu]) => {
+                const restaurantsList = await resRest.json();
+                const menuData = await resMenu.json();
 
-            // 1. Map the Restaurant Metadata
-            const apiRest = restaurantsList.find(r => r.id === activeRestaurantId);
-            if (apiRest) {
-                setActiveRest({
-                    id: apiRest.id,
-                    name: apiRest.name,
-                    description: apiRest.description || "Premium quality food delivered straight to your door.",
-                    rating: apiRest.rating || "4.5",
-                    time: "30-45 min",
-                    address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
-                    image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
-                });
-            }
+                // 1. Map the Restaurant Metadata
+                const apiRest = restaurantsList.find(r => r.id === activeRestaurantId);
+                if (apiRest) {
+                    setActiveRest({
+                        id: apiRest.id,
+                        name: apiRest.name,
+                        description: apiRest.description || "Premium quality food delivered straight to your door.",
+                        rating: apiRest.rating || "4.5",
+                        time: "30-45 min",
+                        address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
+                        image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
+                    });
+                }
 
-            // 2. Map the Menu Items
-            const mappedMenu = menuData.map(item => ({
-                id: item.id,
-                name: item.name,
-                description: item.description,
-                price: item.price,
-                category: item.category || "Recommended",
-                isVeg: item.dietaryPreference === 0, // 0 = Veg, 1 = NonVeg based on your payload
-                isAvailable: true, // Fallback until backend tracks availability
-                imageUrl: item.imageUrl || null, 
-                stockQuantity: item.stockQuantity || null
-            }));
+                // 2. Map the Menu Items
+                const mappedMenu = menuData.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    description: item.description,
+                    price: item.price,
+                    category: item.category || "Recommended",
+                    isVeg: item.dietaryPreference === 0, // 0 = Veg, 1 = NonVeg based on your payload
+                    isAvailable: true, // Fallback until backend tracks availability
+                    imageUrl: item.imageUrl || null,
+                    stockQuantity: item.stockQuantity || null
+                }));
 
-            setMenuItems(mappedMenu);
-            setIsLoading(false);
-        })
-        .catch(error => {
-            console.error("Failed to connect to backend API:", error);
-            setIsLoading(false);
-        });
+                setMenuItems(mappedMenu);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error("Failed to connect to backend API:", error);
+                setIsLoading(false);
+            });
     }, [activeRestaurantId]);
 
     const activeMenuCategories = useMemo(() => {
@@ -209,7 +209,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
             {/* Layout Split Container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
-                
+
                 {/* DESKTOP ONLY: Vertical Sticky Sidebar */}
                 <div className="hidden md:block w-56 shrink-0 sticky top-28">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-3">Menu Categories</h3>
@@ -245,11 +245,11 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                                 <p className="text-lg font-semibold text-slate-700 mb-2">₹{item.price}</p>
                                                 <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
                                             </div>
-                                            
+
                                             <div className="w-32 flex flex-col items-center justify-between shrink-0">
                                                 <div className="w-full h-24 bg-slate-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-100">
-                                                    {item.imageUrl ? 
-                                                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : 
+                                                    {item.imageUrl ?
+                                                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> :
                                                         <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>
                                                     }
                                                 </div>
@@ -263,7 +263,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                                         <button onClick={() => updateQuantity(activeRestaurantId, item.id, 1)} disabled={hitStockLimit} className={`w-7 h-7 flex items-center justify-center rounded-md font-bold transition-all ${hitStockLimit ? 'text-slate-300 bg-slate-100 cursor-not-allowed' : 'text-orange-600 bg-white shadow-sm hover:bg-orange-500 hover:text-white'}`}>+</button>
                                                     </div>
                                                 ) : (
-                                                    <button onClick={() => addToCart(activeRestaurantId, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">
+                                                    <button onClick={() => addToCart(activeRest, item)} className="w-full bg-white text-orange-600 font-bold py-1.5 rounded-lg border-2 border-slate-200 hover:border-orange-500 hover:bg-orange-50 transition-all shadow-sm">
                                                         ADD
                                                     </button>
                                                 )}

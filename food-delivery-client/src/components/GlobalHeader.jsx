@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-// NEW: We brought in mockMenus to enable Deep Search
 import { restaurants, mockMenus } from "../data/mockData";
+import LocationModal from "./LocationModal";
 
 export default function GlobalHeader({ setActiveRestaurantId }) {
-    // Removed userProfile from context destructuring
-    const { setIsCartOpen, setActiveCartView, globalCarts, setIsOrdersOpen, setIsSettingsOpen } = useCart();
+    const { 
+        setIsCartOpen, setActiveCartView, globalCarts, 
+        setIsOrdersOpen, setIsSettingsOpen,
+        isLocationModalOpen, setIsLocationModalOpen, // IMPORTED FROM CONTEXT
+        activeLocation, setActiveLocation            // IMPORTED FROM CONTEXT
+    } = useCart();
     
-    // Real User State (Decoded from JWT)
+    // Real User State
     const [realUser, setRealUser] = useState({ name: "User", email: "" });
 
     // Search State
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
-    
-    // Location Modal State
-    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-    const [activeLocation, setActiveLocation] = useState("Home - Vadodara");
     
     // Profile Menu State
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -44,20 +44,15 @@ export default function GlobalHeader({ setActiveRestaurantId }) {
         }
     }, []);
 
-    // THE DEEP SEARCH ENGINE
     const searchResults = searchQuery.trim() === "" ? [] : restaurants.reduce((acc, rest) => {
         const query = searchQuery.toLowerCase();
-        // 1. Check top-level matches (Name or Tags)
         const matchesNameOrTag = rest.name.toLowerCase().includes(query) || rest.tags.some(tag => tag.toLowerCase().includes(query));
-        // 2. Check deep-level matches (Menu Items)
         const restMenu = mockMenus[rest.id] || [];
         const matchingItems = restMenu.filter(item => item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query));
         
-        // 3. Construct the result if there is a hit anywhere
         if (matchesNameOrTag || matchingItems.length > 0) {
             acc.push({
                 ...rest,
-                // If it only matched because of a dish, we save the dish name to tell the user!
                 matchReason: !matchesNameOrTag && matchingItems.length > 0 ? `Matches: ${matchingItems[0].name}` : null
             });
         }
@@ -91,7 +86,6 @@ export default function GlobalHeader({ setActiveRestaurantId }) {
             <header className="sticky top-0 z-40 bg-white border-b border-slate-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
                     
-                    {/* Logo & Location */}
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveRestaurantId(null)}>
                             <div className="bg-orange-500 p-1.5 rounded-lg shadow-md shadow-orange-200">
@@ -106,7 +100,7 @@ export default function GlobalHeader({ setActiveRestaurantId }) {
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-0.5">Delivering To</span>
                                 <span className="text-sm font-semibold text-slate-700 leading-none truncate max-w-[140px]">{activeLocation}</span>
                             </div>
-                            <svg className={`w-4 h-4 text-slate-400 ml-1 transition-transform ${isLocationModalOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7 7" /></svg>
+                            <svg className={`w-4 h-4 text-slate-400 ml-1 transition-transform ${isLocationModalOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                         </button>
                     </div>
 
@@ -177,12 +171,10 @@ export default function GlobalHeader({ setActiveRestaurantId }) {
                             )}
                         </button>
                         
-                        {/* Profile Avatar Button */}
                         <div onClick={() => setIsProfileOpen(!isProfileOpen)} className="w-10 h-10 bg-slate-200 rounded-full border-2 border-slate-200 overflow-hidden cursor-pointer hover:border-orange-500 transition-colors">
                             <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(realUser.name)}&background=f97316&color=fff&bold=true`} alt="Profile" />
                         </div>
 
-                        {/* Profile Dropdown Menu */}
                         {isProfileOpen && (
                             <>
                                 <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
@@ -213,60 +205,12 @@ export default function GlobalHeader({ setActiveRestaurantId }) {
                 </div>
             </header>
 
-            {/* THE LOCATION MODAL */}
-            {isLocationModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-fade-in" onClick={() => setIsLocationModalOpen(false)}></div>
-                    <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
-                        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-slate-800">Select Delivery Location</h2>
-                            <button onClick={() => setIsLocationModalOpen(false)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                            </button>
-                        </div>
-                        <div className="p-6 space-y-6">
-                            <div className="relative">
-                                <input type="text" placeholder="Search for your area or apartment..." className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl pl-11 pr-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all font-medium" />
-                                <svg className="w-5 h-5 text-slate-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            </div>
-                            
-                            <button onClick={() => { setActiveLocation("Current Location"); setIsLocationModalOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-2xl bg-orange-50/50 hover:bg-orange-50 transition-colors border border-orange-100 group text-left">
-                                <div className="bg-orange-100 text-orange-500 p-2.5 rounded-xl group-hover:scale-110 transition-transform">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><circle cx="12" cy="12" r="3" /></svg>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-orange-600">Use Current Location</span>
-                                    <span className="text-xs text-orange-500/80 font-medium">Vadodara, Gujarat</span>
-                                </div>
-                            </button>
-
-                            <div>
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">Saved Addresses</h3>
-                                <div className="space-y-2">
-                                    {[
-                                        { title: "Home", address: "123 Main St, Vadodara", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
-                                        { title: "Work", address: "Tech Park, Vadodara", icon: "M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" }
-                                    ].map((loc) => (
-                                        <button 
-                                            key={loc.title}
-                                            onClick={() => { setActiveLocation(`${loc.title} - Vadodara`); setIsLocationModalOpen(false); }}
-                                            className="w-full flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl transition-colors border border-transparent hover:border-slate-100 text-left"
-                                        >
-                                            <div className="bg-slate-100 p-2.5 rounded-xl text-slate-500">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={loc.icon} /></svg>
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-semibold text-slate-700">{loc.title}</span>
-                                                <span className="text-xs text-slate-400">{loc.address}</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Location Modal */}
+            <LocationModal 
+                isOpen={isLocationModalOpen} 
+                onClose={() => setIsLocationModalOpen(false)} 
+                setActiveLocation={setActiveLocation}
+            />
         </>
     );
 }

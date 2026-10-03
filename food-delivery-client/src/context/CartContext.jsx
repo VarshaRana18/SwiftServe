@@ -6,37 +6,28 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+    
     // 1. Cart Drawer State
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [activeCartView, setActiveCartView] = useState(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
     const [confirmItemDeleteId, setConfirmItemDeleteId] = useState(null);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    
+    // NEW: Lifted Location State
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+    const [activeLocation, setActiveLocation] = useState("Select Location");
 
     // 2. Order Tracking State
     const [isOrdersOpen, setIsOrdersOpen] = useState(false);
     const [orderHistory, setOrderHistory] = useState([]);
 
-    // 3. NEW: Settings & Profile State
+    // 3. Settings & Profile State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isVegOnly, setIsVegOnly] = useState(false);
-    const [userProfile, setUserProfile] = useState({
-        name: "Samiul Shaikh",
-        email: "samiul@example.com",
-        phone: "+91 98765 43210"
-    });
 
     // 4. Cart Data State
-    const [globalCarts, setGlobalCarts] = useState({
-        "1": {
-            restaurantId: 1,
-            restaurantName: "Firehouse Grill",
-            image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=100&auto=format&fit=crop",
-            items: [
-                { id: 101, name: "Classic Cheeseburger", price: 199, qty: 2 },
-                { id: 102, name: "Large Fries", price: 99, qty: 1 }
-            ]
-        }
-    });
+    const [globalCarts, setGlobalCarts] = useState({});
 
     const updateQuantity = (restaurantId, itemId, delta) => {
         setGlobalCarts(prevCarts => {
@@ -55,28 +46,31 @@ export const CartProvider = ({ children }) => {
         setConfirmItemDeleteId(null);
     };
 
-    const addToCart = (restaurantId, item) => {
-        setGlobalCarts(prevCarts => {
-            const newCarts = { ...prevCarts };
-            if (!newCarts[restaurantId]) {
-                const restInfo = restaurants.find(r => r.id === restaurantId);
-                newCarts[restaurantId] = {
-                    restaurantId: restInfo.id,
-                    restaurantName: restInfo.name,
-                    image: restInfo.image,
-                    items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }]
-                };
+    const addToCart = (restaurant, item) => {
+    const resId = restaurant.id; // Extract the ID from the passed object
+    
+    setGlobalCarts(prevCarts => {
+        const newCarts = { ...prevCarts };
+        
+        if (!newCarts[resId]) {
+            // Build the new cart using the live database details passed from the component
+            newCarts[resId] = { 
+                restaurantId: resId, 
+                restaurantName: restaurant.name, 
+                image: restaurant.image, 
+                items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }] 
+            };
+        } else {
+            const existingItemIndex = newCarts[resId].items.findIndex(i => i.id === item.id);
+            if (existingItemIndex >= 0) {
+                newCarts[resId].items[existingItemIndex].qty += 1;
             } else {
-                const existingItemIndex = newCarts[restaurantId].items.findIndex(i => i.id === item.id);
-                if (existingItemIndex >= 0) {
-                    newCarts[restaurantId].items[existingItemIndex].qty += 1;
-                } else {
-                    newCarts[restaurantId].items.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
-                }
+                newCarts[resId].items.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
             }
-            return newCarts;
-        });
-    };
+        }
+        return newCarts;
+    });
+};
 
     const deleteCart = (restaurantId) => {
         setGlobalCarts(prevCarts => {
@@ -99,28 +93,32 @@ export const CartProvider = ({ children }) => {
         const cartToOrder = globalCarts[cartId];
         if (!cartToOrder) return;
         const orderTotal = getCartTotal(cartId) + 10 + tipAmount;
-        const newOrder = {
-            orderId: `ORD-${Math.floor(Math.random() * 1000000)}`,
-            timestamp: new Date().toISOString(),
-            restaurantId: cartToOrder.restaurantId,
-            restaurantName: cartToOrder.restaurantName,
-            image: cartToOrder.image,
-            items: [...cartToOrder.items],
-            totalAmount: orderTotal,
-            status: "Preparing"
-        };
+        const newOrder = { orderId: `ORD-${Math.floor(Math.random() * 1000000)}`, timestamp: new Date().toISOString(), restaurantId: cartToOrder.restaurantId, restaurantName: cartToOrder.restaurantName, image: cartToOrder.image, items: [...cartToOrder.items], totalAmount: orderTotal, status: "Preparing" };
         setOrderHistory(prev => [newOrder, ...prev]);
         deleteCart(cartId);
     };
 
     return (
         <CartContext.Provider value={{
-            isCartOpen, setIsCartOpen, activeCartView, setActiveCartView,
-            confirmDeleteId, setConfirmDeleteId, confirmItemDeleteId, setConfirmItemDeleteId,
-            globalCarts, updateQuantity, addToCart, deleteCart,
-            getCartTotal, getGrandTotal, getItemQtyInCart,
-            isOrdersOpen, setIsOrdersOpen, orderHistory, checkoutCart,
-            isSettingsOpen, setIsSettingsOpen, isVegOnly, setIsVegOnly, userProfile, setUserProfile
+            isCartOpen, setIsCartOpen,
+            activeCartView, setActiveCartView,
+            confirmDeleteId, setConfirmDeleteId,
+            confirmItemDeleteId, setConfirmItemDeleteId,
+            selectedAddressId, setSelectedAddressId,
+            isLocationModalOpen, setIsLocationModalOpen, // EXPORTED
+            activeLocation, setActiveLocation,           // EXPORTED
+            globalCarts,
+            updateQuantity,
+            addToCart,
+            deleteCart,
+            getCartTotal,
+            getGrandTotal,
+            getItemQtyInCart,
+            isOrdersOpen, setIsOrdersOpen,
+            orderHistory,
+            checkoutCart,
+            isSettingsOpen, setIsSettingsOpen,
+            isVegOnly, setIsVegOnly
         }}>
             {children}
         </CartContext.Provider>
