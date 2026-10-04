@@ -6,16 +6,22 @@ export default function VendorMenu({ activeRestaurantId }) {
     const [menuSearch, setMenuSearch] = useState("");
     const [menuCategory, setMenuCategory] = useState("All");
     
-    // Add Item Modal States
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
-    const [newItem, setNewItem] = useState({
+    // Unified Modal States (Handles both Add and Edit)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
+    const [isSaving, setIsSaving] = useState(false);
+    const [formData, setFormData] = useState({
+        id: null,
         name: "",
         description: "",
         price: "",
         category: "",
         dietaryPreference: "0" // 0 = Veg, 1 = Non-Veg
     });
+
+    // Custom Delete Modal States
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     useEffect(() => {
         if (!activeRestaurantId) return;
@@ -61,46 +67,97 @@ export default function VendorMenu({ activeRestaurantId }) {
         */
     };
 
-    const handleAddItem = async (e) => {
-        e.preventDefault();
-        setIsAdding(true);
-        const token = localStorage.getItem('token');
+    // Trigger Delete Modal
+    const triggerDelete = (item) => {
+        setItemToDelete(item);
+        setIsDeleteModalOpen(true);
+    };
+
+    // Confirm and Execute Delete
+    const confirmDelete = async () => {
+        if (!itemToDelete) return;
+        
+        const itemId = itemToDelete.id;
+        
+        // Optimistic UI update
+        setInventory(prev => prev.filter(item => item.id !== itemId));
+        setIsDeleteModalOpen(false);
+        setItemToDelete(null);
 
         try {
-            const response = await fetch("http://localhost:5121/api/menuitem", {
-                method: "POST",
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` 
-                },
-                body: JSON.stringify({
-                    name: newItem.name,
-                    description: newItem.description,
-                    price: parseFloat(newItem.price),
-                    category: newItem.category,
-                    dietaryPreference: parseInt(newItem.dietaryPreference),
-                    restaurantId: activeRestaurantId
-                })
+            const token = localStorage.getItem('token');
+            await fetch(`http://localhost:5121/api/menuitem/${itemId}`, {
+                method: "DELETE",
+                headers: { 'Authorization': `Bearer ${token}` }
             });
+        } catch (error) {
+            console.error("Failed to delete menu item");
+        }
+    };
 
-            if (response.ok) {
-                const addedItem = await response.json();
-                
-                // Manually add the isAvailable flag for the UI if the backend doesn't return it yet
-                if (addedItem.isAvailable === undefined) {
-                    addedItem.isAvailable = true;
+    const openAddModal = () => {
+        setModalMode("add");
+        setFormData({ id: null, name: "", description: "", price: "", category: "", dietaryPreference: "0" });
+        setIsModalOpen(true);
+    };
+
+    const openEditModal = (item) => {
+        setModalMode("edit");
+        setFormData({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            price: item.price.toString(),
+            category: item.category || "",
+            dietaryPreference: item.dietaryPreference.toString()
+        });
+        setIsModalOpen(true);
+    };
+
+    const handleSaveItem = async (e) => {
+        e.preventDefault();
+        setIsSaving(true);
+        const token = localStorage.getItem('token');
+
+        const payload = {
+            name: formData.name,
+            description: formData.description,
+            price: parseFloat(formData.price),
+            category: formData.category,
+            dietaryPreference: parseInt(formData.dietaryPreference),
+            restaurantId: activeRestaurantId
+        };
+
+        try {
+            if (modalMode === "add") {
+                const response = await fetch("http://localhost:5121/api/menuitem", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const addedItem = await response.json();
+                    if (addedItem.isAvailable === undefined) addedItem.isAvailable = true;
+                    setInventory(prev => [...prev, addedItem]);
+                    setIsModalOpen(false);
                 }
-
-                setInventory(prev => [...prev, addedItem]);
-                setIsAddModalOpen(false);
-                setNewItem({ name: "", description: "", price: "", category: "", dietaryPreference: "0" });
             } else {
-                console.error("Failed to add menu item");
+                const response = await fetch(`http://localhost:5121/api/menuitem/${formData.id}`, {
+                    method: "PUT",
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    setInventory(prev => prev.map(item => item.id === formData.id ? { ...item, ...payload } : item));
+                    setIsModalOpen(false);
+                }
             }
         } catch (error) {
             console.error("Network error");
         } finally {
-            setIsAdding(false);
+            setIsSaving(false);
         }
     };
 
@@ -117,7 +174,7 @@ export default function VendorMenu({ activeRestaurantId }) {
                             <input type="text" placeholder="Search items..." value={menuSearch} onChange={(e) => setMenuSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all font-medium text-sm" />
                             <svg className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </div>
-                        <button onClick={() => setIsAddModalOpen(true)} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2.5 rounded-xl transition-colors shadow-sm shrink-0 whitespace-nowrap">
+                        <button onClick={openAddModal} className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2.5 rounded-xl transition-colors shadow-sm shrink-0 whitespace-nowrap">
                             + Add Item
                         </button>
                     </div>
@@ -136,6 +193,7 @@ export default function VendorMenu({ activeRestaurantId }) {
                 ) : (
                     filteredInventory.map(item => (
                         <div key={item.id} className={`bg-white p-4 rounded-2xl shadow-sm border transition-all flex items-center justify-between gap-4 ${!item.isAvailable ? 'border-red-100 bg-red-50/30' : 'border-slate-100'}`}>
+                            
                             <div className="flex items-center gap-4 flex-1 overflow-hidden">
                                 <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
                                     {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className={`w-full h-full object-cover ${!item.isAvailable && 'grayscale opacity-50'}`} /> : <div className="w-full h-full flex items-center justify-center text-xl">🍽️</div>}
@@ -155,60 +213,75 @@ export default function VendorMenu({ activeRestaurantId }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-end gap-2 shrink-0">
-                                <span className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-md ${item.isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>{item.isAvailable ? 'In Stock' : 'Out of Stock'}</span>
-                                <button onClick={() => toggleItemAvailability(item.id)} className={`w-12 h-6 sm:w-14 sm:h-7 rounded-full transition-colors relative shadow-inner ${item.isAvailable ? 'bg-teal-500' : 'bg-slate-300'}`}>
-                                    <div className={`w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full absolute top-1 shadow transition-transform ${item.isAvailable ? 'translate-x-7 sm:translate-x-8' : 'translate-x-1'}`}></div>
-                                </button>
+
+                            <div className="flex flex-col items-end gap-3 shrink-0">
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-[10px] sm:text-xs font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-md ${item.isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                                        {item.isAvailable ? 'In Stock' : 'Out of Stock'}
+                                    </span>
+                                    <button onClick={() => toggleItemAvailability(item.id)} className={`w-10 h-5 sm:w-12 h-6 rounded-full transition-colors relative shadow-inner ${item.isAvailable ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                                        <div className={`w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full absolute top-1 shadow transition-transform ${item.isAvailable ? 'translate-x-6 sm:translate-x-7' : 'translate-x-1'}`}></div>
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => openEditModal(item)} className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                    </button>
+                                    <button onClick={() => triggerDelete(item)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))
                 )}
             </div>
 
-            {/* Add Menu Item Modal */}
-            {isAddModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsAddModalOpen(false)}></div>
+            {/* Unified Add/Edit Menu Item Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
                     <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden animate-slide-up">
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                            <h2 className="text-lg font-bold text-slate-800">Add New Item</h2>
-                            <button onClick={() => setIsAddModalOpen(false)} className="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition-colors">
+                            <h2 className="text-lg font-bold text-slate-800">
+                                {modalMode === "add" ? "Add New Item" : "Edit Item"}
+                            </h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 text-slate-400 hover:bg-slate-200 rounded-full transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
                         
-                        <form onSubmit={handleAddItem} className="p-6 space-y-4">
+                        <form onSubmit={handleSaveItem} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">Item Name</label>
-                                <input type="text" required value={newItem.name} onChange={(e) => setNewItem({...newItem, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="e.g. Masala Dosa" />
+                                <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="e.g. Masala Dosa" />
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
-                                <textarea required value={newItem.description} onChange={(e) => setNewItem({...newItem, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white resize-none" rows="2" placeholder="Describe the item..." />
+                                <textarea required value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white resize-none" rows="2" placeholder="Describe the item..." />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Price (₹)</label>
-                                    <input type="number" step="0.01" required min="0" value={newItem.price} onChange={(e) => setNewItem({...newItem, price: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="120.00" />
+                                    <input type="number" step="0.01" required min="0" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="120.00" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
-                                    <input type="text" required value={newItem.category} onChange={(e) => setNewItem({...newItem, category: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="e.g. Dosa" />
+                                    <input type="text" required value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" placeholder="e.g. Dosa" />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2">Dietary Preference</label>
                                 <div className="flex gap-4">
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" name="dietary" value="0" checked={newItem.dietaryPreference === "0"} onChange={(e) => setNewItem({...newItem, dietaryPreference: e.target.value})} className="text-teal-600 focus:ring-teal-500" />
+                                        <input type="radio" name="dietary" value="0" checked={formData.dietaryPreference === "0"} onChange={(e) => setFormData({...formData, dietaryPreference: e.target.value})} className="text-teal-600 focus:ring-teal-500" />
                                         <span className="text-sm font-medium text-slate-700 flex items-center gap-1">
                                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-green-600"><rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" /><circle cx="8" cy="8" r="3.5" fill="currentColor" /></svg>
                                             Veg
                                         </span>
                                     </label>
                                     <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" name="dietary" value="1" checked={newItem.dietaryPreference === "1"} onChange={(e) => setNewItem({...newItem, dietaryPreference: e.target.value})} className="text-teal-600 focus:ring-teal-500" />
+                                        <input type="radio" name="dietary" value="1" checked={formData.dietaryPreference === "1"} onChange={(e) => setFormData({...formData, dietaryPreference: e.target.value})} className="text-teal-600 focus:ring-teal-500" />
                                         <span className="text-sm font-medium text-slate-700 flex items-center gap-1">
                                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" className="text-red-700"><rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" /><circle cx="8" cy="8" r="3.5" fill="currentColor" /></svg>
                                             Non-Veg
@@ -217,10 +290,36 @@ export default function VendorMenu({ activeRestaurantId }) {
                                 </div>
                             </div>
                             
-                            <button type="submit" disabled={isAdding} className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-sm disabled:opacity-70">
-                                {isAdding ? "Saving..." : "Save Item"}
+                            <button type="submit" disabled={isSaving} className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-sm disabled:opacity-70">
+                                {isSaving ? "Saving..." : modalMode === "add" ? "Save Item" : "Update Item"}
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {isDeleteModalOpen && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onClick={() => setIsDeleteModalOpen(false)}></div>
+                    <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-slide-up p-6 text-center">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                        <h2 className="text-xl font-bold text-slate-800 mb-2">Delete Menu Item?</h2>
+                        <p className="text-sm text-slate-500 mb-6">
+                            Are you sure you want to delete <span className="font-bold text-slate-700">{itemToDelete?.name}</span>? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">
+                                Cancel
+                            </button>
+                            <button onClick={confirmDelete} className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors shadow-sm">
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -56,6 +56,25 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZ
 
 #------------------------------------------------------------------------------------------------------------
 #Added by Samiul
+
+### Update a Menu Item (Requires Vendor JWT)
+# PUT {{host}}/api/menuitem/REPLACE_WITH_ITEM_ID
+# Content-Type: application/json
+# Authorization: Bearer YOUR_VENDOR_JWT_HERE
+
+# {
+#   "name": "Masala Dosa Extra Crispy",
+#   "description": "Crispy crepe stuffed with spiced potatoes, now with extra crunch.",
+#   "price": 140.00,
+#   "category": "Dosa",
+#   "dietaryPreference": 0,
+#   "restaurantId": "REPLACE_WITH_RESTAURANT_ID"
+# }
+
+# ### Delete a Menu Item (Requires Vendor JWT)
+# DELETE {{host}}/api/menuitem/REPLACE_WITH_ITEM_ID
+# Authorization: Bearer YOUR_VENDOR_JWT_HERE
+
 # GET /api/restaurant/my-restaurants (Requires JWT)
 # Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.
 
