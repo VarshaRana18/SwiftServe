@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const initialOrders = [
     { id: "ORD-8901", items: "1x Truffle Burger, 1x Fries", total: "₹348", status: "Incoming", time: "2 mins ago" },
@@ -7,13 +7,46 @@ const initialOrders = [
     { id: "ORD-8898", items: "3x Bacon Double Smash", total: "₹1047", status: "Ready", time: "15 mins ago" },
 ];
 
-export default function VendorOrders() {
+export default function VendorOrders({ activeRestaurantId }) {
     const [orders, setOrders] = useState(initialOrders);
     const [mobileOrderTab, setMobileOrderTab] = useState("Incoming");
 
-    const updateOrderStatus = (orderId, newStatus) => {
+    useEffect(() => {
+        if (!activeRestaurantId) return;
+
+        // TODO: Uncomment when Varsha finishes GET /api/order/restaurant/{id}
+        /*
+        const fetchOrders = async () => {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5121/api/order/restaurant/${activeRestaurantId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if(response.ok) {
+                const data = await response.json();
+                setOrders(data);
+            }
+        };
+        fetchOrders();
+        */
+    }, [activeRestaurantId]);
+
+    const updateOrderStatus = async (orderId, newStatus) => {
+        // Optimistic UI Update
         setOrders(prevOrders => prevOrders.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
         if (window.innerWidth < 1024) setMobileOrderTab(newStatus);
+
+        // TODO: Wire to Varsha's status update endpoint
+        /*
+        const token = localStorage.getItem('token');
+        await fetch(`http://localhost:5121/api/order/${orderId}/status`, {
+            method: "PUT",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+        */
     };
 
     return (
@@ -35,9 +68,15 @@ export default function VendorOrders() {
                     <div className="space-y-4 overflow-y-auto pr-1 flex-1 pb-20 lg:pb-0">
                         {orders.filter(o => o.status === "Incoming").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                                <div className="flex justify-between items-start mb-3"><span className="font-bold text-slate-800">{order.id}</span><span className="text-xs font-medium text-slate-400">{order.time}</span></div>
+                                <div className="flex justify-between items-start mb-3">
+                                    <span className="font-bold text-slate-800">{order.id}</span>
+                                    <span className="text-xs font-medium text-slate-400">{order.time}</span>
+                                </div>
                                 <p className="text-sm font-medium text-slate-600 mb-6">{order.items}</p>
-                                <div className="flex flex-wrap items-center justify-between gap-3"><span className="font-bold text-teal-600 text-lg">{order.total}</span><button onClick={() => updateOrderStatus(order.id, "Preparing")} className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-colors shadow-sm shrink-0">Accept</button></div>
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <span className="font-bold text-teal-600 text-lg">{order.total}</span>
+                                    <button onClick={() => updateOrderStatus(order.id, "Preparing")} className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-colors shadow-sm shrink-0">Accept</button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -51,9 +90,15 @@ export default function VendorOrders() {
                     <div className="space-y-4 overflow-y-auto pr-1 flex-1 pb-20 lg:pb-0">
                         {orders.filter(o => o.status === "Preparing").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 border-l-4 border-l-yellow-400">
-                                <div className="flex justify-between items-start mb-3"><span className="font-bold text-slate-800">{order.id}</span><span className="text-xs font-medium text-slate-400">{order.time}</span></div>
+                                <div className="flex justify-between items-start mb-3">
+                                    <span className="font-bold text-slate-800">{order.id}</span>
+                                    <span className="text-xs font-medium text-slate-400">{order.time}</span>
+                                </div>
                                 <p className="text-sm font-medium text-slate-600 mb-6">{order.items}</p>
-                                <div className="flex flex-wrap items-center justify-between gap-3"><span className="font-bold text-slate-400 line-through decoration-slate-300 text-lg">{order.total}</span><button onClick={() => updateOrderStatus(order.id, "Ready")} className="bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 text-slate-700 hover:text-teal-700 text-sm font-bold px-6 py-2.5 rounded-xl transition-colors shrink-0">Ready</button></div>
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <span className="font-bold text-slate-400 line-through decoration-slate-300 text-lg">{order.total}</span>
+                                    <button onClick={() => updateOrderStatus(order.id, "Ready")} className="bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 text-slate-700 hover:text-teal-700 text-sm font-bold px-6 py-2.5 rounded-xl transition-colors shrink-0">Ready</button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -67,9 +112,15 @@ export default function VendorOrders() {
                     <div className="space-y-4 overflow-y-auto pr-1 flex-1 pb-20 lg:pb-0">
                         {orders.filter(o => o.status === "Ready").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 border-l-4 border-l-green-400 opacity-75">
-                                <div className="flex justify-between items-start mb-3"><span className="font-bold text-slate-800">{order.id}</span><span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md">Awaiting Driver</span></div>
+                                <div className="flex justify-between items-start mb-3">
+                                    <span className="font-bold text-slate-800">{order.id}</span>
+                                    <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md">Awaiting Driver</span>
+                                </div>
                                 <p className="text-sm font-medium text-slate-500 mb-6">{order.items}</p>
-                                <div className="flex flex-wrap items-center justify-between gap-3"><span className="font-bold text-slate-400 line-through decoration-slate-300 text-lg">{order.total}</span><div className="bg-slate-50 border border-slate-200 text-slate-400 text-sm font-bold px-6 py-2.5 rounded-xl text-center shrink-0">Sealed</div></div>
+                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                    <span className="font-bold text-slate-400 line-through decoration-slate-300 text-lg">{order.total}</span>
+                                    <div className="bg-slate-50 border border-slate-200 text-slate-400 text-sm font-bold px-6 py-2.5 rounded-xl text-center shrink-0">Sealed</div>
+                                </div>
                             </div>
                         ))}
                     </div>

@@ -51,3 +51,33 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZ
   "dietaryPreference": 0,
   "restaurantId": "01a0c2a1-a244-79fb-9603-9f1c2aea0293"
 }
+
+
+
+#------------------------------------------------------------------------------------------------------------
+#Added by Samiul
+# GET /api/restaurant/my-restaurants (Requires JWT)
+# Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.
+
+# PUT /api/restaurant/{id} (Requires JWT)
+# Why: For the VendorSettings tab. The vendor needs to be able to update their store description, change the address, or flip the isOpen boolean (Accepting/Closed toggle).
+
+# PUT /api/menuitem/{id} & DELETE /api/menuitem/{id} (Requires JWT)
+# Why: You already have the POST to create menu items, but the VendorMenu tab needs endpoints to edit prices/descriptions or delete items entirely.
+
+# GET /api/order/restaurant/{id} (Requires JWT)
+# Why: To populate the VendorOrders tab. The backend needs to fetch all orders attached to the selected restaurant.
+
+# PUT /api/order/{id}/status (Requires JWT)
+# Why: Also for VendorOrders. The vendor needs to click buttons to advance the order state (e.g., changing status from "Preparing" to "Ready for Pickup").
+
+# PUT /api/menuitem/{id}/availability (Requires Vendor JWT)
+# Why: To handle the "In Stock" / "Out of Stock" toggle switch on the VendorMenu tab. It should just flip the boolean in the database without needing the full menu item payload (name, price, etc.).
+
+
+# 📉 LOW PRIORITY 📉
+# POST /api/upload/image (Requires Vendor JWT)
+# Why: Currently, the restaurant and menu item POST requests only accept JSON text. We need a way for vendors to upload actual image files (multipart/form-data) for their restaurant banners and menu item photos. This should return the saved image URL so we can attach it to the POST/PUT payloads.
+
+# GET /api/restaurant/{id}/stats (Requires Vendor JWT)
+# Why: For the top row of the VendorSettings tab. We need an endpoint that returns real analytics for the selected restaurant: "Today's Revenue", "Completed Orders", and "Avg. Prep Time". Currently, those are hardcoded to ₹12,450 and 42 orders.

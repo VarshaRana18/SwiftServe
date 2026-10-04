@@ -1,18 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function VendorSettings() {
+export default function VendorSettings({ activeRestaurantId }) {
     const navigate = useNavigate();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [restaurantProfile, setRestaurantProfile] = useState({
-        name: "Firehouse Grill",
-        phone: "+91 98765 43210",
-        address: "123 Burger Lane, Food District",
-        description: "Premium burgers and American classics."
+        name: "Loading...",
+        phone: "+91 98765 43210", // Note: Phone is not currently in Restaurant.cs
+        address: "Loading...",
+        description: "Loading..."
     });
 
-    const handleSaveProfile = () => {
-        setIsEditingProfile(false);
+    useEffect(() => {
+        if (!activeRestaurantId) return;
+
+        const fetchRestDetails = async () => {
+            try {
+                const response = await fetch(`http://localhost:5121/api/restaurant`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const currentRest = data.find(r => r.id === activeRestaurantId);
+                    if (currentRest) {
+                        setRestaurantProfile({
+                            name: currentRest.name,
+                            phone: "+91 98765 43210", // Placeholder until added to model
+                            address: currentRest.fullAddress,
+                            description: currentRest.description || ""
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch settings data");
+            }
+        };
+
+        fetchRestDetails();
+    }, [activeRestaurantId]);
+
+    const handleSaveProfile = async () => {
+        setIsSaving(true);
+        // TODO: Wire to Varsha's upcoming PUT /api/restaurant/{id} endpoint
+        /*
+        const token = localStorage.getItem('token');
+        await fetch(`http://localhost:5121/api/restaurant/${activeRestaurantId}`, {
+            method: "PUT",
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({
+                name: restaurantProfile.name,
+                description: restaurantProfile.description,
+                fullAddress: restaurantProfile.address
+            })
+        });
+        */
+        
+        setTimeout(() => {
+            setIsSaving(false);
+            setIsEditingProfile(false);
+        }, 800);
     };
 
     const handleLogout = () => {
@@ -32,7 +80,7 @@ export default function VendorSettings() {
                 </div>
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
                     <span className="text-sm font-bold text-slate-400 mb-1">Avg. Prep Time</span>
-                    <span className="text-3xl font-extrabold text-slate-800">14 <span className="text-lg text-slate-400">mins</span></span>
+                    <span className="text-3xl font-extrabold text-slate-800">14<span className="text-lg text-slate-400"> mins</span></span>
                 </div>
             </div>
 
@@ -42,27 +90,29 @@ export default function VendorSettings() {
                     {!isEditingProfile ? (
                         <button onClick={() => setIsEditingProfile(true)} className="text-sm font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-4 py-1.5 rounded-lg transition-colors">Edit Details</button>
                     ) : (
-                        <button onClick={handleSaveProfile} className="text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 px-4 py-1.5 rounded-lg transition-colors shadow-sm">Save Changes</button>
+                        <button onClick={handleSaveProfile} disabled={isSaving} className={`text-sm font-bold text-white px-4 py-1.5 rounded-lg transition-colors shadow-sm ${isSaving ? 'bg-teal-400 cursor-wait' : 'bg-teal-600 hover:bg-teal-700'}`}>
+                            {isSaving ? "Saving..." : "Save Changes"}
+                        </button>
                     )}
                 </div>
                 <div className="p-6 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Restaurant Name</label>
-                            <input type="text" value={restaurantProfile.name} onChange={(e) => setRestaurantProfile({...restaurantProfile, name: e.target.value})} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
+                            <input type="text" value={restaurantProfile.name} onChange={(e) => setRestaurantProfile({ ...restaurantProfile, name: e.target.value })} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Phone</label>
-                            <input type="text" value={restaurantProfile.phone} onChange={(e) => setRestaurantProfile({...restaurantProfile, phone: e.target.value})} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
+                            <input type="text" value={restaurantProfile.phone} onChange={(e) => setRestaurantProfile({ ...restaurantProfile, phone: e.target.value })} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
                         </div>
                     </div>
                     <div>
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Address</label>
-                        <input type="text" value={restaurantProfile.address} onChange={(e) => setRestaurantProfile({...restaurantProfile, address: e.target.value})} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
+                        <input type="text" value={restaurantProfile.address} onChange={(e) => setRestaurantProfile({ ...restaurantProfile, address: e.target.value })} disabled={!isEditingProfile} className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
                     </div>
                     <div>
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Short Description</label>
-                        <textarea value={restaurantProfile.description} onChange={(e) => setRestaurantProfile({...restaurantProfile, description: e.target.value})} disabled={!isEditingProfile} rows="2" className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors resize-none ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
+                        <textarea value={restaurantProfile.description} onChange={(e) => setRestaurantProfile({ ...restaurantProfile, description: e.target.value })} disabled={!isEditingProfile} rows="2" className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors resize-none ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`} />
                     </div>
                 </div>
             </div>
