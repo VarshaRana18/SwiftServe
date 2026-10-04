@@ -3,8 +3,12 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 export default function SettingsModal() {
-    // Removed userProfile from Context, we will fetch the real one below
-    const { isSettingsOpen, setIsSettingsOpen, isVegOnly, setIsVegOnly } = useCart();
+    // NEW: Extracted setSelectedAddressId and setActiveLocation to prevent logout crash
+    const { 
+        isSettingsOpen, setIsSettingsOpen, 
+        isVegOnly, setIsVegOnly,
+        setSelectedAddressId, setActiveLocation 
+    } = useCart();
     
     // Real User State
     const [realUser, setRealUser] = useState({ name: "Loading...", email: "Loading..." });
@@ -23,7 +27,6 @@ export default function SettingsModal() {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    // Standard JWT base64 decoding
                     const base64Url = token.split('.')[1];
                     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                     const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
@@ -31,9 +34,7 @@ export default function SettingsModal() {
                     }).join(''));
                     
                     const payload = JSON.parse(jsonPayload);
-                    console.log("JWT Payload:", payload);
                     
-                    // .NET Identity uses specific URI schemas for claims by default
                     const emailClaim = payload.email || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || "No Email";
                     const nameClaim = payload.fullName || payload.name || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "Customer";
 
@@ -50,8 +51,6 @@ export default function SettingsModal() {
     if (!isSettingsOpen) return null;
 
     const handleSave = () => {
-        // NOTE: In the future, this needs to trigger a PUT request to the backend 
-        // to permanently update the database. For now, it just updates local view.
         setRealUser(formData);
         setIsEditing(false);
     };
@@ -91,6 +90,10 @@ export default function SettingsModal() {
     };
 
     const handleLogout = () => {
+        // Wipes global address state on logout
+        setSelectedAddressId(null);
+        setActiveLocation("Select Location");
+        
         localStorage.removeItem('token');
         localStorage.removeItem('roles');
         setIsSettingsOpen(false);
@@ -111,7 +114,6 @@ export default function SettingsModal() {
                 
                 <div className="p-6 space-y-8 max-h-[80vh] overflow-y-auto">
                     
-                    {/* Profile Management */}
                     <section>
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Account Details</h3>
@@ -133,7 +135,6 @@ export default function SettingsModal() {
                         </div>
                     </section>
 
-                    {/* Dietary Global Filter */}
                     <section>
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Dietary Preferences</h3>
                         <div className="flex items-center justify-between bg-slate-50 border border-slate-100 p-4 rounded-2xl">
@@ -150,17 +151,12 @@ export default function SettingsModal() {
                         </div>
                     </section>
 
-                    {/* Account Expansion */}
                     <section>
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Expand Your Account</h3>
                         {upgradeError && <p className="text-xs text-red-500 font-bold mb-3 px-1">{upgradeError}</p>}
                         
                         <div className="space-y-3">
-                            <button 
-                                onClick={() => handleRoleUpgrade('Vendor')}
-                                disabled={isUpgrading}
-                                className="w-full flex items-center justify-between p-4 rounded-2xl border border-teal-100 bg-teal-50 hover:bg-teal-100 transition-colors group"
-                            >
+                            <button onClick={() => handleRoleUpgrade('Vendor')} disabled={isUpgrading} className="w-full flex items-center justify-between p-4 rounded-2xl border border-teal-100 bg-teal-50 hover:bg-teal-100 transition-colors group">
                                 <div className="flex items-center gap-3">
                                     <div className="bg-teal-500 p-2 rounded-lg text-white">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
@@ -173,11 +169,7 @@ export default function SettingsModal() {
                                 <svg className="w-5 h-5 text-teal-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                             </button>
 
-                            <button 
-                                onClick={() => handleRoleUpgrade('Driver')}
-                                disabled={isUpgrading}
-                                className="w-full flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50 hover:bg-blue-100 transition-colors group"
-                            >
+                            <button onClick={() => handleRoleUpgrade('Driver')} disabled={isUpgrading} className="w-full flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50 hover:bg-blue-100 transition-colors group">
                                 <div className="flex items-center gap-3">
                                     <div className="bg-blue-500 p-2 rounded-lg text-white">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
@@ -192,7 +184,6 @@ export default function SettingsModal() {
                         </div>
                     </section>
 
-                    {/* Danger Zone */}
                     <section className="pt-6 border-t border-slate-100">
                         <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 font-bold py-3.5 rounded-xl hover:bg-red-100 transition-colors">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>

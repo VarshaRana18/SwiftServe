@@ -1,12 +1,10 @@
 import { createContext, useContext, useState } from "react";
-import { restaurants } from "../data/mockData";
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-    
     // 1. Cart Drawer State
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [activeCartView, setActiveCartView] = useState(null);
@@ -14,9 +12,9 @@ export const CartProvider = ({ children }) => {
     const [confirmItemDeleteId, setConfirmItemDeleteId] = useState(null);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     
-    // NEW: Lifted Location State
+    // Lifted Location State
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-    const [activeLocation, setActiveLocation] = useState("Select Location");
+    const [activeLocation, setActiveLocation] = useState("Select Delivery Location");
 
     // 2. Order Tracking State
     const [isOrdersOpen, setIsOrdersOpen] = useState(false);
@@ -47,30 +45,29 @@ export const CartProvider = ({ children }) => {
     };
 
     const addToCart = (restaurant, item) => {
-    const resId = restaurant.id; // Extract the ID from the passed object
-    
-    setGlobalCarts(prevCarts => {
-        const newCarts = { ...prevCarts };
+        const resId = restaurant.id; 
         
-        if (!newCarts[resId]) {
-            // Build the new cart using the live database details passed from the component
-            newCarts[resId] = { 
-                restaurantId: resId, 
-                restaurantName: restaurant.name, 
-                image: restaurant.image, 
-                items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }] 
-            };
-        } else {
-            const existingItemIndex = newCarts[resId].items.findIndex(i => i.id === item.id);
-            if (existingItemIndex >= 0) {
-                newCarts[resId].items[existingItemIndex].qty += 1;
+        setGlobalCarts(prevCarts => {
+            const newCarts = { ...prevCarts };
+            
+            if (!newCarts[resId]) {
+                newCarts[resId] = { 
+                    restaurantId: resId, 
+                    restaurantName: restaurant.name, 
+                    image: restaurant.image, 
+                    items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }] 
+                };
             } else {
-                newCarts[resId].items.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
+                const existingItemIndex = newCarts[resId].items.findIndex(i => i.id === item.id);
+                if (existingItemIndex >= 0) {
+                    newCarts[resId].items[existingItemIndex].qty += 1;
+                } else {
+                    newCarts[resId].items.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
+                }
             }
-        }
-        return newCarts;
-    });
-};
+            return newCarts;
+        });
+    };
 
     const deleteCart = (restaurantId) => {
         setGlobalCarts(prevCarts => {
@@ -92,8 +89,21 @@ export const CartProvider = ({ children }) => {
     const checkoutCart = (cartId, tipAmount) => {
         const cartToOrder = globalCarts[cartId];
         if (!cartToOrder) return;
+        
         const orderTotal = getCartTotal(cartId) + 10 + tipAmount;
-        const newOrder = { orderId: `ORD-${Math.floor(Math.random() * 1000000)}`, timestamp: new Date().toISOString(), restaurantId: cartToOrder.restaurantId, restaurantName: cartToOrder.restaurantName, image: cartToOrder.image, items: [...cartToOrder.items], totalAmount: orderTotal, status: "Preparing" };
+        
+        const newOrder = { 
+            orderId: `ORD-${Math.floor(Math.random() * 1000000)}`, 
+            timestamp: new Date().toISOString(), 
+            restaurantId: cartToOrder.restaurantId, 
+            restaurantName: cartToOrder.restaurantName, 
+            image: cartToOrder.image, 
+            items: [...cartToOrder.items], 
+            totalAmount: orderTotal, 
+            status: "Preparing",
+            deliveryAddressId: selectedAddressId 
+        };
+        
         setOrderHistory(prev => [newOrder, ...prev]);
         deleteCart(cartId);
     };
@@ -105,8 +115,8 @@ export const CartProvider = ({ children }) => {
             confirmDeleteId, setConfirmDeleteId,
             confirmItemDeleteId, setConfirmItemDeleteId,
             selectedAddressId, setSelectedAddressId,
-            isLocationModalOpen, setIsLocationModalOpen, // EXPORTED
-            activeLocation, setActiveLocation,           // EXPORTED
+            isLocationModalOpen, setIsLocationModalOpen, 
+            activeLocation, setActiveLocation,           
             globalCarts,
             updateQuantity,
             addToCart,
