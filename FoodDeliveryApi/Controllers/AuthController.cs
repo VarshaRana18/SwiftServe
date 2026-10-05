@@ -120,6 +120,7 @@ namespace FoodDeliveryApi.Controllers
             {
               new Claim(JwtRegisteredClaimNames.Sub,user.Id),  
               new Claim(JwtRegisteredClaimNames.Email,user.Email!),  
+              new Claim(ClaimTypes.Name, user.FullName)
             };
 
             if(user.Roles != null)

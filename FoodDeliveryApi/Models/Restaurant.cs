@@ -16,6 +16,10 @@ namespace FoodDeliveryApi.Models{
 
 
         [Required]
+        [Phone(ErrorMessage = "Invalid phone number format.")]
+        public string ContactNumber { get; set; } = string.Empty;
+
+        [Required]
         public string FullAddress { get; set; } = string.Empty; 
         
         [Required]

@@ -15,5 +15,9 @@ namespace FoodDeliveryApi.DTOs
         
         [Required]
         public string PinCode { get; set; } = string.Empty;
+        
+        [Required]
+        [Phone(ErrorMessage = "Invalid phone number format.")]
+        public string ContactNumber { get; set; } = string.Empty;
     }
 }

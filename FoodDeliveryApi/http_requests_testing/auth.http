@@ -119,3 +119,5 @@ Authorization: Bearer YOUR_CURRENT_CUSTOMER_JWT_HERE
 
 # // Add this alongside the Email and Role claims
 # authClaims.Add(new Claim("fullName", user.FullName));
+
+#Added Name in JWT Token => new Claim(ClaimTypes.Name, user.FullName)
