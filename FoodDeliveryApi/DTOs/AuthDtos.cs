@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using FoodDeliveryApi.Models;
 
 namespace FoodDeliveryApi.DTOs
 {

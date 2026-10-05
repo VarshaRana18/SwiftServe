@@ -1,0 +1,217 @@
+@port = 5121
+@host = http://localhost:{{port}}
+
+### Register Customer
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "alice.customer@example.com",
+  "password": "Password123!",
+  "fullName": "Alice Customer",
+  "roles": ["Customer"]
+}
+
+
+### Register Vendor
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "bob.vendor@example.com",
+  "password": "Password123!",
+  "fullName": "Bob Vendor",
+  "roles": ["Vendor"]
+}
+
+
+### Register Driver
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "charlie.driver@example.com",
+  "password": "Password123!",
+  "fullName": "Charlie Driver",
+  "roles": ["Driver"]
+}
+
+
+### Register Vendor + Customer
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "david.vendorcustomer@example.com",
+  "password": "Password123!",
+  "fullName": "David Vendor Customer",
+  "roles": ["Vendor", "Customer"]
+}
+
+
+### Register Vendor + Driver
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "emma.vendordriver@example.com",
+  "password": "Password123!",
+  "fullName": "Emma Vendor Driver",
+  "roles": ["Vendor", "Driver"]
+}
+
+
+### Register Customer + Driver
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "frank.customerdriver@example.com",
+  "password": "Password123!",
+  "fullName": "Frank Customer Driver",
+  "roles": ["Customer", "Driver"]
+}
+
+
+### Register Vendor + Customer + Driver
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "gordon.everywhere@example.com",
+  "password": "Password123!",
+  "fullName": "Gordon Ramsay",
+  "roles": ["Vendor", "Customer", "Driver"]
+}
+
+
+
+
+
+
+
+
+### Login as varsha
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "emma.vendordriver@example.com",
+  "password": "Password123!"
+}
+
+
+
+
+
+
+
+
+
+
+### 1. Alice Customer - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzNjE0ZGQ1NS0yNjU5LTQ3OTAtYTQ5ZC02OGY0ZGI1MThjNmQiLCJlbWFpbCI6ImFsaWNlLmN1c3RvbWVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ3VzdG9tZXIiLCJleHAiOjE3OTAzNTY4NjEsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.Gr64euOLOn6XZj1RSpcOU7R_Ip1D12PMPEpMVZvrkFw
+
+{
+  "label": "Home",
+  "fullAddress": "A-204 Shree Residency, Gotri Road, Vadodara",
+  "pinCode": "390021"
+}
+
+
+### 2. Bob Vendor - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer YOUR_BOB_JWT
+
+{
+  "label": "Home",
+  "fullAddress": "B-302 Silver Heights, Manjalpur, Vadodara",
+  "pinCode": "390011"
+}
+
+
+### 3. Charlie Driver - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NzYyZTRlYi02Y2U3LTQ4NjUtOTM5My1kMzYxMmI2ODA1OWYiLCJlbWFpbCI6ImNoYXJsaWUuZHJpdmVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiRHJpdmVyIiwiZXhwIjoxNzkwMzU3MjY3LCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.1WGz7mPQyr-1cCfcynHTp-RVMO4TveU4OEVc_zg8hms
+
+{
+  "label": "Home",
+  "fullAddress": "12 Shakti Nagar, Waghodia Road, Vadodara",
+  "pinCode": "390019"
+}
+
+
+### 4. David Vendor Customer - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NWEwNDViOS1jYjVhLTRiZjgtYjg2YS0yNzkwZDQ5N2Q1NDIiLCJlbWFpbCI6ImRhdmlkLnZlbmRvcmN1c3RvbWVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc5MDM1Njk3NywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.IBL72L8ECBxIk-1wRAejsNWp_qMXH4hzOGg5PbKbiRY
+
+{
+  "label": "Home",
+  "fullAddress": "C-501 Akshar Enclave, Vasna-Bhayli Road, Vadodara",
+  "pinCode": "390007"
+}
+
+
+### 5. Emma Vendor Driver - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYmM0MmZlYS02OTc2LTRiOTUtOThhNC1iYTNhMzgzODAwZWMiLCJlbWFpbCI6ImVtbWEudmVuZG9yZHJpdmVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkRyaXZlciJdLCJleHAiOjE3OTAzNTcyODgsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.OiiGkKonTq_3D-Vh7QjWWsxx3nt1ppaB4jX0vWiBXuc
+
+{
+  "label": "Home",
+  "fullAddress": "F-104 Sunrise Apartments, Karelibaug, Vadodara",
+  "pinCode": "390018"
+}
+
+
+### 6. Frank Customer Driver - Home Address
+POST {{host}}/api/address
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4Zjg4YmYyZi05MTllLTRjYTgtYTM5YS1mNjlmZDhlYzc1NWEiLCJlbWFpbCI6ImZyYW5rLmN1c3RvbWVyZHJpdmVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIkN1c3RvbWVyIiwiRHJpdmVyIl0sImV4cCI6MTc5MDM1NzAzNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.LuDM1dj5gKDUlqHT0nHYUco40B3os4cI5dwuOBMl60A
+
+{
+  "label": "Home",
+  "fullAddress": "22 Green Park Society, Akota, Vadodara",
+  "pinCode": "390020"
+}
+
+
+
+
+
+
+
+
+
+
+
+### 2. David Vendor + Customer - Create Restaurant
+POST {{host}}/api/restaurant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NWEwNDViOS1jYjVhLTRiZjgtYjg2YS0yNzkwZDQ5N2Q1NDIiLCJlbWFpbCI6ImRhdmlkLnZlbmRvcmN1c3RvbWVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc5MDM1Njk3NywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.IBL72L8ECBxIk-1wRAejsNWp_qMXH4hzOGg5PbKbiRY
+
+{
+  "name": "David's Spice House",
+  "FullAddress": "Shop 8, Akshar Plaza, Vasna-Bhayli Road, Vadodara",
+  "city": "Vadodara",
+  "pinCode": "390007"
+}
+
+
+### 3. Emma Vendor + Driver - Create Restaurant
+POST {{host}}/api/restaurant
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYmM0MmZlYS02OTc2LTRiOTUtOThhNC1iYTNhMzgzODAwZWMiLCJlbWFpbCI6ImVtbWEudmVuZG9yZHJpdmVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkRyaXZlciJdLCJleHAiOjE3OTAzNTcyODgsImlzcyI6IkZvb2REZWxpdmVyeUFwaSIsImF1ZCI6IkZvb2REZWxpdmVyeUNsaWVudCJ9.OiiGkKonTq_3D-Vh7QjWWsxx3nt1ppaB4jX0vWiBXuc
+
+{
+  "name": "Emma's Food Corner",
+  "FullAddress": "Ground Floor, Sunrise Complex, Karelibaug, Vadodara",
+  "city": "Vadodara",
+  "pinCode": "390018"
+}
+
