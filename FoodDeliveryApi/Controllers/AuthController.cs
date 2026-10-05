@@ -1,8 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FoodDeliveryApi.Data;
 using FoodDeliveryApi.DTOs;
 using FoodDeliveryApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,11 +17,13 @@ namespace FoodDeliveryApi.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly AppDbContext _context;
 
-        public AuthController(UserManager<AppUser> userManager, IConfiguration config)
+        public AuthController(UserManager<AppUser> userManager, IConfiguration config, AppDbContext context)
         {
             _userManager = userManager;
             _config = config;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -110,6 +114,48 @@ namespace FoodDeliveryApi.Controllers
                 Email = user.Email!,
                 FullName = user.FullName,
                 Roles = user.Roles
+            });
+        }
+
+        [HttpPost("upgrade-role")]
+        [Authorize]
+        public async Task<IActionResult> UpgradeRole(UpgradeRoleDto dto)
+        {
+            // 1. Identify the user making the request
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            // 2. Fetch the user from the database
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("User not found.");
+
+            // 3. Prevent users from requesting Admin rights or garbage roles
+            var allowedRoles = new List<string> { "Vendor", "Driver", "Customer" };
+            if (!allowedRoles.Contains(dto.NewRole))
+            {
+                return BadRequest($"Invalid role. Allowed roles are: {string.Join(", ", allowedRoles)}");
+            }
+
+            // 4. Prevent duplicates if they are already that role
+            if (user.Roles != null && user.Roles.Contains(dto.NewRole))
+            {
+                return BadRequest($"User is already a {dto.NewRole}.");
+            }
+
+            // 5. Initialize the list if it's somehow null, then add the role
+            user.Roles ??= new List<string>();
+            user.Roles.Add(dto.NewRole);
+
+            await _context.SaveChangesAsync();
+
+            // 6. Generate a BRAND NEW token containing the updated roles
+            var newToken = GenerateJwtToken(user);
+
+            return Ok(new 
+            { 
+                message = $"Successfully upgraded to {dto.NewRole}.",
+                token = newToken,
+                roles = user.Roles 
             });
         }
 
