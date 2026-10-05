@@ -11,9 +11,9 @@ namespace FoodDeliveryApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-        name: "AddressId", 
-        table: "Orders");
+        //     migrationBuilder.DropColumn(
+        // name: "AddressId", 
+        // table: "Orders");
         
             migrationBuilder.AddColumn<Guid>(
                 name: "AddressId",

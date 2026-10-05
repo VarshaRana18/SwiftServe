@@ -79,3 +79,43 @@ Content-Type: application/json
   "email": "varsha@rana.com",
   "password": "Password321!"
 }
+
+
+#--------------------------------------------------------------------------------------------------------
+#Added by Samiul
+### Upgrade Role to Vendor (Requires existing valid Customer JWT)
+POST {{host}}/api/auth/upgrade-role
+Content-Type: application/json
+Authorization: Bearer YOUR_CURRENT_CUSTOMER_JWT_HERE
+
+{
+  "newRole": "Vendor" 
+}
+
+### Upgrade Role to Driver (Requires existing valid Customer JWT)
+POST {{host}}/api/auth/upgrade-role
+Content-Type: application/json
+Authorization: Bearer YOUR_CURRENT_CUSTOMER_JWT_HERE
+
+{
+  "newRole": "Driver" 
+}
+
+
+# You can tell Varsha that her backend endpoint needs to execute three specific steps to satisfy this request:
+# 1. Identify: Read the user's ID from the incoming Bearer token.
+# 2. Update: Add the requested role ("Vendor" or "Driver") to that user in the PostgreSQL database.
+# 3. Re-issue: Generate and return a brand new JWT that contains the updated array of roles.
+
+# The JSON response your frontend expects from her API must look exactly like this:
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5c...[FRESH_TOKEN_STRING]",
+#   "roles": ["Customer", "Vendor"]
+# }
+
+
+
+# TO-DO: Add full name in JWT token
+
+# // Add this alongside the Email and Role claims
+# authClaims.Add(new Claim("fullName", user.FullName));
