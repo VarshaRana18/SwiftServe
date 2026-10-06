@@ -26,6 +26,16 @@ namespace FoodDeliveryApi.Controllers
             return Ok(restaurants);
         }
 
+        [HttpGet("my-restaurants")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> GetMyRestaurants()
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var restaurants = await _context.Restaurants.Where(r=> r.OwnerId == vendorId).Include(r=> r.MenuItems).ToListAsync();
+            return Ok(restaurants);
+        }
+
         // POST: api/restaurant (Protected - only Vendors can create)
         [HttpPost]
         [Authorize(Roles ="Vendor")]
