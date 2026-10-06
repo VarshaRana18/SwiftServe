@@ -26,7 +26,7 @@ namespace FoodDeliveryApi.Controllers
             return Ok(restaurants);
         }
 
-        [HttpGet("my-restaurants")]
+         [HttpGet("my-restaurants")]
         [Authorize(Roles = "Vendor")]
         public async Task<IActionResult> GetMyRestaurants()
         {
@@ -60,6 +60,31 @@ namespace FoodDeliveryApi.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetAllRestaurants), new { id = restaurant.Id }, restaurant);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> UpdateRestaurant(Guid id, UpdateRestaurantDto dto)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var restaurant = await _context.Restaurants.FindAsync(id);
+
+            if (restaurant == null) return NotFound();
+
+            if (restaurant.OwnerId != vendorId) return Forbid();
+
+            restaurant.Name = dto.Name;
+            restaurant.Description = dto.Description;
+            restaurant.FullAddress = dto.FullAddress;
+            restaurant.City = dto.City;
+            restaurant.PinCode = dto.PinCode;
+            restaurant.ContactNumber = dto.ContactNumber;
+
+            _context.Restaurants.Update(restaurant);
+            await _context.SaveChangesAsync();
+
+            return Ok(restaurant);
         }
 
     }

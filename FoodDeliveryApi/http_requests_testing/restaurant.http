@@ -12,13 +12,15 @@ GET {{host}}/api/menuitem/01a0b4ce-5993-74aa-84f1-e2159ca68238
 ### Create a Restaurant (Requires Vendor JWT)
 POST {{host}}/api/restaurant
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZC05OTA1LTRiYmQtOGY3Mi1iMDEyZWViYzJlZDAiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc5MDU3NjMwNSwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.Ovj9kuPxLrcT2eUlxKvslbKhc2xR_ndArUUXUhMf8jU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
 {
-  "name": "Amritsari Restaurant",
-  "FullAddress": "Fatehgunj mein in front of Zudio",
+  "name": "Cafe Amritsar",
+  "description":"Authentic Amritsari cuisine with a modern twist.",
+  "FullAddress": "Testing k maafik",
   "city":"Vadodara",
-  "pinCode":"390009"
+  "pinCode":"390009",
+  "contactNumber":"9876543210"
 }
 
 
@@ -71,11 +73,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 DELETE {{host}}/api/menuitem/01a11083-d1cf-79a4-bf4d-4a330743ee19
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
-# GET /api/restaurant/my-restaurants (Requires JWT)
-# Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.
 
-# PUT /api/restaurant/{id} (Requires JWT)
+### GET /api/restaurant/my-restaurants (Requires JWT)
+# Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.
+GET {{host}}/api/restaurant/my-restaurants
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
+
+### PUT /api/restaurant/{id} (Requires JWT)
 # Why: For the VendorSettings tab. The vendor needs to be able to update their store description, change the address, or flip the isOpen boolean (Accepting/Closed toggle).
+PUT {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
+
+{
+  "name": "The Tulip Touche Cafe",
+  "description":"Get your luxury right here",
+  "FullAddress": "Alkapuri",
+  "city":"Vadodara",
+  "pinCode":"390009",
+  "contactNumber":"9876543210"
+}
+
 
 # PUT /api/menuitem/{id} & DELETE /api/menuitem/{id} (Requires JWT)
 # Why: You already have the POST to create menu items, but the VendorMenu tab needs endpoints to edit prices/descriptions or delete items entirely.

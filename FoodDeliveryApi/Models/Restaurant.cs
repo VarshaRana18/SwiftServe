@@ -32,7 +32,7 @@ namespace FoodDeliveryApi.Models{
         public bool isOpen {get;set;} = true;// Vendor control
 
         public ICollection<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
-        public ICollection<Order> Orders= new List<Order>();
+        public ICollection<Order> Orders = new List<Order>();
     }
 
 }
