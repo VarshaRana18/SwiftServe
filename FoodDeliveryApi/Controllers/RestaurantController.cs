@@ -87,5 +87,23 @@ namespace FoodDeliveryApi.Controllers
             return Ok(restaurant);
         }
 
+        [HttpPatch("{id}/toggle-status")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> ToggleRestaurantOpenStatus(Guid id)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var restaurant = await _context.Restaurants.FindAsync(id);
+
+            if (restaurant == null) return NotFound();
+
+            if (restaurant.OwnerId != vendorId) return Forbid();
+
+            restaurant.isOpen = !restaurant.isOpen;
+
+            _context.Restaurants.Update(restaurant);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { restaurant.Id, restaurant.isOpen });
+        }
     }
 }

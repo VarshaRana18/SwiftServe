@@ -23,23 +23,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
   "contactNumber":"9876543210"
 }
 
-
-
-### Add a Menu Item (Requires Vendor/Gordon's JWT)
-POST {{host}}/api/menuitem
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZC05OTA1LTRiYmQtOGY3Mi1iMDEyZWViYzJlZDAiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjpbIlZlbmRvciIsIkN1c3RvbWVyIl0sImV4cCI6MTc5MDU3NjMwNSwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.Ovj9kuPxLrcT2eUlxKvslbKhc2xR_ndArUUXUhMf8jU
-
-{
-  "name": "Beef Wellington",
-  "description": "A prime fillet of beef wrapped in puff pastry.",
-  "category":"",
-  "price": 45.99,
-  "restaurantId": "01a0c29d-dbd9-758c-a4d0-1344b237992a"
-}
-
-
-
 ### Add a Categorized Menu Item (Requires Vendor JWT)
 POST {{host}}/api/menuitem
 Content-Type: application/json
@@ -80,7 +63,7 @@ GET {{host}}/api/restaurant/my-restaurants
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
 ### PUT /api/restaurant/{id} (Requires JWT)
-# Why: For the VendorSettings tab. The vendor needs to be able to update their store description, change the address, or flip the isOpen boolean (Accepting/Closed toggle).
+# This is just for updating the restaurant's details (name, description, address, etc.).
 PUT {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
@@ -95,8 +78,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 }
 
 
-# PUT /api/menuitem/{id} & DELETE /api/menuitem/{id} (Requires JWT)
-# Why: You already have the POST to create menu items, but the VendorMenu tab needs endpoints to edit prices/descriptions or delete items entirely.
+# This is for updating/toggling the restaurant's open/closed status. It should just flip the boolean in the database without needing the full restaurant payload (name, description, etc.).
+### PATCH /api/restaurant/{id}/toggle-status (Requires JWT)
+PATCH {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee/toggle-status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
+
 
 # GET /api/order/restaurant/{id} (Requires JWT)
 # Why: To populate the VendorOrders tab. The backend needs to fetch all orders attached to the selected restaurant.
