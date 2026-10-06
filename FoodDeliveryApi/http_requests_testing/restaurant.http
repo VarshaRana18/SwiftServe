@@ -53,10 +53,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZ
 }
 
 
-
-#------------------------------------------------------------------------------------------------------------
-#Added by Samiul
-
 ### Update a Menu Item (Requires Vendor JWT)
 PUT {{host}}/api/menuitem/01a11005-b890-7e64-9899-048e90e4be4c
 Content-Type: application/json
@@ -71,9 +67,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
   "dietaryPreference": 0
 }
 
-# ### Delete a Menu Item (Requires Vendor JWT)
-# DELETE {{host}}/api/menuitem/REPLACE_WITH_ITEM_ID
-# Authorization: Bearer YOUR_VENDOR_JWT_HERE
+### Delete a Menu Item (Requires Vendor JWT)
+DELETE {{host}}/api/menuitem/01a11083-d1cf-79a4-bf4d-4a330743ee19
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
 # GET /api/restaurant/my-restaurants (Requires JWT)
 # Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.

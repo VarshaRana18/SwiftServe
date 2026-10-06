@@ -90,5 +90,34 @@ namespace FoodDeliveryApi.Controllers
             await _context.SaveChangesAsync();
             return Ok(menuItem);
         }
+
+        [HttpDelete("{itemId}")]
+        [Authorize(Roles ="Vendor")]
+        public async Task<IActionResult> DeleteMenuItem(Guid itemId)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(vendorId == null)
+            {
+                return Unauthorized("You must be logged in to delete a menu item.");
+            }
+
+            var menuItem = await _context.MenuItems.Include(m => m.Restaurant).FirstOrDefaultAsync(m => m.Id == itemId);
+
+            if(menuItem == null)
+            {
+                return NotFound("Menu item not found.");
+            }
+
+            if(menuItem.Restaurant!.OwnerId != vendorId)
+            {
+                return Forbid("You don't own this restaurant, so you can't delete its menu items."); 
+            }
+
+            _context.MenuItems.Remove(menuItem);
+            await _context.SaveChangesAsync();
+
+            return Ok("Menu item deleted successfully.");
+        }
     }
 }
