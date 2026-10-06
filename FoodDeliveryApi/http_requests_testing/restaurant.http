@@ -58,18 +58,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMzRhMWExZ
 #Added by Samiul
 
 ### Update a Menu Item (Requires Vendor JWT)
-# PUT {{host}}/api/menuitem/REPLACE_WITH_ITEM_ID
-# Content-Type: application/json
-# Authorization: Bearer YOUR_VENDOR_JWT_HERE
+PUT {{host}}/api/menuitem/01a11005-b890-7e64-9899-048e90e4be4c
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
+# no need of -> "restaurantId": "REPLACE_WITH_RESTAURANT_ID"
 
-# {
-#   "name": "Masala Dosa Extra Crispy",
-#   "description": "Crispy crepe stuffed with spiced potatoes, now with extra crunch.",
-#   "price": 140.00,
-#   "category": "Dosa",
-#   "dietaryPreference": 0,
-#   "restaurantId": "REPLACE_WITH_RESTAURANT_ID"
-# }
+{
+  "name": "Italian Pizza",
+  "description": "The real taste of Italy, you will experience the authentic flavors of Italy in every bite.",
+  "price": 1040.00,
+  "category": "Pizza",
+  "dietaryPreference": 0
+}
 
 # ### Delete a Menu Item (Requires Vendor JWT)
 # DELETE {{host}}/api/menuitem/REPLACE_WITH_ITEM_ID

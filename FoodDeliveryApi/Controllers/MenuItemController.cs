@@ -57,5 +57,38 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok(menuItem);
         }
+
+        [HttpPut("{itemId}")]
+        [Authorize(Roles ="Vendor")]
+        public async Task<IActionResult> UpdateMenuItem(Guid itemId, UpdateMenuItemDto dto)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    
+            if(vendorId == null)
+            {
+                return Unauthorized("You must be logged in to update a menu item.");
+            }
+
+            var menuItem = await _context.MenuItems.Include(m => m.Restaurant).FirstOrDefaultAsync(m => m.Id == itemId);
+
+            if(menuItem == null)
+            {
+                return NotFound("Menu item not found.");
+            }
+
+            if (menuItem.Restaurant!.OwnerId != vendorId)
+            {
+                return Forbid("You don't own this restaurant, so you can't update its menu items."); 
+            }
+
+            menuItem.Name = dto.Name;
+            menuItem.Description = dto.Description;
+            menuItem.Price = dto.Price;
+            menuItem.Category = dto.Category;
+            menuItem.DietaryPreference = dto.DietaryPreference;
+
+            await _context.SaveChangesAsync();
+            return Ok(menuItem);
+        }
     }
 }
