@@ -87,9 +87,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 # GET /api/order/restaurant/{id} (Requires JWT)
 # Why: To populate the VendorOrders tab. The backend needs to fetch all orders attached to the selected restaurant.
 
-# PUT /api/order/{id}/status (Requires JWT)
-# Why: Also for VendorOrders. The vendor needs to click buttons to advance the order state (e.g., changing status from "Preparing" to "Ready for Pickup").
-
 # PUT /api/menuitem/{id}/availability (Requires Vendor JWT)
 # Why: To handle the "In Stock" / "Out of Stock" toggle switch on the VendorMenu tab. It should just flip the boolean in the database without needing the full menu item payload (name, price, etc.).
 

@@ -124,5 +124,25 @@ namespace FoodDeliveryApi.Controllers
                 newStatus = order.Status.ToString()
             });
         }
+
+        [HttpGet("vendor/{id}")]
+        [Authorize(Roles="Vendor")]
+        public async Task<IActionResult> GetRestaurantOrdersForVendor(Guid id)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if(vendorId == null) return Unauthorized();
+
+            var orders = await _context.Orders.Where(o => o.RestaurantId == id && o.Restaurant!.OwnerId == vendorId)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
+
     }
 }
