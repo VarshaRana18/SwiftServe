@@ -17,9 +17,8 @@ namespace FoodDeliveryApi.Models
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price{get;set;}
-        public string? imageUrl{get;set;}
-        public bool isAvailable{get;set;} =true;
-        public int? StockQuantity { get; set; } // Null means Unlimited
+        public string? ImageUrl{get;set;}
+        public bool IsAvailable{get;set;} =true;
 
         [Timestamp]
         public uint Version { get; set; }

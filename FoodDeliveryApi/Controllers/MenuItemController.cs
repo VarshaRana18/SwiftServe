@@ -119,5 +119,33 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok("Menu item deleted successfully.");
         }
+
+        [HttpPatch("{id}/toggle-availability")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> ToggleAvailability(Guid id)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(vendorId == null)
+            {
+                return Unauthorized("You must be logged in to toggle menu item availability.");
+            }
+            var menuItem = await _context.MenuItems.Include(m=> m.Restaurant).FirstOrDefaultAsync(m => m.Id == id);
+            if(menuItem == null)
+            {
+                return NotFound("Menu item not found.");
+            }
+            if(menuItem.Restaurant!.OwnerId != vendorId)
+            {
+                return Forbid();
+            }
+            menuItem.IsAvailable = !menuItem.IsAvailable;
+            await _context.SaveChangesAsync();
+            return Ok(new 
+            { 
+                message = menuItem.IsAvailable ? "Item is now Available" : "Item is not available anymore",
+                isAvailable = menuItem.IsAvailable,
+                itemId = menuItem.Id
+            });
+        }
     }
 }

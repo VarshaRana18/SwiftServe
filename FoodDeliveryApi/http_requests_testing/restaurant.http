@@ -56,6 +56,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 DELETE {{host}}/api/menuitem/01a11083-d1cf-79a4-bf4d-4a330743ee19
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
+### Toggle Menu Item Availability (Requires Vendor JWT)
+PATCH {{host}}/api/menuitem/01a11006-092d-7ba4-b9c1-4d305991ceb8/toggle-availability
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
+
 
 ### GET /api/restaurant/my-restaurants (Requires JWT)
 # Why: Right now the dashboard fetches every restaurant on the platform and filters it on the frontend. We need a secure endpoint that reads the OwnerId from the JWT and only returns restaurants owned by that specific vendor.
@@ -82,10 +86,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 ### PATCH /api/restaurant/{id}/toggle-status (Requires JWT)
 PATCH {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee/toggle-status
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
-
-
-# GET /api/order/restaurant/{id} (Requires JWT)
-# Why: To populate the VendorOrders tab. The backend needs to fetch all orders attached to the selected restaurant.
 
 # PUT /api/menuitem/{id}/availability (Requires Vendor JWT)
 # Why: To handle the "In Stock" / "Out of Stock" toggle switch on the VendorMenu tab. It should just flip the boolean in the database without needing the full menu item payload (name, price, etc.).
