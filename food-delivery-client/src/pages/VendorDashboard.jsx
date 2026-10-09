@@ -14,10 +14,11 @@ export default function VendorDashboard() {
     const [isCreating, setIsCreating] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Form State
+    // Form State (Updated with contactNumber)
     const [formData, setFormData] = useState({
         name: "",
         description: "",
+        contactNumber: "",
         fullAddress: "",
         city: "Vadodara",
         pinCode: ""
@@ -29,7 +30,6 @@ export default function VendorDashboard() {
         { name: "Settings", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543-.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" }
     ];
 
-    // INITAL LOAD: Using new secure endpoint
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
@@ -52,7 +52,6 @@ export default function VendorDashboard() {
         fetchRestaurants();
     }, []);
 
-    // Sync header toggle switch with actual restaurant status
     useEffect(() => {
         if (selectedRestaurant) {
             setIsAcceptingOrders(selectedRestaurant.isOpen !== false); 
@@ -74,9 +73,10 @@ export default function VendorDashboard() {
                 body: JSON.stringify({
                     name: formData.name,
                     description: formData.description,
-                    fullAddress: formData.fullAddress,
+                    FullAddress: formData.fullAddress, // Cased to match Varsha's payload
                     city: formData.city,
-                    pinCode: formData.pinCode
+                    pinCode: formData.pinCode,
+                    contactNumber: formData.contactNumber // Added Contact Number
                 })
             });
 
@@ -85,7 +85,9 @@ export default function VendorDashboard() {
                 setRestaurants(prev => [...prev, newRest]);
                 setSelectedRestaurant(newRest);
                 setIsCreating(false);
-                setFormData({ name: "", description: "", fullAddress: "", city: "Vadodara", pinCode: "" });
+                setFormData({ name: "", description: "", contactNumber: "", fullAddress: "", city: "Vadodara", pinCode: "" });
+            } else {
+                console.error("Failed to save to database");
             }
         } catch (error) {
             console.error("Network error");
@@ -94,12 +96,10 @@ export default function VendorDashboard() {
         }
     };
 
-    // New Toggle Status function
     const handleToggleStatus = async () => {
         if (!selectedRestaurant) return;
         const newStatus = !isAcceptingOrders;
         
-        // Optimistic update
         setIsAcceptingOrders(newStatus);
         
         try {
@@ -110,14 +110,13 @@ export default function VendorDashboard() {
             });
             
             if (response.ok) {
-                // Update local state to persist tab switching
                 setSelectedRestaurant(prev => ({ ...prev, isOpen: newStatus }));
                 setRestaurants(prev => prev.map(r => r.id === selectedRestaurant.id ? { ...r, isOpen: newStatus } : r));
             } else {
-                setIsAcceptingOrders(!newStatus); // Revert on fail
+                setIsAcceptingOrders(!newStatus);
             }
         } catch (error) {
-            setIsAcceptingOrders(!newStatus); // Revert on fail
+            setIsAcceptingOrders(!newStatus);
         }
     };
 
@@ -138,19 +137,23 @@ export default function VendorDashboard() {
                     </div>
 
                     <form onSubmit={handleFormSubmit} className="p-8 space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Restaurant Name *</label>
-                            <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. Firehouse Grill" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
-                            <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors resize-none" rows="2" placeholder="Briefly describe your cuisine and specialties..." />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Full Street Address *</label>
-                            <input type="text" required value={formData.fullAddress} onChange={(e) => setFormData({...formData, fullAddress: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="Shop No, Building, Area" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Restaurant Name *</label>
+                                <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. Firehouse Grill" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Contact Phone *</label>
+                                <input type="text" required value={formData.contactNumber} onChange={(e) => setFormData({...formData, contactNumber: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. +91 98765 43210" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors resize-none" rows="2" placeholder="Briefly describe your cuisine and specialties..." />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Full Street Address *</label>
+                                <input type="text" required value={formData.fullAddress} onChange={(e) => setFormData({...formData, fullAddress: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="Shop No, Building, Area" />
+                            </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">City *</label>
                                 <input type="text" required value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" />
@@ -246,12 +249,9 @@ export default function VendorDashboard() {
                     <h1 className="text-2xl font-bold text-slate-800">{activeTab}</h1>
                     <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
                         <span className={`text-sm font-bold px-3 transition-colors ${isAcceptingOrders ? 'text-slate-400' : 'text-red-500'}`}>Closed</span>
-                        
-                        {/* Status Toggle replaces raw state update */}
                         <button onClick={handleToggleStatus} className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${isAcceptingOrders ? 'bg-teal-500' : 'bg-slate-300'}`}>
                             <div className={`w-5 h-5 bg-white rounded-full absolute top-1 shadow transition-transform ${isAcceptingOrders ? 'translate-x-8' : 'translate-x-1'}`}></div>
                         </button>
-                        
                         <span className={`text-sm font-bold px-3 transition-colors ${isAcceptingOrders ? 'text-teal-600' : 'text-slate-400'}`}>Accepting</span>
                     </div>
                 </header>
