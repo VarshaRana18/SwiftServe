@@ -54,33 +54,32 @@ export default function VendorMenu({ activeRestaurantId }) {
         });
     }, [inventory, menuSearch, menuCategory]);
 
+    // NEW PATCH API for Availability Toggle
     const toggleItemAvailability = async (itemId) => {
         setInventory(prev => prev.map(item => item.id === itemId ? { ...item, isAvailable: !item.isAvailable } : item));
         
-        // TODO: Wire to Varsha's upcoming PUT /api/menuitem/{id}/availability endpoint
-        /*
-        const token = localStorage.getItem('token');
-        await fetch(`http://localhost:5121/api/menuitem/${itemId}/availability`, {
-            method: "PUT",
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        */
+        try {
+            const token = localStorage.getItem('token');
+            await fetch(`http://localhost:5121/api/menuitem/${itemId}/toggle-availability`, {
+                method: "PATCH",
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+        } catch (error) {
+            console.error("Failed to toggle availability");
+        }
     };
 
-    // Trigger Delete Modal
     const triggerDelete = (item) => {
         setItemToDelete(item);
         setIsDeleteModalOpen(true);
     };
 
-    // Confirm and Execute Delete
+    // NEW DELETE API Execution
     const confirmDelete = async () => {
         if (!itemToDelete) return;
         
         const itemId = itemToDelete.id;
-        
-        // Optimistic UI update
-        setInventory(prev => prev.filter(item => item.id !== itemId));
+        setInventory(prev => prev.filter(item => item.id !== itemId)); // Optimistic delete
         setIsDeleteModalOpen(false);
         setItemToDelete(null);
 
@@ -114,26 +113,27 @@ export default function VendorMenu({ activeRestaurantId }) {
         setIsModalOpen(true);
     };
 
+    // Unified Save Function (POST for Add, PUT for Edit)
     const handleSaveItem = async (e) => {
         e.preventDefault();
         setIsSaving(true);
         const token = localStorage.getItem('token');
 
-        const payload = {
-            name: formData.name,
-            description: formData.description,
-            price: parseFloat(formData.price),
-            category: formData.category,
-            dietaryPreference: parseInt(formData.dietaryPreference),
-            restaurantId: activeRestaurantId
-        };
-
         try {
             if (modalMode === "add") {
+                const addPayload = {
+                    name: formData.name,
+                    description: formData.description,
+                    price: parseFloat(formData.price),
+                    category: formData.category,
+                    dietaryPreference: parseInt(formData.dietaryPreference),
+                    restaurantId: activeRestaurantId
+                };
+
                 const response = await fetch("http://localhost:5121/api/menuitem", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(addPayload)
                 });
 
                 if (response.ok) {
@@ -143,14 +143,23 @@ export default function VendorMenu({ activeRestaurantId }) {
                     setIsModalOpen(false);
                 }
             } else {
+                // Edit Payload omits RestaurantId as per Varsha's update
+                const editPayload = {
+                    name: formData.name,
+                    description: formData.description,
+                    price: parseFloat(formData.price),
+                    category: formData.category,
+                    dietaryPreference: parseInt(formData.dietaryPreference)
+                };
+
                 const response = await fetch(`http://localhost:5121/api/menuitem/${formData.id}`, {
                     method: "PUT",
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(editPayload)
                 });
 
                 if (response.ok) {
-                    setInventory(prev => prev.map(item => item.id === formData.id ? { ...item, ...payload } : item));
+                    setInventory(prev => prev.map(item => item.id === formData.id ? { ...item, ...editPayload } : item));
                     setIsModalOpen(false);
                 }
             }
@@ -237,7 +246,6 @@ export default function VendorMenu({ activeRestaurantId }) {
                 )}
             </div>
 
-            {/* Unified Add/Edit Menu Item Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
@@ -298,7 +306,6 @@ export default function VendorMenu({ activeRestaurantId }) {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-fade-in" onClick={() => setIsDeleteModalOpen(false)}></div>

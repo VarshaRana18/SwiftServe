@@ -5,11 +5,15 @@ export default function VendorSettings({ activeRestaurantId }) {
     const navigate = useNavigate();
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    
+    // Updated state to include backend-required fields (city, pinCode)
     const [restaurantProfile, setRestaurantProfile] = useState({
         name: "Loading...",
-        phone: "+91 98765 43210", // Note: Phone is not currently in Restaurant.cs
+        phone: "",
         address: "Loading...",
-        description: "Loading..."
+        description: "Loading...",
+        city: "",
+        pinCode: ""
     });
 
     useEffect(() => {
@@ -17,16 +21,23 @@ export default function VendorSettings({ activeRestaurantId }) {
 
         const fetchRestDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:5121/api/restaurant`);
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5121/api/restaurant/my-restaurants`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
                 if (response.ok) {
                     const data = await response.json();
                     const currentRest = data.find(r => r.id === activeRestaurantId);
+                    
                     if (currentRest) {
                         setRestaurantProfile({
                             name: currentRest.name,
-                            phone: "+91 98765 43210", // Placeholder until added to model
-                            address: currentRest.fullAddress,
-                            description: currentRest.description || ""
+                            phone: currentRest.contactNumber || "", 
+                            address: currentRest.fullAddress || "",
+                            description: currentRest.description || "",
+                            city: currentRest.city || "Vadodara",
+                            pinCode: currentRest.pinCode || ""
                         });
                     }
                 }
@@ -38,29 +49,38 @@ export default function VendorSettings({ activeRestaurantId }) {
         fetchRestDetails();
     }, [activeRestaurantId]);
 
+    // NEW PUT API for updating Restaurant Settings
     const handleSaveProfile = async () => {
         setIsSaving(true);
-        // TODO: Wire to Varsha's upcoming PUT /api/restaurant/{id} endpoint
-        /*
         const token = localStorage.getItem('token');
-        await fetch(`http://localhost:5121/api/restaurant/${activeRestaurantId}`, {
-            method: "PUT",
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({
-                name: restaurantProfile.name,
-                description: restaurantProfile.description,
-                fullAddress: restaurantProfile.address
-            })
-        });
-        */
         
-        setTimeout(() => {
+        try {
+            const response = await fetch(`http://localhost:5121/api/restaurant/${activeRestaurantId}`, {
+                method: "PUT",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    name: restaurantProfile.name,
+                    description: restaurantProfile.description,
+                    FullAddress: restaurantProfile.address, // Matches Varsha's payload exact case
+                    city: restaurantProfile.city,
+                    pinCode: restaurantProfile.pinCode,
+                    contactNumber: restaurantProfile.phone
+                })
+            });
+
+            if (response.ok) {
+                setIsEditingProfile(false);
+            } else {
+                console.error("Failed to update profile");
+            }
+        } catch (error) {
+            console.error("Network error");
+        } finally {
             setIsSaving(false);
-            setIsEditingProfile(false);
-        }, 800);
+        }
     };
 
     const handleLogout = () => {
