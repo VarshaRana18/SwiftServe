@@ -1,0 +1,45 @@
+@port = 5121
+
+@host = http://localhost:{{port}}
+
+### 1. Upload Image to Cloudinary (Requires Vendor JWT)
+POST {{host}}/api/imageupload
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkyMTM2NDIwLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.P0KAOo_shyTlFSl6L90S0o82132DywROmeBW094YHO0
+Content-Type: multipart/form-data; boundary=UploadBoundary
+
+--UploadBoundary
+Content-Disposition: form-data; name="file"; filename="cafe.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\Home\OneDrive\Desktop\cafe.jpg
+--UploadBoundary--
+
+### 2. Update Menu Item with the new Image URL
+PUT {{host}}/api/menuitem/01a11005-b890-7e64-9899-048e90e4be4c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkyMTM2NDIwLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.P0KAOo_shyTlFSl6L90S0o82132DywROmeBW094YHO0
+Content-Type: application/json
+
+{
+  "name": "Italian Pizza",
+  "description": "The real taste of Italy, you will experience the authentic flavors of Italy in every bite.",
+  "price": 1040.00,
+  "category": "Pizza",
+  "dietaryPreference": 0,
+  "imageUrl": "https://res.cloudinary.com/dkj8pecl6/image/upload/v1791532053/SwiftServe/njk5tejeadhyh8spp8rx.jpg"
+}
+
+### 2. Update Restaurant with the new Image URL
+PUT {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkyMTM2NDIwLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.P0KAOo_shyTlFSl6L90S0o82132DywROmeBW094YHO0
+Content-Type: application/json
+
+{
+    
+  "name": "The Tulip Touche Cafe",
+  "description":"Get your luxury right here",
+  "fullAddress": "Alkapuri",
+  "city":"Vadodara",
+  "pinCode":"390009",
+  "contactNumber":"9876543210",
+  "imageUrl": "https://res.cloudinary.com/dkj8pecl6/image/upload/v1791532265/SwiftServe/dknuglirjurbmdxvj5ax.jpg"
+}
