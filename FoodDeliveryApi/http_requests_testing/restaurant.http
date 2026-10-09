@@ -87,9 +87,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 PATCH {{host}}/api/restaurant/01a1109e-9460-7b5f-8197-524e4b58aeee/toggle-status
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkxODc1MDcyLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.tAgxo-XqM96x4C6wEw-g6mRD3p4x3_okJi6L0NHgyYw
 
-# 📉 LOW PRIORITY 📉
-# POST /api/upload/image (Requires Vendor JWT)
-# Why: Currently, the restaurant and menu item POST requests only accept JSON text. We need a way for vendors to upload actual image files (multipart/form-data) for their restaurant banners and menu item photos. This should return the saved image URL so we can attach it to the POST/PUT payloads.
-
 # GET /api/restaurant/{id}/stats (Requires Vendor JWT)
 # Why: For the top row of the VendorSettings tab. We need an endpoint that returns real analytics for the selected restaurant: "Today's Revenue", "Completed Orders", and "Avg. Prep Time". Currently, those are hardcoded to ₹12,450 and 42 orders.
