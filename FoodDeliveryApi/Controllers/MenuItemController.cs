@@ -46,6 +46,7 @@ namespace FoodDeliveryApi.Controllers
             var menuItem = new MenuItem{
                 Name = dto.Name,
                 Description = dto.Description,
+                ImageUrl = dto.ImageUrl,
                 Price = dto.Price,
                 Category = dto.Category, 
                 DietaryPreference = dto.DietaryPreference,
@@ -84,6 +85,7 @@ namespace FoodDeliveryApi.Controllers
             menuItem.Name = dto.Name;
             menuItem.Description = dto.Description;
             menuItem.Price = dto.Price;
+            menuItem.ImageUrl = dto.ImageUrl;
             menuItem.Category = dto.Category;
             menuItem.DietaryPreference = dto.DietaryPreference;
 

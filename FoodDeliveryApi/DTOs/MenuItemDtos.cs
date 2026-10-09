@@ -8,6 +8,7 @@ namespace FoodDeliveryApi.DTOs
         [Required]
         public String Name{get;set;} = String.Empty;
         public string Description{get;set;} = string.Empty;
+        public string? ImageUrl { get; set; }
 
         [Required]
         public Guid RestaurantId { get; set; }
@@ -26,6 +27,7 @@ namespace FoodDeliveryApi.DTOs
         [Required]
         public String Name{get;set;} = String.Empty;
         public string Description{get;set;} = string.Empty;
+        public string? ImageUrl { get; set; }
 
         [Required]
         [Range(0.01, 10000)]

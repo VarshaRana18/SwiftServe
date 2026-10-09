@@ -5,8 +5,18 @@ using FoodDeliveryApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var cloudinaryAccount = new Account(
+    builder.Configuration["Cloudinary:CloudName"],
+    builder.Configuration["Cloudinary:ApiKey"],
+    builder.Configuration["Cloudinary:ApiSecret"]
+);
+
+var cloudinary = new Cloudinary(cloudinaryAccount);
+builder.Services.AddSingleton(cloudinary);
 
 builder.Services.AddControllers().AddJsonOptions(options => 
 {

@@ -8,6 +8,7 @@ namespace FoodDeliveryApi.DTOs
         public String Name {get;set;} = String.Empty;
         [Required]
         public string Description{get;set;} = string.Empty;
+        public string? ImageUrl { get; set; }
 
         [Required]
         public string FullAddress { get; set; } = string.Empty;
@@ -30,6 +31,7 @@ namespace FoodDeliveryApi.DTOs
 
         [Required]
         public string Description{get;set;} = string.Empty;
+        public string? ImageUrl { get; set; }
 
         [Required]
         public string FullAddress { get; set; } = string.Empty;

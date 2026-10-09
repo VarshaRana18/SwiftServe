@@ -50,6 +50,7 @@ namespace FoodDeliveryApi.Controllers
             {
                 OwnerId = vendorId,
                 Name = dto.Name,
+                ImageUrl = dto.ImageUrl,
                 FullAddress = dto.FullAddress,
                 ContactNumber = dto.ContactNumber,
                 City = dto.City,
@@ -76,6 +77,7 @@ namespace FoodDeliveryApi.Controllers
 
             restaurant.Name = dto.Name;
             restaurant.Description = dto.Description;
+            restaurant.ImageUrl = dto.ImageUrl;
             restaurant.FullAddress = dto.FullAddress;
             restaurant.City = dto.City;
             restaurant.PinCode = dto.PinCode;
@@ -98,12 +100,12 @@ namespace FoodDeliveryApi.Controllers
 
             if (restaurant.OwnerId != vendorId) return Forbid();
 
-            restaurant.isOpen = !restaurant.isOpen;
+            restaurant.IsOpen = !restaurant.IsOpen;
 
             _context.Restaurants.Update(restaurant);
             await _context.SaveChangesAsync();
 
-            return Ok(new { restaurant.Id, restaurant.isOpen });
+            return Ok(new { restaurant.Id, restaurant.IsOpen });
         }
     }
 }
