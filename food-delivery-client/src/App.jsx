@@ -5,6 +5,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import CustomerHome from './pages/CustomerHome';
 import VendorDashboard from './pages/VendorDashboard';
 import DriverDashboard from "./pages/DriverDashboard";
+import NotFound from './pages/NotFound';
 
 // ==========================================
 // AUTHENTICATION & AUTHORIZATION GUARDS
@@ -114,7 +115,7 @@ function App() {
                 <Route path="/driver/forgot-password" element={<RequireGuest><ForgotPassword /></RequireGuest>} />
 
                 {/* Fallback Route for 404s */}
-                <Route path="*" element={<RootRedirect />} />
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
     );
