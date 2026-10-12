@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { getCategoryEmoji } from "../utils/categoryEmojis";
+import { getCategoryEmoji } from "../utils/categoryEmojis"; 
 
 export default function HomeFeed({ setActiveRestaurantId }) {
     const { isVegOnly } = useCart();
@@ -38,7 +38,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                         id: rest.id,
                         name: rest.name,
                         address: rest.fullAddress || `${rest.city}, ${rest.pinCode}`,
-                        isOpen: true, 
+                        isOpen: rest.isOpen !== false, // FIX: Now reads actual database status
                         tags: rest.tags?.length > 0 ? rest.tags : ["Indian", "Fast Food"],
                         image: rest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop",
                         rating: rest.rating || "4.5"
@@ -51,7 +51,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                     ...Array.from(uniqueCategories).map((cat, index) => ({
                         id: `cat-${index}`,
                         name: cat,
-                        emoji: getCategoryEmoji(cat) // CALLING UTILITY HERE
+                        emoji: getCategoryEmoji(cat)
                     }))
                 ];
 
@@ -67,10 +67,11 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                 setIsLoading(false);
             });
     }, []);
+
     // 1. Only show open restaurants that have AT LEAST ONE menu item
     const openRestaurants = feedData.restaurants.filter(rest => {
         const hasMenu = feedData.mockMenus[rest.id] && feedData.mockMenus[rest.id].length > 0;
-        return rest.isOpen && hasMenu;
+        return rest.isOpen && hasMenu; // This will now correctly drop closed restaurants
     });
 
     // 2. Filter based on actual menu categories (not just restaurant tags)

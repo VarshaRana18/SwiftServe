@@ -11,7 +11,7 @@ export const CartProvider = ({ children }) => {
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
     const [confirmItemDeleteId, setConfirmItemDeleteId] = useState(null);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
-    
+
     // Lifted Location State
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
     const [activeLocation, setActiveLocation] = useState("Select Delivery Location");
@@ -31,7 +31,11 @@ export const CartProvider = ({ children }) => {
         setGlobalCarts(prevCarts => {
             const targetCart = prevCarts[restaurantId];
             if (!targetCart) return prevCarts;
-            const updatedItems = targetCart.items.map(item => item.id === itemId ? { ...item, qty: item.qty + delta } : item).filter(item => item.qty > 0);
+            
+            const updatedItems = targetCart.items
+                .map(item => item.id === itemId ? { ...item, qty: item.qty + delta } : item)
+                .filter(item => item.qty > 0);
+            
             if (updatedItems.length === 0) {
                 const newCarts = { ...prevCarts };
                 delete newCarts[restaurantId];
@@ -45,17 +49,15 @@ export const CartProvider = ({ children }) => {
     };
 
     const addToCart = (restaurant, item) => {
-        const resId = restaurant.id; 
-        
+        const resId = restaurant.id;
         setGlobalCarts(prevCarts => {
             const newCarts = { ...prevCarts };
-            
             if (!newCarts[resId]) {
-                newCarts[resId] = { 
-                    restaurantId: resId, 
-                    restaurantName: restaurant.name, 
-                    image: restaurant.image, 
-                    items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }] 
+                newCarts[resId] = {
+                    restaurantId: resId,
+                    restaurantName: restaurant.name,
+                    image: restaurant.image,
+                    items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }]
                 };
             } else {
                 const existingItemIndex = newCarts[resId].items.findIndex(i => i.id === item.id);
@@ -79,33 +81,79 @@ export const CartProvider = ({ children }) => {
         setConfirmDeleteId(null);
     };
 
-    const getCartTotal = (restaurantId) => globalCarts[restaurantId]?.items.reduce((total, item) => total + (item.price * item.qty), 0) || 0;
-    const getGrandTotal = () => Object.values(globalCarts).reduce((grandTotal, cart) => grandTotal + cart.items.reduce((sum, item) => sum + (item.price * item.qty), 0), 0);
+    const getCartTotal = (restaurantId) => 
+        globalCarts[restaurantId]?.items.reduce((total, item) => total + (item.price * item.qty), 0) || 0;
+
+    const getGrandTotal = () => 
+        Object.values(globalCarts).reduce((grandTotal, cart) => grandTotal + cart.items.reduce((sum, item) => sum + (item.price * item.qty), 0), 0);
+
     const getItemQtyInCart = (restaurantId, itemId) => {
         const cart = globalCarts[restaurantId];
         return cart?.items.find(i => i.id === itemId)?.qty || 0;
     };
 
-    const checkoutCart = (cartId, tipAmount) => {
+    // REAL BACKEND CHECKOUT
+    const checkoutCart = async (cartId, tipAmount) => {
         const cartToOrder = globalCarts[cartId];
-        if (!cartToOrder) return;
-        
-        const orderTotal = getCartTotal(cartId) + 10 + tipAmount;
-        
-        const newOrder = { 
-            orderId: `ORD-${Math.floor(Math.random() * 1000000)}`, 
-            timestamp: new Date().toISOString(), 
-            restaurantId: cartToOrder.restaurantId, 
-            restaurantName: cartToOrder.restaurantName, 
-            image: cartToOrder.image, 
-            items: [...cartToOrder.items], 
-            totalAmount: orderTotal, 
-            status: "Preparing",
-            deliveryAddressId: selectedAddressId 
-        };
-        
-        setOrderHistory(prev => [newOrder, ...prev]);
-        deleteCart(cartId);
+        if (!cartToOrder) return false;
+
+        const orderTotal = getCartTotal(cartId) + 10 + tipAmount; // 10 is platform fee
+        const token = localStorage.getItem('token');
+
+        try {
+            const response = await fetch("http://localhost:5121/api/orders", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    restaurantId: cartToOrder.restaurantId,
+                    totalAmount: orderTotal,
+                    items: cartToOrder.items.map(item => ({
+                        menuItemId: item.id,
+                        quantity: item.qty,
+                        price: item.price
+                    }))
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                
+                // LAZY VALIDATION TRAP
+                if (errorData.code === "RESTAURANT_CLOSED" || response.status === 400) {
+                    alert("Oops! The kitchen just closed while you were deciding. We have to cancel this cart.");
+                    deleteCart(cartId); // Nuke it
+                    return false;
+                }
+                throw new Error(errorData.message || "Checkout failed");
+            }
+
+            const successData = await response.json();
+
+            // Track locally for MVP Order Tracking tab
+            const newOrder = {
+                orderId: successData.orderId || `ORD-${Math.floor(Math.random() * 1000000)}`,
+                timestamp: new Date().toISOString(),
+                restaurantId: cartToOrder.restaurantId,
+                restaurantName: cartToOrder.restaurantName,
+                image: cartToOrder.image,
+                items: [...cartToOrder.items],
+                totalAmount: orderTotal,
+                status: "Preparing",
+                deliveryAddressId: selectedAddressId
+            };
+
+            setOrderHistory(prev => [newOrder, ...prev]);
+            deleteCart(cartId);
+            return true;
+
+        } catch (error) {
+            console.error("Checkout Error:", error);
+            alert("Something went wrong with the checkout. Is the backend running?");
+            return false;
+        }
     };
 
     return (
@@ -115,20 +163,12 @@ export const CartProvider = ({ children }) => {
             confirmDeleteId, setConfirmDeleteId,
             confirmItemDeleteId, setConfirmItemDeleteId,
             selectedAddressId, setSelectedAddressId,
-            isLocationModalOpen, setIsLocationModalOpen, 
-            activeLocation, setActiveLocation,           
-            globalCarts,
-            updateQuantity,
-            addToCart,
-            deleteCart,
-            getCartTotal,
-            getGrandTotal,
-            getItemQtyInCart,
-            isOrdersOpen, setIsOrdersOpen,
-            orderHistory,
-            checkoutCart,
-            isSettingsOpen, setIsSettingsOpen,
-            isVegOnly, setIsVegOnly
+            isLocationModalOpen, setIsLocationModalOpen,
+            activeLocation, setActiveLocation,
+            globalCarts, updateQuantity, addToCart, deleteCart,
+            getCartTotal, getGrandTotal, getItemQtyInCart,
+            isOrdersOpen, setIsOrdersOpen, orderHistory, checkoutCart,
+            isSettingsOpen, setIsSettingsOpen, isVegOnly, setIsVegOnly
         }}>
             {children}
         </CartContext.Provider>
