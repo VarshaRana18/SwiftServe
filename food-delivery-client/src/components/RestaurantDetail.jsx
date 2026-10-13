@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext";
 
 export default function RestaurantDetail({ activeRestaurantId, setActiveRestaurantId }) {
     const { updateQuantity, addToCart, getItemQtyInCart } = useCart();
-    
+
     // API States
     const [isLoading, setIsLoading] = useState(true);
     const [activeRest, setActiveRest] = useState(null);
@@ -27,7 +27,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     id: apiRest.id,
                     name: apiRest.name,
                     description: apiRest.description || "Premium quality food delivered straight to your door.",
-                    rating: apiRest.rating || "4.5",
                     time: "30-45 min",
                     address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
                     image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
@@ -42,7 +41,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                 price: item.price,
                 category: item.category || "Recommended",
                 isVeg: item.dietaryPreference === 0, // 0 = Veg, 1 = NonVeg
-                isAvailable: item.isAvailable ?? true, // Wired to backend boolean directly
+                isAvailable: item.isAvailable ?? true, 
                 imageUrl: item.imageUrl || null
             }));
 
@@ -52,7 +51,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
             console.error("Failed to connect to backend API:", error);
             setIsLoading(false);
         });
-
     }, [activeRestaurantId]);
 
     const activeMenuCategories = useMemo(() => {
@@ -61,7 +59,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
     }, [menuItems]);
 
     const [activeTab, setActiveTab] = useState("");
-
+    
     useEffect(() => {
         if (activeMenuCategories.length > 0 && !activeTab) {
             setActiveTab(activeMenuCategories[0]);
@@ -110,7 +108,9 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
             <div className="animate-slide-in-right pb-32">
                 <div className="relative h-64 md:h-80 w-full bg-slate-200 animate-pulse">
                     <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-slate-300 p-2 rounded-full text-white z-10">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
                     </button>
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                         <div className="w-2/3 h-10 bg-slate-300 rounded-lg mb-4"></div>
@@ -121,6 +121,7 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                         </div>
                     </div>
                 </div>
+                {/* Loader structure remains... */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
                     <div className="hidden md:block w-56 shrink-0 sticky top-28">
                         <div className="w-32 h-4 bg-slate-200 rounded mb-6 animate-pulse"></div>
@@ -158,28 +159,54 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
     if (!activeRest) return null;
 
+    // Calculate dietary status for the header pill
+    const hasVeg = menuItems.some(item => item.isVeg === true);
+    const hasNonVeg = menuItems.some(item => item.isVeg === false);
+
     return (
         <div className="animate-slide-in-right pb-32">
             <div className="relative h-64 md:h-80 w-full bg-slate-900">
                 <img src={activeRest.image} alt={activeRest.name} className="w-full h-full object-cover opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                
                 <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
                 </button>
+
                 <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">{activeRest.name}</h1>
                     <p className="text-slate-300 text-sm md:text-base mb-4 max-w-2xl">{activeRest.description}</p>
+                    
                     <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white">
-                        <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg">
-                            <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                            {activeRest.rating}
+                        
+                        {/* Dietary Icons moved to former Rating spot */}
+                        <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg">
+                            {hasVeg && (
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-green-400">
+                                    <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" />
+                                    <circle cx="8" cy="8" r="3.5" fill="currentColor" />
+                                </svg>
+                            )}
+                            {hasNonVeg && (
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-red-400">
+                                    <rect x="1.5" y="1.5" width="13" height="13" stroke="currentColor" strokeWidth="1.5" rx="1" />
+                                    <circle cx="8" cy="8" r="3.5" fill="currentColor" />
+                                </svg>
+                            )}
                         </div>
+
                         <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                             {activeRest.time}
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            </svg>
                             {activeRest.address}
                         </div>
                     </div>
@@ -233,7 +260,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                                                 <div className="w-full h-24 bg-slate-100 rounded-xl overflow-hidden mb-3 shadow-sm border border-slate-100">
                                                     {item.imageUrl ? <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><span className="text-3xl">🍽️</span></div>}
                                                 </div>
-                                                
                                                 {!item.isAvailable ? (
                                                     <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase tracking-wider text-center w-full">Unavailable</span>
                                                 ) : qtyInCart > 0 ? (
