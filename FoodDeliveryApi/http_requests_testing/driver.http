@@ -19,3 +19,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YzQyODJlY
 Content-Type: application/json
 
 { "status": 4 }
+
+# ------------------------------------------------------------------------------
+# Added by Samiul
+### Get Available Deliveries (Requires Driver JWT)
+# # Fetches all orders where Status == 2 (Ready for Pickup) AND DriverId is null.
+# GET {{host}}/api/driver/available-orders
+# Authorization: Bearer YOUR_TOKEN_HERE

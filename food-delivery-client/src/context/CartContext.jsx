@@ -101,7 +101,7 @@ export const CartProvider = ({ children }) => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch("http://localhost:5121/api/orders", {
+            const response = await fetch("http://localhost:5121/api/order", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
@@ -109,6 +109,7 @@ export const CartProvider = ({ children }) => {
                 },
                 body: JSON.stringify({
                     restaurantId: cartToOrder.restaurantId,
+                    addressId: selectedAddressId, // FIX: Added the missing address payload
                     totalAmount: orderTotal,
                     items: cartToOrder.items.map(item => ({
                         menuItemId: item.id,
@@ -121,13 +122,20 @@ export const CartProvider = ({ children }) => {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 
-                // LAZY VALIDATION TRAP
-                if (errorData.code === "RESTAURANT_CLOSED" || response.status === 400) {
+                // FIX: Tightened the trap to ONLY catch the specific backend code
+                if (errorData?.code === "RESTAURANT_CLOSED") {
                     alert("Oops! The kitchen just closed while you were deciding. We have to cancel this cart.");
-                    deleteCart(cartId); // Nuke it
+                    deleteCart(cartId); 
                     return false;
                 }
-                throw new Error(errorData.message || "Checkout failed");
+
+                // Generic 400 error catch for things like missing data
+                if (response.status === 400) {
+                    alert(`Checkout Failed: ${errorData?.message || "Invalid request details sent to server."}`);
+                    return false;
+                }
+
+                throw new Error(errorData?.message || "Checkout failed");
             }
 
             const successData = await response.json();
@@ -141,7 +149,7 @@ export const CartProvider = ({ children }) => {
                 image: cartToOrder.image,
                 items: [...cartToOrder.items],
                 totalAmount: orderTotal,
-                status: "Preparing",
+                status: "Pending", // Changed to Pending to match standard enum
                 deliveryAddressId: selectedAddressId
             };
 
