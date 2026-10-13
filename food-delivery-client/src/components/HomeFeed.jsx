@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
-import { getCategoryEmoji } from "../utils/categoryEmojis"; 
+import { getCategoryEmoji } from "../utils/categoryEmojis";
 
 export default function HomeFeed({ setActiveRestaurantId }) {
     const { isVegOnly } = useCart();
@@ -26,7 +26,6 @@ export default function HomeFeed({ setActiveRestaurantId }) {
 
                 // Map the C# backend data
                 const mappedRestaurants = apiRestaurants.map(rest => {
-                    
                     // Extract menus and track unique categories
                     const items = rest.menuItems || [];
                     menusDict[rest.id] = items.map(item => {
@@ -38,8 +37,8 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                         id: rest.id,
                         name: rest.name,
                         address: rest.fullAddress || `${rest.city}, ${rest.pinCode}`,
-                        isOpen: rest.isOpen !== false, // FIX: Now reads actual database status
-                        tags: rest.tags?.length > 0 ? rest.tags : ["Indian", "Fast Food"],
+                        isOpen: rest.isOpen !== false,
+                        tags: rest.tags || [], // FIX: Removed hardcoded fallback tags
                         image: rest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop",
                         rating: rest.rating || "4.5"
                     };
@@ -51,7 +50,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                     ...Array.from(uniqueCategories).map((cat, index) => ({
                         id: `cat-${index}`,
                         name: cat,
-                        emoji: getCategoryEmoji(cat)
+                        emoji: getCategoryEmoji(cat) 
                     }))
                 ];
 
@@ -71,10 +70,10 @@ export default function HomeFeed({ setActiveRestaurantId }) {
     // 1. Only show open restaurants that have AT LEAST ONE menu item
     const openRestaurants = feedData.restaurants.filter(rest => {
         const hasMenu = feedData.mockMenus[rest.id] && feedData.mockMenus[rest.id].length > 0;
-        return rest.isOpen && hasMenu; // This will now correctly drop closed restaurants
+        return rest.isOpen && hasMenu; 
     });
 
-    // 2. Filter based on actual menu categories (not just restaurant tags)
+    // 2. Filter based on actual menu categories
     const categoryFilteredRestaurants = activeCategory === "All"
         ? openRestaurants
         : openRestaurants.filter(rest => {
@@ -92,7 +91,6 @@ export default function HomeFeed({ setActiveRestaurantId }) {
 
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-            
             {/* Categories Section */}
             <section className="mb-8">
                 <div className="flex items-center justify-between mb-4">
@@ -198,9 +196,12 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                                                 <span className="text-sm font-bold text-slate-700">{rest.rating}</span>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 font-medium">
-                                            {rest.tags.join(" • ")}
-                                        </div>
+                                        {/* FIX: Conditionally render the tags section only if there are tags */}
+                                        {rest.tags && rest.tags.length > 0 && (
+                                            <div className="flex items-center gap-2 text-sm text-slate-500 mb-4 font-medium">
+                                                {rest.tags.join(" • ")}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             );
