@@ -27,7 +27,6 @@ Content-Type: application/json
 }
 
 
-### Register Multi-Role User for Varsha
 ### will not work
 POST {{host}}/api/auth/register
 Content-Type: application/json

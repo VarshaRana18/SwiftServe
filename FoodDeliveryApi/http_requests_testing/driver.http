@@ -9,20 +9,18 @@ Content-Type: application/json
 
 
 ### Claim Order
-PUT {{host}}/api/driver/01a0994d-af7e-7c47-be16-883cc20f35aa/claim
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YzQyODJlYi0xYzZhLTQ4YzYtODc0YS1lZjdjOWI3YTViZWEiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiRHJpdmVyIiwiZXhwIjoxNzg5ODgzODM0LCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.pZYvcaCUktDUrDcWf1QtXot9C2M-oyOr2i5WGPLdi98
+PUT {{host}}/api/driver/01a11b6f-ccf1-7cfc-b9ad-6802c89372d0/claim
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5MjU3NDk0NCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.UmWGuqCPO0OjNE2IOc7RzyhRPga8Jc5MmM5YTR8oEts
 
 
 ### Update to Delivered
-PUT {{host}}/api/driver/01a0994d-af7e-7c47-be16-883cc20f35aa/status
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YzQyODJlYi0xYzZhLTQ4YzYtODc0YS1lZjdjOWI3YTViZWEiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiRHJpdmVyIiwiZXhwIjoxNzg5ODgzODM0LCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.pZYvcaCUktDUrDcWf1QtXot9C2M-oyOr2i5WGPLdi98
+PUT {{host}}/api/driver/01a0b562-1bb0-744c-9d56-bfa047355713/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5MjU3NDk0NCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.UmWGuqCPO0OjNE2IOc7RzyhRPga8Jc5MmM5YTR8oEts
 Content-Type: application/json
 
 { "status": 4 }
 
-# ------------------------------------------------------------------------------
-# Added by Samiul
 ### Get Available Deliveries (Requires Driver JWT)
 # # Fetches all orders where Status == 2 (Ready for Pickup) AND DriverId is null.
-# GET {{host}}/api/driver/available-orders
-# Authorization: Bearer YOUR_TOKEN_HERE
+GET {{host}}/api/driver/available-orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5MjU3NDk0NCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.UmWGuqCPO0OjNE2IOc7RzyhRPga8Jc5MmM5YTR8oEts

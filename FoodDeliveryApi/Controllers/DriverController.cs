@@ -71,5 +71,13 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok(new { message = "Delivery status updated", orderId = order.Id, newStatus = order.Status.ToString() });
         }
+
+        [HttpGet("available-orders")]
+        [Authorize(Roles="Driver")]
+        public async Task<IActionResult> GetAvailableOrdersForDrivers()
+        {
+            var orders = await _context.Orders.Include(o => o.Restaurant).Include(o => o.Address).Where(o => o.Status == OrderStatus.Ready && o.DriverId == null).OrderBy(o => o.CreatedAt).ToListAsync();
+            return Ok(orders);
+        }
     }
 }
