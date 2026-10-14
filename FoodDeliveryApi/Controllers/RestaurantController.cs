@@ -107,5 +107,29 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok(new { restaurant.Id, restaurant.IsOpen });
         }
+
+        [HttpGet("{id}/stats")]
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> GetRestaurantStats(Guid id)
+        {
+            var vendorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var restaurant = await _context.Restaurants.FindAsync(id);
+
+            if (restaurant == null) return NotFound();
+
+            if (restaurant.OwnerId != vendorId) return Forbid();
+
+            var today = DateTime.UtcNow.Date;
+            var completedOrders = await _context.Orders.Where(o => o.RestaurantId == id && o.Status == OrderStatus.Delivered && o.UpdatedAt >= today).ToListAsync();
+            var todaysRevenue = completedOrders.Sum(o => o.TotalAmount);
+            var avgPrepTime = completedOrders.Any() ? completedOrders.Average(o => (o.UpdatedAt - o.CreatedAt).TotalMinutes) : 0;
+
+            return Ok(new
+            {
+                TodaysRevenue = todaysRevenue,
+                CompletedOrders = completedOrders.Count,
+                AvgPrepTime = avgPrepTime
+            });
+        }
     }
 }
