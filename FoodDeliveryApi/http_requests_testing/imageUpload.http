@@ -8,24 +8,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 Content-Type: multipart/form-data; boundary=UploadBoundary
 
 --UploadBoundary
-Content-Disposition: form-data; name="file"; filename="cafe.jpg"
+Content-Disposition: form-data; name="file"; filename="food.jpg"
 Content-Type: image/jpeg
 
-< C:\Users\Home\OneDrive\Desktop\cafe.jpg
+< C:\Users\Home\OneDrive\Desktop\food.jpg
 --UploadBoundary--
 
 ### 2. Update Menu Item with the new Image URL
-PUT {{host}}/api/menuitem/01a11005-b890-7e64-9899-048e90e4be4c
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkyMTM2NDIwLCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.P0KAOo_shyTlFSl6L90S0o82132DywROmeBW094YHO0
+PUT {{host}}/api/menuitem/01a11006-092d-7ba4-b9c1-4d305991ceb8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxYy1kYTFhLTRhNzItYjgyOS1lOThjOGYzYTc4N2EiLCJlbWFpbCI6ImdvcmRvbi5ldmVyeXdoZXJlQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkdvcmRvbiBSYW1zYXkiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiVmVuZG9yIiwiQ3VzdG9tZXIiLCJEcml2ZXIiXSwiZXhwIjoxNzkyMTY5ODY1LCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.G1qP48E9FeVee2dQJ706NkEE3lx5WJsTxp5rSfxf9gc
 Content-Type: application/json
 
 {
-  "name": "Italian Pizza",
-  "description": "The real taste of Italy, you will experience the authentic flavors of Italy in every bite.",
-  "price": 1040.00,
-  "category": "Pizza",
+  "name": "Ratatouille",
+  "description": "Made by famous rats of our paris nagri",
+  "price": 1050.00,
+  "category": "Starter",
   "dietaryPreference": 0,
-  "imageUrl": "https://res.cloudinary.com/dkj8pecl6/image/upload/v1791532053/SwiftServe/njk5tejeadhyh8spp8rx.jpg"
+  "imageUrl": "https://res.cloudinary.com/dkj8pecl6/image/upload/v1791564959/SwiftServe/gn4vzng9jessbaq0no9h.jpg"
 }
 
 ### 2. Update Restaurant with the new Image URL
