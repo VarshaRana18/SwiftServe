@@ -14,8 +14,6 @@ export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
             const token = localStorage.getItem('token');
             
             if (routePhase === "pickup") {
-                // Action: Driver has arrived at the restaurant and picked up the food.
-                // Advance status to PickedUp (Enum: 3)
                 const response = await fetch(`http://localhost:5121/api/driver/${activeOrder.id}/status`, {
                     method: "PUT",
                     headers: {
@@ -30,8 +28,6 @@ export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
                 }
             } 
             else if (routePhase === "delivery") {
-                // Action: Driver has handed the food to the customer.
-                // Advance status to Delivered (Enum: 4)
                 const response = await fetch(`http://localhost:5121/api/driver/${activeOrder.id}/status`, {
                     method: "PUT",
                     headers: {
@@ -72,24 +68,36 @@ export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
         );
     }
 
-    // Dynamic destination for Google Maps based on current phase
+    // Dynamic UI resolution: Anonymize the customer name for privacy
+    const destName = routePhase === "pickup" 
+        ? activeOrder?.restaurant?.name || "Restaurant" 
+        : "Customer Drop-off";
+
+    // Use Vadodara as the fallback location
     const rawDestination = routePhase === "pickup" 
-        ? activeOrder?.restaurantAddress || "Vadodara" 
-        : activeOrder?.deliveryAddress || "Vadodara";
+        ? activeOrder?.restaurant?.fullAddress || activeOrder?.restaurant?.city || "Vadodara" 
+        : activeOrder?.address?.fullAddress || "Customer Delivery Address, Vadodara";
+
     const mapDestination = encodeURIComponent(rawDestination);
 
     return (
         <div className="h-full flex flex-col p-6 animate-fade-in bg-slate-50 justify-center">
             
-            {/* Centered Mission Card */}
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 border border-slate-100 w-full">
                 <div className="flex justify-between items-start mb-6">
                     <div className="flex-1 pr-4">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-3 inline-block ${routePhase === "pickup" ? "text-orange-600 bg-orange-50" : "text-blue-600 bg-blue-50"}`}>
-                            {routePhase === "pickup" ? "Step 1: Pick Up" : "Step 2: Drop Off"}
-                        </span>
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md inline-block ${routePhase === "pickup" ? "text-orange-600 bg-orange-50" : "text-blue-600 bg-blue-50"}`}>
+                                {routePhase === "pickup" ? "Step 1: Pick Up" : "Step 2: Drop Off"}
+                            </span>
+                            {routePhase === "pickup" && (
+                                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md uppercase tracking-wider">
+                                    Ready
+                                </span>
+                            )}
+                        </div>
                         <h2 className="text-2xl font-extrabold text-slate-800 leading-tight">
-                            {routePhase === "pickup" ? (activeOrder?.restaurantName || "Restaurant") : (activeOrder?.customerName || "Customer")}
+                            {destName}
                         </h2>
                         <p className="text-sm font-medium text-slate-500 mt-1 line-clamp-2">
                             {rawDestination}
@@ -101,30 +109,15 @@ export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
                     </div>
                 </div>
 
-                {/* Google Maps Deep Link Button */}
                 <a 
                     href={`https://www.google.com/maps/dir/?api=1&destination=${mapDestination}`}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 font-bold py-3 rounded-xl mb-6 hover:bg-blue-100 transition-colors border border-blue-100"
+                    className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 font-bold py-3 rounded-xl mb-8 hover:bg-blue-100 transition-colors border border-blue-100"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                     Open in Google Maps
                 </a>
-
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-bold text-slate-700">Order #{activeOrder?.id?.substring(0, 8).toUpperCase() || "ORD-8901"}</span>
-                        {routePhase === "pickup" && (
-                            <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
-                                Food is Ready
-                            </span>
-                        )}
-                    </div>
-                    <p className="text-xs font-medium text-slate-500">
-                        {activeOrder?.items || "1x Truffle Burger, 1x Fries"}
-                    </p>
-                </div>
 
                 <div className="space-y-3">
                     <button 

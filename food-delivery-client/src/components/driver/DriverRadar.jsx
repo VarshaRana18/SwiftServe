@@ -167,13 +167,13 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
                             <span className="bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg animate-pulse">
                                 New Request
                             </span>
-                            <span className="text-2xl font-extrabold text-slate-800">₹{incomingOrder.driverFee || 45}</span>
+                            <span className="text-2xl font-extrabold text-slate-800">₹45</span>
                         </div>
                         
-                        <h3 className="text-xl font-extrabold text-slate-800 mb-1">{incomingOrder.restaurantName || "Restaurant"}</h3>
+                        <h3 className="text-xl font-extrabold text-slate-800 mb-1">{incomingOrder.restaurant?.name || "Restaurant"}</h3>
                         <p className="text-slate-500 font-medium text-sm mb-6 flex items-center gap-2">
                             <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            <span className="line-clamp-1">{incomingOrder.deliveryAddress || "Customer Address"}</span>
+                            <span className="line-clamp-1">{incomingOrder.restaurant?.fullAddress || "Pickup Location"}</span>
                         </p>
                         
                         <div className="grid grid-cols-2 gap-3 mb-4">

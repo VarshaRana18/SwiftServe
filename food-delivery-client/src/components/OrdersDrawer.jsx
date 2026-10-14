@@ -5,10 +5,16 @@ export default function OrdersDrawer() {
     const { isOrdersOpen, setIsOrdersOpen } = useCart();
     const [customerOrders, setCustomerOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // NEW: State to track which order card is expanded
+    const [expandedOrderId, setExpandedOrderId] = useState(null);
 
     // Fetch and Poll Orders when Drawer is open
     useEffect(() => {
-        if (!isOrdersOpen) return;
+        if (!isOrdersOpen) {
+            setExpandedOrderId(null); // Reset expansion when closed
+            return;
+        }
 
         const fetchOrders = async () => {
             try {
@@ -36,13 +42,11 @@ export default function OrdersDrawer() {
         setIsLoading(true);
         fetchOrders();
         
-        // MVP Real-time feel: Poll every 10 seconds while drawer is open
         const interval = setInterval(fetchOrders, 10000);
         return () => clearInterval(interval);
 
     }, [isOrdersOpen]);
 
-    // Helper to translate backend integer enum to user-friendly UI badges
     const getStatusConfig = (statusCode) => {
         switch (statusCode) {
             case 0: return { label: "Pending", color: "bg-slate-100 text-slate-600 border-slate-200", icon: "🕒" };
@@ -55,19 +59,20 @@ export default function OrdersDrawer() {
         }
     };
 
+    const toggleExpand = (id) => {
+        setExpandedOrderId(prev => prev === id ? null : id);
+    };
+
     return (
         <div className={`fixed inset-0 z-50 flex justify-end overflow-hidden ${isOrdersOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
             
-            {/* Backdrop */}
             <div 
                 className={`absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 ease-out ${isOrdersOpen ? 'opacity-100' : 'opacity-0'}`} 
                 onClick={() => setIsOrdersOpen(false)}
             ></div>
 
-            {/* Drawer */}
             <div className={`relative w-full max-w-md bg-slate-50 h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${isOrdersOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                 
-                {/* Header */}
                 <div className="p-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0 shadow-sm z-10">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-800">Track Orders</h2>
@@ -80,7 +85,6 @@ export default function OrdersDrawer() {
                     </button>
                 </div>
 
-                {/* Orders List */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {isLoading && customerOrders.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center text-slate-400">
@@ -95,39 +99,75 @@ export default function OrdersDrawer() {
                     ) : (
                         customerOrders.map((order) => {
                             const statusConfig = getStatusConfig(order.status);
+                            const isExpanded = expandedOrderId === order.id;
+                            
+                            // FIX: Using correct nested API paths
+                            const restName = order.restaurant?.name || "Unknown Restaurant";
+                            const restImage = order.restaurant?.imageUrl;
                             
                             return (
-                                <div key={order.id} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col gap-4">
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-xl">
-                                                {/* Fallback emoji if backend doesn't send restaurant image yet */}
-                                                {order.restaurantImage ? <img src={order.restaurantImage} alt={order.restaurantName} className="w-full h-full object-cover" /> : "🍽️"}
+                                <div key={order.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300">
+                                    
+                                    {/* Clickable Header Area */}
+                                    <div 
+                                        onClick={() => toggleExpand(order.id)}
+                                        className="p-5 cursor-pointer hover:bg-slate-50 transition-colors"
+                                    >
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center text-xl">
+                                                    {restImage ? <img src={restImage} alt={restName} className="w-full h-full object-cover" /> : "🍽️"}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-slate-800 line-clamp-1">{restName}</span>
+                                                    <span className="text-xs font-medium text-slate-400">ID: {order.id.substring(0, 8).toUpperCase()}...</span>
+                                                </div>
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-slate-800 line-clamp-1">{order.restaurantName || "SwiftServe Order"}</span>
-                                                <span className="text-xs font-medium text-slate-400">ID: {order.id.substring(0, 8).toUpperCase()}...</span>
+                                            
+                                            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${statusConfig.color}`}>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">{statusConfig.label}</span>
                                             </div>
                                         </div>
-                                        
-                                        {/* Dynamic Status Badge */}
-                                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${statusConfig.color}`}>
-                                            <span className="text-sm">{statusConfig.icon}</span>
-                                            <span className="text-[10px] font-bold uppercase tracking-wider">{statusConfig.label}</span>
+
+                                        <div className="flex justify-between items-center border-t border-slate-100 pt-4">
+                                            <span className="font-bold text-slate-800">₹{order.totalAmount}</span>
+                                            <div className="flex items-center gap-1 text-xs font-bold text-slate-400 uppercase tracking-wide">
+                                                {isExpanded ? "Hide Details" : "View Receipt"}
+                                                <svg className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Expandable Receipt Area */}
+                                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="p-5 pt-0 bg-slate-50 border-t border-slate-100">
+                                            <div className="space-y-3 mb-4 pt-4">
+                                                {order.orderItems && order.orderItems.map((item) => (
+                                                    <div key={item.id} className="flex justify-between text-sm">
+                                                        <span className="text-slate-600 font-medium">
+                                                            <span className="text-orange-500 font-bold mr-2">{item.quantity}x</span> 
+                                                            {item.menuItem?.name || "Item"}
+                                                        </span>
+                                                        <span className="text-slate-800 font-medium">₹{item.unitPrice * item.quantity}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            
+                                            <div className="border-t border-slate-200 border-dashed pt-3 mb-4 space-y-2">
+                                                <div className="flex justify-between text-xs text-slate-500">
+                                                    <span>Delivery Fee / Taxes</span>
+                                                    <span>₹10.00</span>
+                                                </div>
+                                                <div className="flex justify-between font-bold text-slate-800">
+                                                    <span>Total Paid</span>
+                                                    <span>₹{order.totalAmount}</span>
+                                                </div>
+                                            </div>
+
+                                            
                                         </div>
                                     </div>
                                     
-                                    <div className="text-sm text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                        {order.items && order.items.map((item, idx) => (
-                                            <div key={idx} className="flex justify-between py-1">
-                                                <span>{item.quantity}x {item.menuItemName || "Item"}</span>
-                                            </div>
-                                        ))}
-                                        <div className="flex justify-between pt-2 mt-2 border-t border-slate-200 font-bold text-slate-800">
-                                            <span>Total Paid</span>
-                                            <span>₹{order.totalAmount}</span>
-                                        </div>
-                                    </div>
                                 </div>
                             );
                         })

@@ -21,10 +21,14 @@ export default function VendorOrders({ activeRestaurantId }) {
                     
                     // Map backend data to UI format
                     const mappedOrders = data.map(o => {
-                        // Safely format the items list
-                        const itemsStr = o.items && o.items.length > 0 
-                            ? o.items.map(i => `${i.quantity}x ${i.menuItemName || 'Item'}`).join(', ') 
+                        
+                        // EXACT MATCH FOR JSON: o.orderItems and i.menuItem.name
+                        const itemsStr = o.orderItems && o.orderItems.length > 0 
+                            ? o.orderItems.map(i => `${i.quantity}x ${i.menuItem?.name || 'Item'}`).join(', ') 
                             : "Order items unavailable";
+
+                        // EXACT MATCH FOR JSON: o.customer.fullName
+                        const custName = o.customer?.fullName || `Customer #${o.id.substring(0, 4).toUpperCase()}`;
 
                         // Translate Backend Enum to UI Tab Names
                         let uiStatus = "Incoming"; // Fallback / 0 = Pending
@@ -34,6 +38,7 @@ export default function VendorOrders({ activeRestaurantId }) {
 
                         return {
                             id: o.id,
+                            customerName: custName,
                             items: itemsStr,
                             total: `₹${o.totalAmount || 0}`,
                             status: uiStatus,
@@ -62,7 +67,7 @@ export default function VendorOrders({ activeRestaurantId }) {
         // Map UI string back to backend Enum integer
         const backendStatusInt = newUiStatus === "Preparing" ? 1 : 2;
 
-        // Optimistic UI Update (Instant feedback for the vendor)
+        // Optimistic UI Update
         setOrders(prevOrders => prevOrders.map(order => 
             order.id === orderId ? { ...order, status: newUiStatus } : order
         ));
@@ -81,7 +86,6 @@ export default function VendorOrders({ activeRestaurantId }) {
             });
         } catch (error) {
             console.error("Failed to update order status:", error);
-            // If it fails, you would ideally revert the optimistic UI update here
         }
     };
 
@@ -120,7 +124,7 @@ export default function VendorOrders({ activeRestaurantId }) {
                         {orders.filter(o => o.status === "Incoming").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
                                 <div className="flex justify-between items-start mb-3">
-                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.id}</span>
+                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.customerName}</span>
                                     <span className="text-xs font-medium text-slate-400 shrink-0 ml-2">{order.time}</span>
                                 </div>
                                 <p className="text-sm font-medium text-slate-600 mb-6">{order.items}</p>
@@ -150,7 +154,7 @@ export default function VendorOrders({ activeRestaurantId }) {
                         {orders.filter(o => o.status === "Preparing").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 border-l-4 border-l-yellow-400">
                                 <div className="flex justify-between items-start mb-3">
-                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.id}</span>
+                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.customerName}</span>
                                     <span className="text-xs font-medium text-slate-400 shrink-0 ml-2">{order.time}</span>
                                 </div>
                                 <p className="text-sm font-medium text-slate-600 mb-6">{order.items}</p>
@@ -180,7 +184,7 @@ export default function VendorOrders({ activeRestaurantId }) {
                         {orders.filter(o => o.status === "Ready").map(order => (
                             <div key={order.id} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 border-l-4 border-l-green-400 opacity-75">
                                 <div className="flex justify-between items-start mb-3">
-                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.id}</span>
+                                    <span className="font-bold text-slate-800 line-clamp-1 break-all">{order.customerName}</span>
                                     <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md shrink-0 ml-2">Awaiting Driver</span>
                                 </div>
                                 <p className="text-sm font-medium text-slate-500 mb-6">{order.items}</p>
