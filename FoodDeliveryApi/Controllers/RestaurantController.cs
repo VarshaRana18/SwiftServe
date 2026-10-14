@@ -131,5 +131,53 @@ namespace FoodDeliveryApi.Controllers
                 AvgPrepTime = avgPrepTime
             });
         }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchRestaurants([FromQuery] string q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return Ok(new List<RestaurantSearchResponseDto>());
+            }
+
+            var searchTerm = q.ToLower();
+
+            var matchingRestaurants = await _context.Restaurants
+            .Include(r => r.MenuItems)
+            .Where(r => r.Name.ToLower().Contains(searchTerm) || r.MenuItems.Any(m => m.Name.ToLower().Contains(searchTerm) && m.IsAvailable))
+            .ToListAsync();
+
+            var results = matchingRestaurants.Select(r =>
+            {
+               bool nameMatch = r.Name.ToLower().Contains(searchTerm);
+
+               var matchedItem = r.MenuItems.FirstOrDefault(m => 
+                    m.Name.ToLower().Contains(searchTerm) && m.IsAvailable); 
+                
+                string? reason = null;
+                if (!nameMatch && matchedItem != null)
+                {
+                    reason = $"Matches: {matchedItem.Name}";
+                }
+
+                var dynamicTags = r.MenuItems
+                    .Select(m => m.Category)
+                    .Distinct()
+                    // .Take(3) // Send max 3 tags to keep the UI clean
+                    .ToList();
+
+                return new RestaurantSearchResponseDto
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Image = r.ImageUrl,
+                    IsOpen = r.IsOpen,
+                    Tags = dynamicTags,
+                    MatchReason = reason
+                };                
+            }).ToList();
+
+            return Ok(results);
+        }
     }
 }
