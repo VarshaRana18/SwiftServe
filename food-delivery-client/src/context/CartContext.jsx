@@ -52,7 +52,9 @@ export const CartProvider = ({ children }) => {
         const resId = restaurant.id;
         setGlobalCarts(prevCarts => {
             const newCarts = { ...prevCarts };
+
             if (!newCarts[resId]) {
+                // Cart doesn't exist yet, safe to create fresh
                 newCarts[resId] = {
                     restaurantId: resId,
                     restaurantName: restaurant.name,
@@ -60,11 +62,22 @@ export const CartProvider = ({ children }) => {
                     items: [{ id: item.id, name: item.name, price: item.price, qty: 1 }]
                 };
             } else {
-                const existingItemIndex = newCarts[resId].items.findIndex(i => i.id === item.id);
+                // Cart exists! We MUST make a deep copy of the items array to prevent StrictMode double-adding
+                const existingCart = newCarts[resId];
+                const existingItemIndex = existingCart.items.findIndex(i => i.id === item.id);
+
                 if (existingItemIndex >= 0) {
-                    newCarts[resId].items[existingItemIndex].qty += 1;
+                    // Map to a completely new array, incrementing only the target item
+                    const updatedItems = existingCart.items.map(i => 
+                        i.id === item.id ? { ...i, qty: i.qty + 1 } : i
+                    );
+                    newCarts[resId] = { ...existingCart, items: updatedItems };
                 } else {
-                    newCarts[resId].items.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
+                    // Spread syntax to create a new array with the new item appended
+                    newCarts[resId] = { 
+                        ...existingCart, 
+                        items: [...existingCart.items, { id: item.id, name: item.name, price: item.price, qty: 1 }] 
+                    };
                 }
             }
             return newCarts;
