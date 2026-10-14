@@ -14,10 +14,11 @@ export default function VendorDashboard() {
     const [isCreating, setIsCreating] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Form State mapping exactly to Restaurant.cs
+    // Form State (Updated with contactNumber)
     const [formData, setFormData] = useState({
         name: "",
         description: "",
+        contactNumber: "",
         fullAddress: "",
         city: "Vadodara",
         pinCode: ""
@@ -29,29 +30,19 @@ export default function VendorDashboard() {
         { name: "Settings", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543-.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" }
     ];
 
-    // INITIAL LOAD: Fetch existing restaurants
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
-                // NOTE: Currently fetching all restaurants. 
-                // Varsha needs to make a GET /api/restaurant/my-restaurants endpoint later.
-                const response = await fetch("http://localhost:5121/api/restaurant");
+                const token = localStorage.getItem('token');
+                const response = await fetch("http://localhost:5121/api/restaurant/my-restaurants", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
                 if (response.ok) {
-                    const data = await response.json();
-                    
-                    // Simple frontend filter: we decode JWT to find our ID, and only show our restaurants
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        const payload = JSON.parse(atob(token.split('.')[1]));
-                        // .NET sub claim is usually the User ID
-                        const userId = payload.sub || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-                        
-                        const myRestaurants = data.filter(r => r.ownerId === userId);
-                        setRestaurants(myRestaurants);
-                        
-                        if (myRestaurants.length > 0) {
-                            setSelectedRestaurant(myRestaurants[0]);
-                        }
+                    const myRestaurants = await response.json();
+                    setRestaurants(myRestaurants);
+                    if (myRestaurants.length > 0) {
+                        setSelectedRestaurant(myRestaurants[0]);
                     }
                 }
             } catch (error) {
@@ -61,7 +52,12 @@ export default function VendorDashboard() {
         fetchRestaurants();
     }, []);
 
-    // WIRE API: Create Restaurant
+    useEffect(() => {
+        if (selectedRestaurant) {
+            setIsAcceptingOrders(selectedRestaurant.isOpen !== false); 
+        }
+    }, [selectedRestaurant]);
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -77,9 +73,10 @@ export default function VendorDashboard() {
                 body: JSON.stringify({
                     name: formData.name,
                     description: formData.description,
-                    fullAddress: formData.fullAddress,
+                    FullAddress: formData.fullAddress, // Cased to match Varsha's payload
                     city: formData.city,
-                    pinCode: formData.pinCode
+                    pinCode: formData.pinCode,
+                    contactNumber: formData.contactNumber // Added Contact Number
                 })
             });
 
@@ -88,7 +85,7 @@ export default function VendorDashboard() {
                 setRestaurants(prev => [...prev, newRest]);
                 setSelectedRestaurant(newRest);
                 setIsCreating(false);
-                setFormData({ name: "", description: "", fullAddress: "", city: "Vadodara", pinCode: "" });
+                setFormData({ name: "", description: "", contactNumber: "", fullAddress: "", city: "Vadodara", pinCode: "" });
             } else {
                 console.error("Failed to save to database");
             }
@@ -99,9 +96,30 @@ export default function VendorDashboard() {
         }
     };
 
-    // ----------------------------------------------------------------------
-    // VIEW 1: THE CREATION WIZARD (Shown if 0 restaurants OR explicitly adding new)
-    // ----------------------------------------------------------------------
+    const handleToggleStatus = async () => {
+        if (!selectedRestaurant) return;
+        const newStatus = !isAcceptingOrders;
+        
+        setIsAcceptingOrders(newStatus);
+        
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:5121/api/restaurant/${selectedRestaurant.id}/toggle-status`, {
+                method: "PATCH",
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                setSelectedRestaurant(prev => ({ ...prev, isOpen: newStatus }));
+                setRestaurants(prev => prev.map(r => r.id === selectedRestaurant.id ? { ...r, isOpen: newStatus } : r));
+            } else {
+                setIsAcceptingOrders(!newStatus);
+            }
+        } catch (error) {
+            setIsAcceptingOrders(!newStatus);
+        }
+    };
+
     if (restaurants.length === 0 || isCreating) {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
@@ -119,19 +137,23 @@ export default function VendorDashboard() {
                     </div>
 
                     <form onSubmit={handleFormSubmit} className="p-8 space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Restaurant Name *</label>
-                            <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. Firehouse Grill" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
-                            <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors resize-none" rows="2" placeholder="Briefly describe your cuisine and specialties..." />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">Full Street Address *</label>
-                            <input type="text" required value={formData.fullAddress} onChange={(e) => setFormData({...formData, fullAddress: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="Shop No, Building, Area" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Restaurant Name *</label>
+                                <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. Firehouse Grill" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Contact Phone *</label>
+                                <input type="text" required value={formData.contactNumber} onChange={(e) => setFormData({...formData, contactNumber: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="e.g. +91 98765 43210" />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors resize-none" rows="2" placeholder="Briefly describe your cuisine and specialties..." />
+                            </div>
+                            <div className="sm:col-span-2">
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Full Street Address *</label>
+                                <input type="text" required value={formData.fullAddress} onChange={(e) => setFormData({...formData, fullAddress: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" placeholder="Shop No, Building, Area" />
+                            </div>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">City *</label>
                                 <input type="text" required value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-600 outline-none bg-slate-50 focus:bg-white transition-colors" />
@@ -158,9 +180,6 @@ export default function VendorDashboard() {
         );
     }
 
-    // ----------------------------------------------------------------------
-    // VIEW 2: THE MAIN DASHBOARD (Shown if they have at least 1 restaurant)
-    // ----------------------------------------------------------------------
     return (
         <div className="h-screen bg-slate-50 flex flex-col lg:flex-row font-sans overflow-hidden">
             
@@ -169,7 +188,6 @@ export default function VendorDashboard() {
                 <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
                     <span className="text-xl font-extrabold text-slate-800">Swift<span className="text-teal-600">Partner</span></span>
                     
-                    {/* Mobile Restaurant Switcher */}
                     <select 
                         className="bg-slate-50 border border-slate-200 text-sm font-bold text-slate-700 rounded-lg px-2 py-1.5 outline-none focus:ring-2 focus:ring-teal-500 max-w-[140px]"
                         value={selectedRestaurant?.id || ""}
@@ -198,7 +216,6 @@ export default function VendorDashboard() {
                     <span className="text-2xl font-extrabold text-slate-800 tracking-tight">Swift<span className="text-teal-600">Partner</span></span>
                 </div>
                 
-                {/* Desktop Restaurant Switcher */}
                 <div className="p-4 border-b border-slate-100 bg-slate-50/50">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 block px-1">Active Restaurant</label>
                     <select 
@@ -232,7 +249,7 @@ export default function VendorDashboard() {
                     <h1 className="text-2xl font-bold text-slate-800">{activeTab}</h1>
                     <div className="flex items-center gap-3 bg-slate-50 p-1.5 rounded-2xl border border-slate-100">
                         <span className={`text-sm font-bold px-3 transition-colors ${isAcceptingOrders ? 'text-slate-400' : 'text-red-500'}`}>Closed</span>
-                        <button onClick={() => setIsAcceptingOrders(!isAcceptingOrders)} className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${isAcceptingOrders ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                        <button onClick={handleToggleStatus} className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${isAcceptingOrders ? 'bg-teal-500' : 'bg-slate-300'}`}>
                             <div className={`w-5 h-5 bg-white rounded-full absolute top-1 shadow transition-transform ${isAcceptingOrders ? 'translate-x-8' : 'translate-x-1'}`}></div>
                         </button>
                         <span className={`text-sm font-bold px-3 transition-colors ${isAcceptingOrders ? 'text-teal-600' : 'text-slate-400'}`}>Accepting</span>
@@ -240,7 +257,6 @@ export default function VendorDashboard() {
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50">
-                    {/* We pass the selectedRestaurant down so the components know whose data to fetch */}
                     {activeTab === "Orders" && <VendorOrders activeRestaurantId={selectedRestaurant?.id} />}
                     {activeTab === "Menu" && <VendorMenu activeRestaurantId={selectedRestaurant?.id} />}
                     {activeTab === "Settings" && <VendorSettings activeRestaurantId={selectedRestaurant?.id} />}
