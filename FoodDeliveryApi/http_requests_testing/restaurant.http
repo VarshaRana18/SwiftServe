@@ -93,8 +93,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODA1YWMxY
 # @description Searches restaurant names, tags, and all associated menu items. 
 # If a match is found inside a menu (e.g., searching "Dosa"), it returns the parent restaurant 
 # and populates the "matchReason" field so the frontend can display "Matches: Masala Dosa".
-# GET {{host}}/api/restaurant/search?q=dosa
-# EXPECTED RESPONSE FORMAT FOR VARSHA:
+GET {{host}}/api/restaurant/search?q=dosa
 # [
 #   {
 #     "id": "01a0c2a1-a244-79fb-9603-9f1c2aea0293",
