@@ -15,7 +15,7 @@ export default function VendorSettings({ activeRestaurantId }) {
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [upgradeError, setUpgradeError] = useState("");
 
-    // Restaurant Profile State (Added imageUrl)
+    // Restaurant Profile State
     const [restaurantProfile, setRestaurantProfile] = useState({
         name: "Loading...",
         phone: "",
@@ -23,7 +23,7 @@ export default function VendorSettings({ activeRestaurantId }) {
         description: "Loading...",
         city: "",
         pinCode: "",
-        imageUrl: "" // NEW
+        imageUrl: "" 
     });
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                             description: currentRest.description || "",
                             city: currentRest.city || "Vadodara",
                             pinCode: currentRest.pinCode || "",
-                            imageUrl: currentRest.imageUrl || "" // NEW
+                            imageUrl: currentRest.imageUrl || "" 
                         });
                     }
                 }
@@ -66,7 +66,6 @@ export default function VendorSettings({ activeRestaurantId }) {
         fetchRestDetails();
     }, [activeRestaurantId]);
 
-    // NEW: Handle Instant Image Upload
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -86,7 +85,6 @@ export default function VendorSettings({ activeRestaurantId }) {
 
             if (response.ok) {
                 const data = await response.json();
-                // Assumes the backend returns { imageUrl: "https://cloudinary..." }
                 const uploadedUrl = data.imageUrl || data.url; 
                 setRestaurantProfile(prev => ({ ...prev, imageUrl: uploadedUrl }));
             } else {
@@ -97,12 +95,10 @@ export default function VendorSettings({ activeRestaurantId }) {
             alert("Network error during image upload.");
         } finally {
             setIsUploadingImage(false);
-            // Reset input so they can upload the same file again if needed
             if (fileInputRef.current) fileInputRef.current.value = ""; 
         }
     };
 
-    // UPDATED: Now includes imageUrl in the payload
     const handleSaveProfile = async () => {
         setIsSaving(true);
         const token = localStorage.getItem('token');
@@ -120,7 +116,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                     city: restaurantProfile.city,
                     pinCode: restaurantProfile.pinCode,
                     contactNumber: restaurantProfile.phone,
-                    imageUrl: restaurantProfile.imageUrl // NEW
+                    imageUrl: restaurantProfile.imageUrl 
                 })
             });
 
@@ -202,21 +198,6 @@ export default function VendorSettings({ activeRestaurantId }) {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
-                    <span className="text-sm font-bold text-slate-400 mb-1">Today's Revenue</span>
-                    <span className="text-3xl font-extrabold text-teal-600">₹12,450</span>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
-                    <span className="text-sm font-bold text-slate-400 mb-1">Completed Orders</span>
-                    <span className="text-3xl font-extrabold text-slate-800">42</span>
-                </div>
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
-                    <span className="text-sm font-bold text-slate-400 mb-1">Avg. Prep Time</span>
-                    <span className="text-3xl font-extrabold text-slate-800">14 <span className="text-lg text-slate-400">mins</span></span>
-                </div>
-            </div>
-
             {/* RESTAURANT PROFILE COMPONENT */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-6 border-b border-slate-100 flex items-center justify-between">
@@ -233,14 +214,12 @@ export default function VendorSettings({ activeRestaurantId }) {
                 </div>
                 
                 <div className="p-6 space-y-6">
-                    {/* NEW: Cover Image Uploader */}
                     <div className="w-full">
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Cover Photo</label>
                         <div 
                             onClick={() => isEditingProfile && fileInputRef.current?.click()}
                             className={`relative w-full h-48 sm:h-56 rounded-xl overflow-hidden border-2 ${isEditingProfile ? 'cursor-pointer hover:border-teal-500 border-dashed border-slate-300 bg-slate-50' : 'border-slate-100 bg-slate-100'} transition-colors group flex items-center justify-center`}
                         >
-                            {/* Hidden file input */}
                             <input 
                                 type="file" 
                                 accept="image/*" 
@@ -276,7 +255,6 @@ export default function VendorSettings({ activeRestaurantId }) {
                         </div>
                     </div>
 
-                    {/* Standard Text Fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Restaurant Name</label>

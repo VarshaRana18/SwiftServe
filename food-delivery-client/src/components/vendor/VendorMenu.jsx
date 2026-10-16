@@ -11,11 +11,11 @@ export default function VendorMenu({ activeRestaurantId }) {
     const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
     const [isSaving, setIsSaving] = useState(false);
     
-    // NEW: Image Upload States for Menu Modal
+    // Image Upload States for Menu Modal
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
 
-    // Form State (Added imageUrl)
+    // Form State
     const [formData, setFormData] = useState({
         id: null,
         name: "",
@@ -23,7 +23,7 @@ export default function VendorMenu({ activeRestaurantId }) {
         price: "",
         category: "",
         dietaryPreference: "0", 
-        imageUrl: "" // NEW
+        imageUrl: "" 
     });
 
     // Custom Delete Modal States
@@ -111,12 +111,11 @@ export default function VendorMenu({ activeRestaurantId }) {
             price: item.price.toString(),
             category: item.category || "",
             dietaryPreference: item.dietaryPreference.toString(),
-            imageUrl: item.imageUrl || "" // NEW
+            imageUrl: item.imageUrl || "" 
         });
         setIsModalOpen(true);
     };
 
-    // NEW: Handle Instant Image Upload for Menu Item
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -150,7 +149,6 @@ export default function VendorMenu({ activeRestaurantId }) {
         }
     };
 
-    // Unified Save Function (Now includes imageUrl)
     const handleSaveItem = async (e) => {
         e.preventDefault();
         setIsSaving(true);
@@ -165,7 +163,7 @@ export default function VendorMenu({ activeRestaurantId }) {
                     category: formData.category,
                     dietaryPreference: parseInt(formData.dietaryPreference),
                     restaurantId: activeRestaurantId,
-                    imageUrl: formData.imageUrl // NEW
+                    imageUrl: formData.imageUrl
                 };
                 
                 const response = await fetch("http://localhost:5121/api/menuitem", {
@@ -190,7 +188,7 @@ export default function VendorMenu({ activeRestaurantId }) {
                     price: parseFloat(formData.price),
                     category: formData.category,
                     dietaryPreference: parseInt(formData.dietaryPreference),
-                    imageUrl: formData.imageUrl // NEW
+                    imageUrl: formData.imageUrl 
                 };
                 
                 const response = await fetch(`http://localhost:5121/api/menuitem/${formData.id}`, {
@@ -220,8 +218,11 @@ export default function VendorMenu({ activeRestaurantId }) {
 
     return (
         <div className="max-w-4xl mx-auto flex flex-col h-full relative">
+            
+            {/* HEADER CONTROLS (Search & Category Dropdown) */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 shrink-0">
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+                    
                     <div className="flex w-full md:w-auto gap-3 flex-1">
                         <div className="relative flex-1 md:w-96">
                             <input 
@@ -238,20 +239,26 @@ export default function VendorMenu({ activeRestaurantId }) {
                         </button>
                     </div>
                     
-                    <div className="flex gap-2 overflow-x-auto w-full md:w-auto scrollbar-hide pb-2 md:pb-0">
-                        {menuCategories.map(cat => (
-                            <button 
-                                key={cat} 
-                                onClick={() => setMenuCategory(cat)}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors border ${menuCategory === cat ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
+                    {/* NEW: Dropdown Category Filter */}
+                    <div className="relative w-full md:w-48 shrink-0">
+                        <select 
+                            value={menuCategory}
+                            onChange={(e) => setMenuCategory(e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold rounded-xl pl-4 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all appearance-none cursor-pointer"
+                        >
+                            {menuCategories.map(cat => (
+                                <option key={cat} value={cat}>{cat === "All" ? "All Categories" : cat}</option>
+                            ))}
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
+            {/* INVENTORY LIST */}
             <div className="flex-1 overflow-y-auto space-y-3 pb-20">
                 {filteredInventory.length === 0 ? (
                     <div className="text-center text-slate-400 font-medium py-12">
@@ -324,7 +331,6 @@ export default function VendorMenu({ activeRestaurantId }) {
                         
                         <form onSubmit={handleSaveItem} className="p-6 space-y-4">
                             
-                            {/* NEW: Menu Item Image Uploader and Name Group */}
                             <div className="flex gap-4 items-start">
                                 {/* Compact Uploader Box */}
                                 <div 
