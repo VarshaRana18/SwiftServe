@@ -102,12 +102,13 @@ Authorization: Bearer YOUR_CURRENT_CUSTOMER_JWT_HERE
 #Added By Samiul
 ### Update User Profile (Unified API for Name, Email, and Phone)
 # Works for ANY logged-in role (Customer, Vendor, Driver)
-# PUT {{host}}/api/auth/profile
-# Authorization: Bearer YOUR_TOKEN_HERE
-# Content-Type: application/json
+# The frontend MUST save new token over their old token
+PUT {{host}}/api/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYmM0MmZlYS02OTc2LTRiOTUtOThhNC1iYTNhMzgzODAwZWMiLCJlbWFpbCI6ImVtbWEudmVuZG9yZHJpdmVyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IkVtbWEgVmVuZG9yIERyaXZlciIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6WyJWZW5kb3IiLCJEcml2ZXIiXSwiZXhwIjoxNzkyODQ3NzU4LCJpc3MiOiJGb29kRGVsaXZlcnlBcGkiLCJhdWQiOiJGb29kRGVsaXZlcnlDbGllbnQifQ.czsqqWexyv7l_Ae1PUXlxKYk1TjmIG8bEKWjB6Qzvf0
+Content-Type: application/json
 
-# {
-#   "fullName": "Samiul Shaikh",
-#   "email": "shaikhsamiul2005@gmail.com",
-#   "phoneNumber": "+919876543210"
-# }
+{
+  "fullName": "Emma Walker",
+  "email": "walkeremma2005@gmail.com",
+  "phoneNumber": "+919873543210"
+}

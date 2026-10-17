@@ -32,4 +32,17 @@ namespace FoodDeliveryApi.DTOs
         public List<string> Roles { get; set; } = new List<string>();
 
     }
+
+    public class UpdateProfileDto
+    {
+        [Required]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Phone]
+        public string? PhoneNumber { get; set; }
+    }
 }

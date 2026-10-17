@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodDeliveryApi.Controllers
 {
@@ -98,12 +99,12 @@ namespace FoodDeliveryApi.Controllers
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if(user == null)
             {
-                return Unauthorized("Invalid email");
+                return Unauthorized();
             }
 
             // 2. Check Password
             var isPasswordValid = await _userManager.CheckPasswordAsync(user,dto.Password);
-            if(!isPasswordValid) return Unauthorized("Invalid Password");
+            if(!isPasswordValid) return Unauthorized();
 
             // 3. Generate JWT Token
             var token = GenerateJwtToken(user);
@@ -156,6 +157,45 @@ namespace FoodDeliveryApi.Controllers
                 message = $"Successfully upgraded to {dto.NewRole}.",
                 token = newToken,
                 roles = user.Roles 
+            });
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile(UpdateProfileDto dto)
+        {   
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound("User not found.");
+
+            // 1. Handle Email Change Logic
+            if (user.Email != dto.Email)
+            {
+                // Security Check: Is this new email already taken by another user?
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == dto.Email && u.Id != userId);
+                if (emailExists)
+                {
+                    return BadRequest("This email is already in use by another account.");
+                }
+
+                user.Email = dto.Email;
+                user.UserName = dto.Email; 
+            }
+
+            // 2. Update remaining fields
+            user.FullName = dto.FullName;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+
+            // 3. Generate a fresh token because the Name and Email claims have changed!
+            var newToken = GenerateJwtToken(user);
+
+            return Ok(new 
+            { 
+                message = "Profile updated successfully.",
+                token = newToken // The frontend MUST save this over their old token
             });
         }
 
