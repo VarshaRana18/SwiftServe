@@ -98,5 +98,21 @@ namespace FoodDeliveryApi.Controllers
                 phoneNumber = driver.PhoneNumber
             });
         }
+
+        [HttpPut("profile")]
+        [Authorize(Roles="Driver")]
+        public async Task<IActionResult> UpdateDriverProfile([FromBody] UpdateDriverPhoneDto dto){
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var driver = await _context.Users.FirstOrDefaultAsync(d => d.Id == userId);
+
+            if (driver == null) return NotFound("Driver not found.");
+
+            driver.PhoneNumber = dto.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Driver profile updated", phoneNumber = driver.PhoneNumber });
+        }
     }
 }
