@@ -27,7 +27,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     id: apiRest.id,
                     name: apiRest.name,
                     description: apiRest.description || "Premium quality food delivered straight to your door.",
-                    time: "30-45 min",
                     address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
                     image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
                 });
@@ -121,7 +120,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                         </div>
                     </div>
                 </div>
-                {/* Loader structure remains... */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex gap-8 items-start">
                     <div className="hidden md:block w-56 shrink-0 sticky top-28">
                         <div className="w-32 h-4 bg-slate-200 rounded mb-6 animate-pulse"></div>
@@ -181,7 +179,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     
                     <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-white">
                         
-                        {/* Dietary Icons moved to former Rating spot */}
                         <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-lg">
                             {hasVeg && (
                                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-green-400">
@@ -197,12 +194,8 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                             )}
                         </div>
 
-                        <div className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            {activeRest.time}
-                        </div>
+                        {/* REMOVED AVG PREP TIME HERE */}
+
                         <div className="flex items-center gap-1.5">
                             <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

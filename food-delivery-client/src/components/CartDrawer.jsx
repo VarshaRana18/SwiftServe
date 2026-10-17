@@ -12,38 +12,28 @@ export default function CartDrawer() {
         selectedAddressId, activeLocation, setIsLocationModalOpen
     } = useCart();
 
-    // Local state for payment screen and tipping
     const [isCheckoutMode, setIsCheckoutMode] = useState(false);
-    const [selectedTip, setSelectedTip] = useState(0);
-    const [isCustomTip, setIsCustomTip] = useState(false);
-    const [customTipAmount, setCustomTipAmount] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState("UPI");
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-    // Single restaurant math (Multi-checkout is gone)
+    // Single restaurant math (Multi-checkout is gone, Tipping is gone)
     const subtotal = activeCartView ? getCartTotal(activeCartView) : 0;
     const platformFee = 10;
-    const totalToPay = subtotal + platformFee + selectedTip;
+    const totalToPay = subtotal + platformFee;
 
     const handlePlaceOrder = async () => {
         if (!selectedAddressId || !activeCartView) return;
         
         setIsPlacingOrder(true);
 
-        // Await the backend response
-        const success = await checkoutCart(activeCartView, selectedTip);
+        // Await the backend response (Passing 0 for tip since it's removed)
+        const success = await checkoutCart(activeCartView, 0);
 
         if (success) {
-            // Success: Reset UI and open tracker
             setIsCheckoutMode(false);
             setActiveCartView(null);
             setIsCartOpen(false);
-            setSelectedTip(0);
-            setIsCustomTip(false);
-            setCustomTipAmount("");
             setIsOrdersOpen(true);
         } else {
-            // Failed (e.g. Restaurant Closed trap): Reset to Cart Hub
             setIsCheckoutMode(false);
             setActiveCartView(null);
         }
@@ -57,7 +47,7 @@ export default function CartDrawer() {
 
             <div className={`relative w-full max-w-md bg-slate-50 h-full shadow-2xl flex flex-col transition-transform duration-300 ease-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
 
-                {/* VIEW A: THE CART HUB (Checkout All button removed) */}
+                {/* VIEW A: THE CART HUB */}
                 {activeCartView === null && !isCheckoutMode && (
                     <>
                         <div className="p-6 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
@@ -179,6 +169,7 @@ export default function CartDrawer() {
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                            
                             <section>
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="font-bold text-slate-800">Delivery Address</h3>
@@ -205,47 +196,30 @@ export default function CartDrawer() {
                             </section>
 
                             <section>
-                                <h3 className="font-bold text-slate-800 mb-4">Tip your delivery partner</h3>
-                                <div className="flex gap-2 mb-3">
-                                    {[0, 20, 30].map((amount) => (
-                                        <button key={amount} onClick={() => { setSelectedTip(amount); setIsCustomTip(false); setCustomTipAmount(""); }} className={`flex-1 py-2 rounded-xl font-bold transition-all border ${!isCustomTip && selectedTip === amount ? 'bg-orange-50 border-orange-500 text-orange-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:border-orange-300'}`}>
-                                            {amount === 0 ? 'No Tip' : `₹${amount}`}
-                                        </button>
-                                    ))}
-                                    <button onClick={() => setIsCustomTip(true)} className={`flex-1 py-2 rounded-xl font-bold transition-all border ${isCustomTip ? 'bg-orange-50 border-orange-500 text-orange-600 shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:border-orange-300'}`}>Custom</button>
-                                </div>
-                                {isCustomTip && (
-                                    <div className="animate-fade-in relative">
-                                        <span className="absolute left-4 top-3 font-bold text-slate-400">₹</span>
-                                        <input type="number" min="0" value={customTipAmount} onWheel={(e) => e.target.blur()} onChange={(e) => { const val = e.target.value; setCustomTipAmount(val); setSelectedTip(Number(val) || 0); }} placeholder="Enter tip amount" className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl pl-8 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all font-bold" />
-                                    </div>
-                                )}
-                            </section>
-
-                            <section>
                                 <h3 className="font-bold text-slate-800 mb-4">Payment Method</h3>
                                 <div className="space-y-3">
-                                    {["UPI", "Credit/Debit Card", "Cash on Delivery"].map((method) => (
-                                        <label key={method} className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${paymentMethod === method ? 'bg-orange-50/50 border-orange-500 shadow-sm' : 'bg-white border-slate-200 hover:border-orange-300'}`}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === method ? 'border-orange-500' : 'border-slate-300'}`}>
-                                                    {paymentMethod === method && <div className="w-2.5 h-2.5 bg-orange-500 rounded-full"></div>}
-                                                </div>
-                                                <span className="font-semibold text-slate-700">{method}</span>
+                                    <label className="flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all bg-orange-50/50 border-orange-500 shadow-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center border-orange-500">
+                                                <div className="w-2.5 h-2.5 bg-orange-500 rounded-full"></div>
                                             </div>
-                                        </label>
-                                    ))}
+                                            <span className="font-semibold text-slate-700">Cash on Delivery</span>
+                                        </div>
+                                    </label>
                                 </div>
                             </section>
 
                             <section className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                                 <h3 className="font-bold text-slate-800 mb-4">Bill Details</h3>
                                 <div className="space-y-2 text-sm text-slate-600 mb-4">
-                                    <div className="flex justify-between"><span>Item Total</span><span>₹{subtotal}</span></div>
-                                    <div className="flex justify-between"><span>Platform Fee</span><span>₹{platformFee}</span></div>
-                                    {selectedTip > 0 && (
-                                        <div className="flex justify-between text-orange-600"><span>Delivery Tip</span><span>₹{selectedTip}</span></div>
-                                    )}
+                                    <div className="flex justify-between">
+                                        <span>Item Total</span>
+                                        <span>₹{subtotal}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Platform Fee</span>
+                                        <span>₹{platformFee}</span>
+                                    </div>
                                 </div>
                                 <div className="flex justify-between font-bold text-lg text-slate-800 pt-4 border-t border-slate-100">
                                     <span>To Pay</span>
