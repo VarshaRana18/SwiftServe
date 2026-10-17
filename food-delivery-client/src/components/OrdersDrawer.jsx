@@ -6,7 +6,7 @@ export default function OrdersDrawer() {
     const [customerOrders, setCustomerOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     
-    // NEW: State to track which order card is expanded
+    // State to track which order card is expanded
     const [expandedOrderId, setExpandedOrderId] = useState(null);
 
     // Fetch and Poll Orders when Drawer is open
@@ -101,7 +101,6 @@ export default function OrdersDrawer() {
                             const statusConfig = getStatusConfig(order.status);
                             const isExpanded = expandedOrderId === order.id;
                             
-                            // FIX: Using correct nested API paths
                             const restName = order.restaurant?.name || "Unknown Restaurant";
                             const restImage = order.restaurant?.imageUrl;
                             
@@ -148,7 +147,8 @@ export default function OrdersDrawer() {
                                                             <span className="text-orange-500 font-bold mr-2">{item.quantity}x</span> 
                                                             {item.menuItem?.name || "Item"}
                                                         </span>
-                                                        <span className="text-slate-800 font-medium">₹{item.unitPrice * item.quantity}</span>
+                                                        {/* FIX: Show base unit price instead of multiplied total */}
+                                                        <span className="text-slate-800 font-medium">₹{item.unitPrice}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -163,8 +163,6 @@ export default function OrdersDrawer() {
                                                     <span>₹{order.totalAmount}</span>
                                                 </div>
                                             </div>
-
-                                            
                                         </div>
                                     </div>
                                     

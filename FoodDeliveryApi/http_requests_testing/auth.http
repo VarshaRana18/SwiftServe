@@ -97,3 +97,17 @@ Authorization: Bearer YOUR_CURRENT_CUSTOMER_JWT_HERE
   "newRole": "Driver" 
 }
 
+
+#---------------------------------------------------------------------------
+#Added By Samiul
+### Update User Profile (Unified API for Name, Email, and Phone)
+# Works for ANY logged-in role (Customer, Vendor, Driver)
+# PUT {{host}}/api/auth/profile
+# Authorization: Bearer YOUR_TOKEN_HERE
+# Content-Type: application/json
+
+# {
+#   "fullName": "Samiul Shaikh",
+#   "email": "shaikhsamiul2005@gmail.com",
+#   "phoneNumber": "+919876543210"
+# }
