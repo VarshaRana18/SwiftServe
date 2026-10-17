@@ -26,22 +26,14 @@ GET {{host}}/api/driver/available-orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5MjU3NDk0NCwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.UmWGuqCPO0OjNE2IOc7RzyhRPga8Jc5MmM5YTR8oEts
 
 
-#-------------------------------------------------------------------------------------------------------------------------
-#Added by Samiul
 ### Get Driver Profile (Requires Driver JWT)
 # Why: When the driver logs in or opens Settings, we need to check if they have a phone number.
-# GET {{host}}/api/driver/profile
-# Authorization: Bearer YOUR_TOKEN_HERE
-
-# EXPECTED RESPONSE:
-# {
-#   "id": "8886d8f5-...",
-#   "fullName": "Sharon Mascarenhas",
-#   "email": "Sharon@Mas.com",
-#   "phoneNumber": null  // Frontend will check this to show the prompt!
-# }
+GET {{host}}/api/driver/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5Mjg1MDIxOSwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.rkvo0CM_k-JJOL9HdcY5YaLaXxWiwjnOeBgtAVGPiPs
 
 
+#-------------------------------------------------------------------------------------------------------------------------
+#Added by Samiul
 ### Update Driver Profile / Phone Number (Requires Driver JWT)
 # Why: When the driver enters their phone number in the mandatory prompt or Settings page, 
 # save it to their AspNetUsers record.

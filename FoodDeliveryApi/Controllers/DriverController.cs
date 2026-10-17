@@ -79,5 +79,24 @@ namespace FoodDeliveryApi.Controllers
             var orders = await _context.Orders.Include(o => o.Restaurant).Include(o => o.Address).Where(o => o.Status == OrderStatus.Ready && o.DriverId == null).OrderBy(o => o.CreatedAt).ToListAsync();
             return Ok(orders);
         }
+
+        [HttpGet("profile")]
+        [Authorize(Roles="Driver")]
+        public async Task<IActionResult> GetDriverProfile()
+        {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            var driver = await _context.Users.FirstOrDefaultAsync(d => d.Id == user);
+
+            if (driver == null) return NotFound("Driver not found.");
+
+            return Ok(new 
+            {
+                id = driver.Id,
+                fullName = driver.FullName,
+                email = driver.Email,
+                phoneNumber = driver.PhoneNumber
+            });
+        }
     }
 }
