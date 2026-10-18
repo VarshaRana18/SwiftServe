@@ -1,26 +1,45 @@
+import { useState, useEffect } from "react";
+
 export default function DriverWallet() {
-    // Mock delivery history - Added a few more to test the full-page scroll
-    const recentTrips = [
-        { id: "ORD-8898", time: "2:14 PM", distance: "3.2 km", earning: "₹65", status: "Completed" },
-        { id: "ORD-8885", time: "1:30 PM", distance: "1.8 km", earning: "₹45", status: "Completed" },
-        { id: "ORD-8872", time: "12:45 PM", distance: "4.5 km", earning: "₹85", status: "Completed" },
-        { id: "ORD-8860", time: "11:20 AM", distance: "2.1 km", earning: "₹50", status: "Completed" },
-        { id: "ORD-8845", time: "10:05 AM", distance: "3.8 km", earning: "₹75", status: "Completed" },
-        { id: "ORD-8830", time: "9:15 AM", distance: "1.5 km", earning: "₹40", status: "Completed" },
-    ];
+    const [deliveries, setDeliveries] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Fixed MVP Payout Rate
+    const payoutPerDelivery = 50;
+
+    useEffect(() => {
+        const fetchDeliveries = async () => {
+            setIsLoading(true);
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch("http://localhost:5121/api/driver/history", {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    setDeliveries(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch delivery history:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDeliveries();
+    }, []);
+
+    // MVP Math logic based on the IsDriverSettled backend flag
+    const unsettledDeliveries = deliveries.filter(d => !d.isDriverSettled);
+    const pendingPayout = unsettledDeliveries.length * payoutPerDelivery;
+    const lifetimeEarnings = deliveries.length * payoutPerDelivery;
 
     return (
-        /* Removed h-full and flex constraints so it flows naturally */
-        <div className="p-6 animate-fade-in">
+        <div className="p-6 animate-fade-in pb-24">
             
-            {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-800">Earnings</h2>
-                <select className="bg-slate-100 border-none text-sm font-bold text-slate-600 rounded-lg py-2 px-3 focus:ring-0 cursor-pointer outline-none">
-                    <option>Today</option>
-                    <option>This Week</option>
-                    <option>This Month</option>
-                </select>
             </div>
 
             {/* Main Balance Card */}
@@ -28,61 +47,71 @@ export default function DriverWallet() {
                 <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
                 <div className="absolute -left-6 -bottom-6 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
                 
-                <div className="relative z-10">
-                    <span className="text-blue-100 text-sm font-bold uppercase tracking-wider mb-1 block">Net Payout</span>
-                    <div className="text-5xl font-extrabold tracking-tight mb-4">₹850</div>
-                    
-                    <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-2">
-                        <div className="flex flex-col">
-                            <span className="text-blue-200 text-xs font-semibold">Active Time</span>
-                            <span className="font-bold">4h 20m</span>
-                        </div>
-                        <div className="w-px h-8 bg-white/20"></div>
-                        <div className="flex flex-col">
-                            <span className="text-blue-200 text-xs font-semibold">Trips</span>
-                            <span className="font-bold text-center">12</span>
-                        </div>
-                        <div className="w-px h-8 bg-white/20"></div>
-                        <div className="flex flex-col items-end">
-                            <span className="text-blue-200 text-xs font-semibold">Tips</span>
-                            <span className="font-bold">₹120</span>
-                        </div>
+                <div className="relative z-10 flex flex-col items-center text-center">
+                    <span className="text-blue-100 text-sm font-bold uppercase tracking-wider mb-1">Pending Payout</span>
+                    <div className="text-5xl font-extrabold tracking-tight mb-3">₹{pendingPayout}</div>
+                    <div className="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md">
+                        {unsettledDeliveries.length} Unpaid Trips
                     </div>
                 </div>
             </div>
 
-            {/* Daily Goal Progress */}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6 shrink-0">
-                <div className="flex justify-between items-end mb-2">
-                    <span className="text-sm font-bold text-slate-700">Daily Goal</span>
-                    <span className="text-xs font-bold text-slate-400">₹850 / ₹1000</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-blue-500 h-3 rounded-full transition-all duration-1000" style={{ width: '85%' }}></div>
-                </div>
+            {/* Lifetime Stats */}
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-8 flex justify-between items-center">
+                <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Lifetime Earnings</span>
+                <span className="text-lg font-extrabold text-slate-800">₹{lifetimeEarnings}</span>
             </div>
 
-            {/* Trip History List - Now scrolls with the page */}
+            {/* Trip History List */}
             <div>
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-1">Recent Trips</h3>
-                <div className="space-y-3">
-                    {recentTrips.map((trip, index) => (
-                        <div key={index} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-slate-50 rounded-full border border-slate-100 flex items-center justify-center shrink-0">
-                                    <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 px-1">Delivery History</h3>
+                
+                {isLoading ? (
+                    <div className="text-center text-slate-400 font-medium py-8">Loading history...</div>
+                ) : deliveries.length === 0 ? (
+                    <div className="text-center text-slate-400 font-medium py-8 bg-slate-100/50 rounded-2xl border border-slate-100 border-dashed">
+                        No completed deliveries yet.
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {deliveries.map((trip) => {
+                            const timeString = trip.updatedAt || trip.createdAt 
+                                ? new Date(trip.updatedAt || trip.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                                : "Completed";
+
+                            return (
+                                <div key={trip.id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-blue-50 rounded-full border border-blue-100 flex items-center justify-center shrink-0">
+                                            <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-800 text-sm line-clamp-1">
+                                                {trip.restaurant?.name || `Order #${trip.id.substring(0, 8).toUpperCase()}`}
+                                            </span>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-xs font-medium text-slate-400">
+                                                    {timeString}
+                                                </span>
+                                                {trip.isDriverSettled ? (
+                                                    <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded uppercase">Paid</span>
+                                                ) : (
+                                                    <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded uppercase">Pending</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className={`font-extrabold ${trip.isDriverSettled ? 'text-slate-400' : 'text-blue-600'}`}>
+                                        +₹{payoutPerDelivery}
+                                    </span>
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="font-bold text-slate-800 text-sm">{trip.id}</span>
-                                    <span className="text-xs font-medium text-slate-400">{trip.time} • {trip.distance}</span>
-                                </div>
-                            </div>
-                            <span className="font-extrabold text-blue-600">{trip.earning}</span>
-                        </div>
-                    ))}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
-            
         </div>
     );
 }

@@ -32,8 +32,6 @@ GET {{host}}/api/driver/profile
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNIYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5Mjg1MzYwNiwiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.Mgdmx5Q0J-smA2WI23CzhP9IvKcru-r26KAEmdbAamc
 
 
-#-------------------------------------------------------------------------------------------------------------------------
-#Added by Samiul
 ### Update Driver Profile / Phone Number (Requires Driver JWT)
 # Why: When the driver enters their phone number in the mandatory prompt or Settings page, 
 # save it to their AspNetUsers record.
@@ -44,3 +42,22 @@ Content-Type: application/json
 {
   "phoneNumber": "+919876543217"
 }
+
+
+#-------------------------------------------------------------------------------------------------------------------------
+#Added by Samiul
+### Get Driver Delivery History (Requires Driver JWT)
+# Why: Fetches all orders successfully delivered by this specific driver.
+# GET {{host}}/api/driver/history
+# Authorization: Bearer YOUR_TOKEN_HERE
+
+# EXPECTED RESPONSE FORMAT:
+# [
+#   {
+#     "id": "01a135b5-...",
+#     "restaurant": { "name": "Firehouse Grill" },
+#     "updatedAt": "2026-10-18T14:41:26Z" // Used to show the delivery time
+#   }
+# ]
+
+#NOTE FOR VARSHA : This endpoint should query the Orders table where DriverId == CurrentUserId AND Status == 4 (Delivered), ordered by date descending.

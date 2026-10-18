@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
+export default function DriverRoute({ activeOrder, onComplete }) {
     // Phase 1: Driving to Restaurant (Pickup)
     // Phase 2: Driving to Customer (Delivery)
     const [routePhase, setRoutePhase] = useState("pickup");
@@ -131,12 +131,6 @@ export default function DriverRoute({ activeOrder, onComplete, onCancel }) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
                             </svg>
                         )}
-                    </button>
-                    <button 
-                        onClick={onCancel}
-                        className="w-full py-2 text-sm font-bold text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                        Report Issue / Cancel Delivery
                     </button>
                 </div>
             </div>
