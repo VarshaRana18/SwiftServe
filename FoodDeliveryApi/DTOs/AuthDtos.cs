@@ -42,7 +42,7 @@ namespace FoodDeliveryApi.DTOs
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Phone]
+        [RegularExpression(@"^(\+\d{1,3}[- ]?)?\d{10}$", ErrorMessage = "Invalid phone number format. Must be 10 digits.")]
         public string? PhoneNumber { get; set; }
     }
 }

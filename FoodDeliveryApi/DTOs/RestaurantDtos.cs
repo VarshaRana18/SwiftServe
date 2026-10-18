@@ -20,7 +20,7 @@ namespace FoodDeliveryApi.DTOs
         public string PinCode { get; set; } = string.Empty;
         
         [Required]
-        [Phone(ErrorMessage = "Invalid phone number format.")]
+        [RegularExpression(@"^(\+\d{1,3}[- ]?)?\d{10}$", ErrorMessage = "Invalid phone number format. Must be 10 digits.")]
         public string ContactNumber { get; set; } = string.Empty;
     }
 
@@ -43,7 +43,7 @@ namespace FoodDeliveryApi.DTOs
         public string PinCode { get; set; } = string.Empty;
         
         [Required]
-        [Phone(ErrorMessage = "Invalid phone number format.")]
+        [RegularExpression(@"^(\+\d{1,3}[- ]?)?\d{10}$", ErrorMessage = "Invalid phone number format. Must be 10 digits.")]
         public string ContactNumber { get; set; } = string.Empty;
     }
 }
