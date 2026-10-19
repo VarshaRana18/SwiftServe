@@ -13,6 +13,9 @@ export default function DriverSettings() {
         phone: ""
     });
 
+    // NEW: Validation state
+    const [validationError, setValidationError] = useState("");
+
     // Role Upgrade States
     const [userRoles, setUserRoles] = useState([]);
     const [upgradeIntent, setUpgradeIntent] = useState(null); // 'Customer', 'Vendor', or null
@@ -52,8 +55,34 @@ export default function DriverSettings() {
     }, []);
 
     const handleSaveProfile = async () => {
-        if (!profile.phone || profile.phone.length < 8) {
-            alert("Please enter a valid contact number.");
+        setValidationError(""); // Reset error state
+
+        // 1. Basic Name Validation
+        if (!profile.name.trim()) {
+            setValidationError("Full Name cannot be empty.");
+            return;
+        }
+
+        // 2. Email Regex Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(profile.email)) {
+            setValidationError("Please enter a valid email address.");
+            return;
+        }
+
+        // 3. Strict Phone Validation (10-digits only)
+        if (!profile.phone) {
+            setValidationError("Contact Number is required to be online.");
+            return;
+        }
+
+        let justDigits = profile.phone.replace(/\D/g, '');
+        if (justDigits.length === 12 && justDigits.startsWith('91')) {
+            justDigits = justDigits.substring(2);
+        }
+
+        if (justDigits.length !== 10) {
+            setValidationError("Please enter exactly a 10-digit contact number.");
             return;
         }
 
@@ -79,11 +108,11 @@ export default function DriverSettings() {
                 localStorage.setItem('customerPhone', profile.phone); 
                 setIsEditing(false);
             } else {
-                alert("Failed to save profile details.");
+                setValidationError("Failed to save profile details.");
             }
         } catch (error) {
             console.error("Profile update error:", error);
-            alert("Network error. Please try again.");
+            setValidationError("Network error. Please try again.");
         } finally {
             setIsSaving(false);
         }
@@ -181,19 +210,30 @@ export default function DriverSettings() {
                     {!isEditing ? (
                         <button onClick={() => setIsEditing(true)} className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">Edit</button>
                     ) : (
-                        <button onClick={handleSaveProfile} disabled={isSaving} className="text-xs font-bold text-white bg-blue-600 px-3 py-1.5 rounded-lg shadow-sm disabled:opacity-50">
-                            {isSaving ? "Saving..." : "Save"}
-                        </button>
+                        <div className="flex gap-2">
+                            <button onClick={() => { setIsEditing(false); setValidationError(""); }} className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2 py-1.5 transition-colors">Cancel</button>
+                            <button onClick={handleSaveProfile} disabled={isSaving} className="text-xs font-bold text-white bg-blue-600 px-3 py-1.5 rounded-lg shadow-sm disabled:opacity-50">
+                                {isSaving ? "Saving..." : "Save"}
+                            </button>
+                        </div>
                     )}
                 </div>
                 
                 <div className="p-5 space-y-4">
+                    {/* VALIDATION ERROR DISPLAY */}
+                    {validationError && isEditing && (
+                        <div className="bg-red-50 text-red-600 text-[11px] font-bold px-3 py-2 rounded-lg mb-2 flex items-center gap-2">
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            {validationError}
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
                         <input 
                             type="text" 
                             value={profile.name} 
-                            onChange={(e) => setProfile({...profile, name: e.target.value})} 
+                            onChange={(e) => { setProfile({...profile, name: e.target.value}); setValidationError(""); }} 
                             disabled={!isEditing} 
                             className={`w-full font-bold text-slate-800 rounded-xl px-3 py-2 transition-colors ${isEditing ? 'bg-white border-2 border-blue-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}
                         />
@@ -203,7 +243,7 @@ export default function DriverSettings() {
                         <input 
                             type="email" 
                             value={profile.email} 
-                            onChange={(e) => setProfile({...profile, email: e.target.value})} 
+                            onChange={(e) => { setProfile({...profile, email: e.target.value}); setValidationError(""); }} 
                             disabled={!isEditing} 
                             className={`w-full font-bold text-slate-800 rounded-xl px-3 py-2 transition-colors ${isEditing ? 'bg-white border-2 border-blue-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}
                         />
@@ -216,7 +256,7 @@ export default function DriverSettings() {
                         <input 
                             type="tel" 
                             value={profile.phone} 
-                            onChange={(e) => setProfile({...profile, phone: e.target.value})} 
+                            onChange={(e) => { setProfile({...profile, phone: e.target.value}); setValidationError(""); }} 
                             disabled={!isEditing} 
                             placeholder="+91 9876543210"
                             className={`w-full font-bold text-slate-800 rounded-xl px-3 py-2 transition-colors ${isEditing ? 'bg-white border-2 border-blue-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'} ${!profile.phone && !isEditing ? 'border-red-200 bg-red-50' : ''}`}

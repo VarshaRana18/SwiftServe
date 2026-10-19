@@ -39,7 +39,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                         address: rest.fullAddress || `${rest.city}, ${rest.pinCode}`,
                         isOpen: rest.isOpen !== false,
                         tags: rest.tags || [],
-                        image: rest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop"
+                        image: rest.imageUrl || null 
                     };
                 });
 
@@ -49,7 +49,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                     ...Array.from(uniqueCategories).map((cat, index) => ({
                         id: `cat-${index}`,
                         name: cat,
-                        emoji: getCategoryEmoji(cat) 
+                        emoji: getCategoryEmoji(cat)
                     }))
                 ];
 
@@ -69,7 +69,7 @@ export default function HomeFeed({ setActiveRestaurantId }) {
     // 1. Only show open restaurants that have AT LEAST ONE menu item
     const openRestaurants = feedData.restaurants.filter(rest => {
         const hasMenu = feedData.mockMenus[rest.id] && feedData.mockMenus[rest.id].length > 0;
-        return rest.isOpen && hasMenu; 
+        return rest.isOpen && hasMenu;
     });
 
     // 2. Filter based on actual menu categories
@@ -165,15 +165,25 @@ export default function HomeFeed({ setActiveRestaurantId }) {
                                     onClick={() => setActiveRestaurantId(rest.id)}
                                     className="group bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
                                 >
-                                    <div className="h-52 overflow-hidden relative">
-                                        <img src={rest.image} alt={rest.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+                                    {/* FIX: Branded Initials Avatar Approach */}
+                                    <div className="h-52 overflow-hidden relative bg-slate-100 flex flex-col items-center justify-center">
+                                        {rest.image ? (
+                                            <>
+                                                <img src={rest.image} alt={rest.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
+                                            </>
+                                        ) : (
+                                            <div className="w-full h-full bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center transition-transform duration-700 group-hover:scale-105">
+                                                <span className="text-8xl font-black text-white/30 select-none shadow-sm">
+                                                    {rest.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
+                                    
                                     <div className="p-5">
-                                        {/* FIX: gap-3 added, max-w-[180px] replaced with flex-1 pr-2 */}
                                         <div className="flex justify-between items-center gap-3 mb-2">
                                             <h3 className="text-xl font-bold text-slate-800 truncate flex-1 pr-2">{rest.name}</h3>
-                                            
                                             <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100 shrink-0">
                                                 {hasVeg && (
                                                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-green-600">

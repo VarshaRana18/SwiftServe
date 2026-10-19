@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { getCategoryNames } from "../../utils/categoryEmojis"; // NEW: Import the category list
+import { getCategoryNames } from "../../utils/categoryEmojis";
 
 export default function VendorMenu({ activeRestaurantId }) {
     const [inventory, setInventory] = useState([]);
@@ -7,11 +7,14 @@ export default function VendorMenu({ activeRestaurantId }) {
     const [menuSearch, setMenuSearch] = useState("");
     const [menuCategory, setMenuCategory] = useState("All");
 
-    // Unified Modal States (Handles both Add and Edit)
+    // Unified Modal States
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
+    const [modalMode, setModalMode] = useState("add"); 
     const [isSaving, setIsSaving] = useState(false);
     
+    // NEW: Validation Error State
+    const [validationError, setValidationError] = useState("");
+
     // Image Upload States for Menu Modal
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const fileInputRef = useRef(null);
@@ -31,7 +34,6 @@ export default function VendorMenu({ activeRestaurantId }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
 
-    // Get the standardized list of categories
     const availableCategories = useMemo(() => getCategoryNames(), []);
 
     useEffect(() => {
@@ -103,6 +105,7 @@ export default function VendorMenu({ activeRestaurantId }) {
     const openAddModal = () => {
         setModalMode("add");
         setFormData({ id: null, name: "", description: "", price: "", category: "", dietaryPreference: "0", imageUrl: "" });
+        setValidationError("");
         setIsModalOpen(true);
     };
 
@@ -117,6 +120,7 @@ export default function VendorMenu({ activeRestaurantId }) {
             dietaryPreference: item.dietaryPreference.toString(),
             imageUrl: item.imageUrl || "" 
         });
+        setValidationError("");
         setIsModalOpen(true);
     };
 
@@ -155,6 +159,27 @@ export default function VendorMenu({ activeRestaurantId }) {
 
     const handleSaveItem = async (e) => {
         e.preventDefault();
+        setValidationError(""); // Reset error state
+
+        // 1. Strict Form Validation
+        if (!formData.name.trim()) {
+            setValidationError("Item Name cannot be empty.");
+            return;
+        }
+        if (!formData.description.trim()) {
+            setValidationError("Description cannot be empty.");
+            return;
+        }
+        if (!formData.category.trim()) {
+            setValidationError("Please select a category.");
+            return;
+        }
+        const parsedPrice = parseFloat(formData.price);
+        if (isNaN(parsedPrice) || parsedPrice <= 0) {
+            setValidationError("Price must be a valid number greater than 0.");
+            return;
+        }
+
         setIsSaving(true);
         const token = localStorage.getItem('token');
         
@@ -163,7 +188,7 @@ export default function VendorMenu({ activeRestaurantId }) {
                 const addPayload = {
                     name: formData.name,
                     description: formData.description,
-                    price: parseFloat(formData.price),
+                    price: parsedPrice,
                     category: formData.category,
                     dietaryPreference: parseInt(formData.dietaryPreference),
                     restaurantId: activeRestaurantId,
@@ -184,12 +209,14 @@ export default function VendorMenu({ activeRestaurantId }) {
                     if(addedItem.isAvailable === undefined) addedItem.isAvailable = true;
                     setInventory(prev => [...prev, addedItem]);
                     setIsModalOpen(false);
+                } else {
+                    setValidationError("Failed to save item on the server.");
                 }
             } else {
                 const editPayload = {
                     name: formData.name,
                     description: formData.description,
-                    price: parseFloat(formData.price),
+                    price: parsedPrice,
                     category: formData.category,
                     dietaryPreference: parseInt(formData.dietaryPreference),
                     imageUrl: formData.imageUrl 
@@ -207,10 +234,13 @@ export default function VendorMenu({ activeRestaurantId }) {
                 if (response.ok) {
                     setInventory(prev => prev.map(item => item.id === formData.id ? { ...item, ...editPayload } : item));
                     setIsModalOpen(false);
+                } else {
+                    setValidationError("Failed to update item on the server.");
                 }
             }
         } catch (error) {
             console.error("Network error");
+            setValidationError("Network error. Please try again.");
         } finally {
             setIsSaving(false);
         }
@@ -223,7 +253,7 @@ export default function VendorMenu({ activeRestaurantId }) {
     return (
         <div className="max-w-4xl mx-auto flex flex-col h-full relative">
             
-            {/* HEADER CONTROLS (Search & Category Dropdown) */}
+            {/* HEADER CONTROLS */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6 shrink-0">
                 <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
                     
@@ -334,6 +364,14 @@ export default function VendorMenu({ activeRestaurantId }) {
                         
                         <form onSubmit={handleSaveItem} className="p-6 space-y-4">
                             
+                            {/* VALIDATION ERROR DISPLAY */}
+                            {validationError && (
+                                <div className="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg mb-4 flex items-center gap-2">
+                                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    {validationError}
+                                </div>
+                            )}
+
                             <div className="flex gap-4 items-start">
                                 {/* Compact Uploader Box */}
                                 <div 
@@ -370,9 +408,8 @@ export default function VendorMenu({ activeRestaurantId }) {
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Item Name</label>
                                     <input 
                                         type="text" 
-                                        required 
                                         value={formData.name} 
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})} 
+                                        onChange={(e) => { setFormData({...formData, name: e.target.value}); setValidationError(""); }} 
                                         className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" 
                                         placeholder="e.g. Masala Dosa" 
                                     />
@@ -382,9 +419,8 @@ export default function VendorMenu({ activeRestaurantId }) {
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
                                 <textarea 
-                                    required 
                                     value={formData.description} 
-                                    onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                                    onChange={(e) => { setFormData({...formData, description: e.target.value}); setValidationError(""); }} 
                                     className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white resize-none" 
                                     rows="2" 
                                     placeholder="Describe the item..." 
@@ -397,22 +433,19 @@ export default function VendorMenu({ activeRestaurantId }) {
                                     <input 
                                         type="number" 
                                         step="0.01" 
-                                        required 
                                         min="0" 
                                         value={formData.price} 
-                                        onChange={(e) => setFormData({...formData, price: e.target.value})} 
+                                        onChange={(e) => { setFormData({...formData, price: e.target.value}); setValidationError(""); }} 
                                         className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" 
                                         placeholder="120.00" 
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
-                                    {/* NEW: Replaced Text Input with Select Dropdown */}
                                     <div className="relative">
                                         <select 
-                                            required 
                                             value={formData.category} 
-                                            onChange={(e) => setFormData({...formData, category: e.target.value})} 
+                                            onChange={(e) => { setFormData({...formData, category: e.target.value}); setValidationError(""); }} 
                                             className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white appearance-none cursor-pointer"
                                         >
                                             <option value="" disabled>Select a category</option>

@@ -8,6 +8,9 @@ export default function VendorSettings({ activeRestaurantId }) {
     const [isEditingProfile, setIsEditingProfile] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
+    
+    // Validation state for profile edit
+    const [validationError, setValidationError] = useState("");
 
     // User Roles & Upgrade State
     const [userRoles, setUserRoles] = useState([]);
@@ -100,8 +103,39 @@ export default function VendorSettings({ activeRestaurantId }) {
     };
 
     const handleSaveProfile = async () => {
+        setValidationError(""); // Reset error state
+
+        // 1. Name Validation
+        if (!restaurantProfile.name.trim()) {
+            setValidationError("Restaurant Name cannot be empty.");
+            return;
+        }
+
+        // 2. Strict Phone Validation (10-digits only)
+        let justDigits = restaurantProfile.phone.replace(/\D/g, '');
+        if (justDigits.length === 12 && justDigits.startsWith('91')) {
+            justDigits = justDigits.substring(2);
+        }
+        if (justDigits.length !== 10) {
+            setValidationError("Please enter exactly a 10-digit contact number.");
+            return;
+        }
+
+        // 3. Address Validation
+        if (!restaurantProfile.address.trim()) {
+            setValidationError("Address cannot be empty.");
+            return;
+        }
+
+        // 4. Description Validation
+        if (!restaurantProfile.description.trim()) {
+            setValidationError("Short Description cannot be empty.");
+            return;
+        }
+
         setIsSaving(true);
         const token = localStorage.getItem('token');
+        
         try {
             const response = await fetch(`http://localhost:5121/api/restaurant/${activeRestaurantId}`, {
                 method: "PUT",
@@ -123,10 +157,11 @@ export default function VendorSettings({ activeRestaurantId }) {
             if (response.ok) {
                 setIsEditingProfile(false);
             } else {
-                console.error("Failed to update profile");
+                setValidationError("Failed to update profile. Check backend logs.");
             }
         } catch (error) {
             console.error("Network error");
+            setValidationError("Network error. Please try again.");
         } finally {
             setIsSaving(false);
         }
@@ -152,8 +187,8 @@ export default function VendorSettings({ activeRestaurantId }) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('roles', JSON.stringify(data.roles));
                 setUserRoles(data.roles);
-                
                 setUpgradeIntent(null);
+                
                 if (newRole === 'Customer') navigate('/');
                 if (newRole === 'Driver') navigate('/driver/dashboard');
             } else {
@@ -223,13 +258,24 @@ export default function VendorSettings({ activeRestaurantId }) {
                             Edit Details
                         </button>
                     ) : (
-                        <button onClick={handleSaveProfile} disabled={isSaving || isUploadingImage} className={`text-sm font-bold text-white px-4 py-1.5 rounded-lg transition-colors shadow-sm ${isSaving || isUploadingImage ? 'bg-teal-400 cursor-wait' : 'bg-teal-600 hover:bg-teal-700'}`}>
-                            {isSaving ? "Saving..." : "Save Changes"}
-                        </button>
+                        <div className="flex gap-3">
+                            <button onClick={() => { setIsEditingProfile(false); setValidationError(""); }} className="text-sm font-bold text-slate-400 hover:text-slate-600 disabled:opacity-50">Cancel</button>
+                            <button onClick={handleSaveProfile} disabled={isSaving || isUploadingImage} className={`text-sm font-bold text-white px-4 py-1.5 rounded-lg transition-colors shadow-sm ${isSaving || isUploadingImage ? 'bg-teal-400 cursor-wait' : 'bg-teal-600 hover:bg-teal-700'}`}>
+                                {isSaving ? "Saving..." : "Save Changes"}
+                            </button>
+                        </div>
                     )}
                 </div>
                 
                 <div className="p-6 space-y-6">
+                    {/* VALIDATION ERROR DISPLAY */}
+                    {validationError && isEditingProfile && (
+                        <div className="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg mb-4 flex items-center gap-2">
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            {validationError}
+                        </div>
+                    )}
+
                     <div className="w-full">
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Cover Photo</label>
                         <div 
@@ -277,7 +323,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                             <input 
                                 type="text" 
                                 value={restaurantProfile.name} 
-                                onChange={(e) => setRestaurantProfile({...restaurantProfile, name: e.target.value})} 
+                                onChange={(e) => { setRestaurantProfile({...restaurantProfile, name: e.target.value}); setValidationError(""); }} 
                                 disabled={!isEditingProfile} 
                                 className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}
                             />
@@ -287,7 +333,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                             <input 
                                 type="text" 
                                 value={restaurantProfile.phone} 
-                                onChange={(e) => setRestaurantProfile({...restaurantProfile, phone: e.target.value})} 
+                                onChange={(e) => { setRestaurantProfile({...restaurantProfile, phone: e.target.value}); setValidationError(""); }} 
                                 disabled={!isEditingProfile} 
                                 className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}
                             />
@@ -299,7 +345,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                         <input 
                             type="text" 
                             value={restaurantProfile.address} 
-                            onChange={(e) => setRestaurantProfile({...restaurantProfile, address: e.target.value})} 
+                            onChange={(e) => { setRestaurantProfile({...restaurantProfile, address: e.target.value}); setValidationError(""); }} 
                             disabled={!isEditingProfile} 
                             className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}
                         />
@@ -309,7 +355,7 @@ export default function VendorSettings({ activeRestaurantId }) {
                         <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Short Description</label>
                         <textarea 
                             value={restaurantProfile.description} 
-                            onChange={(e) => setRestaurantProfile({...restaurantProfile, description: e.target.value})} 
+                            onChange={(e) => { setRestaurantProfile({...restaurantProfile, description: e.target.value}); setValidationError(""); }} 
                             disabled={!isEditingProfile} 
                             rows="2" 
                             className={`w-full font-bold text-slate-800 rounded-xl px-4 py-3 transition-colors resize-none ${isEditingProfile ? 'bg-white border-2 border-teal-500 focus:outline-none' : 'bg-slate-50 border border-slate-100'}`}

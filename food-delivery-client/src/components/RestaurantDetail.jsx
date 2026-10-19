@@ -28,19 +28,19 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                     name: apiRest.name,
                     description: apiRest.description || "Premium quality food delivered straight to your door.",
                     address: apiRest.fullAddress || `${apiRest.city}, ${apiRest.pinCode}`,
-                    phone: apiRest.contactNumber || "Phone unavailable", // NEW: Mapped contact number
-                    image: apiRest.imageUrl || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1200&auto=format&fit=crop"
+                    phone: apiRest.contactNumber || "Phone unavailable",
+                    image: apiRest.imageUrl || null // FIX: Removed hardcoded Unsplash string
                 });
             }
 
-            // 2. Map the Menu Items using the real isAvailable boolean
+            // 2. Map the Menu Items
             const mappedMenu = menuData.map(item => ({
                 id: item.id,
                 name: item.name,
                 description: item.description,
                 price: item.price,
                 category: item.category || "Recommended",
-                isVeg: item.dietaryPreference === 0, // 0 = Veg, 1 = NonVeg
+                isVeg: item.dietaryPreference === 0, 
                 isAvailable: item.isAvailable ?? true, 
                 imageUrl: item.imageUrl || null
             }));
@@ -164,17 +164,30 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
 
     return (
         <div className="animate-slide-in-right pb-32">
-            <div className="relative h-64 md:h-80 w-full bg-slate-900">
-                <img src={activeRest.image} alt={activeRest.name} className="w-full h-full object-cover opacity-60" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+            
+            {/* FIX: Dynamic Branded Initials Header */}
+            <div className={`relative h-64 md:h-80 w-full flex items-center justify-center overflow-hidden ${!activeRest.image ? 'bg-gradient-to-br from-teal-500 to-teal-700' : 'bg-slate-900'}`}>
+                {activeRest.image ? (
+                    <>
+                        <img src={activeRest.image} alt={activeRest.name} className="w-full h-full object-cover opacity-60" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    </>
+                ) : (
+                    <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent z-0"></div>
+                        <span className="text-[12rem] font-black text-white/10 select-none z-0 mt-8">
+                            {activeRest.name.charAt(0).toUpperCase()}
+                        </span>
+                    </>
+                )}
                 
-                <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors">
+                <button onClick={() => setActiveRestaurantId(null)} className="absolute top-6 left-4 sm:left-8 bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors z-10">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
                 </button>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto">
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 max-w-7xl mx-auto z-10">
                     <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">{activeRest.name}</h1>
                     <p className="text-slate-300 text-sm md:text-base mb-4 max-w-2xl">{activeRest.description}</p>
                     
@@ -202,7 +215,6 @@ export default function RestaurantDetail({ activeRestaurantId, setActiveRestaura
                             {activeRest.address}
                         </div>
 
-                        {/* NEW: Phone Number Display */}
                         <div className="flex items-center gap-1.5">
                             <svg className="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
