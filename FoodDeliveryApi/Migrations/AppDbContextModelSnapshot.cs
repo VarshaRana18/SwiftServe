@@ -192,6 +192,9 @@ namespace FoodDeliveryApi.Migrations
                     b.Property<string>("DriverId")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsDriverSettled")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uuid");
 
