@@ -1,32 +1,115 @@
 // src/utils/categoryEmojis.js
 
 export const categoryEmojiMap = {
-    // Popular & Fast Food
-    "burgers": "🍔", "pizza": "🍕", "fast food": "🌭", "wraps": "🌯", 
-    "sandwiches": "🥪", "wings": "🍗", "fried chicken": "🍗", "fries": "🍟",
-    
-    // Indian Cuisines
-    "dosa": "🥞", "south indian": "🍛", "north indian": "🍲", "biryani": "🥘", 
-    "indian": "🥘", "thali": "🍛", "street food": "🍢", "chaat": "🥔", 
-    "mughlai": "🍖", "tandoori": "🍗",
-    
-    // Asian & Global
-    "chinese": "🍜", "sushi": "🍣", "asian": "🍱", "thai": "🍛", 
-    "noodles": "🍜", "mexican": "🌮", "italian": "🍝", "pasta": "🍝", 
-    "bbq": "🥩", "steak": "🥩", "seafood": "🦐", "middle eastern": "🥙",
-    
-    // Healthy & Dietary
-    "healthy": "🥗", "salads": "🥗", "vegan": "🥬", "vegetarian": "🥦", 
-    "soups": "🥣", "keto": "🥑",
-    
-    // Breakfast, Bakery & Desserts
-    "breakfast": "🍳", "waffles": "🧇", "pancakes": "🥞", "bakery": "🥐", 
-    "dessert": "🍦", "ice cream": "🍨", "donuts": "🍩", "cakes": "🎂", 
-    "pastries": "🧁", "sweets": "🍬", "mithai": "🍡",
-    
-    // Beverages
-    "beverages": "🥤", "cafe": "☕", "coffee": "☕", "tea": "🍵", 
-    "juices": "🍹", "smoothies": "🥤", "shakes": "🥛", "boba": "🧋"
+    // 🍔 Popular & Fast Food
+    "Burgers": "🍔",
+    "Pizza": "🍕",
+    "Fast Food": "🌭",
+    "Sandwiches": "🥪",
+    "Wraps & Rolls": "🌯",
+    "Fried Chicken": "🍗",
+    "Wings": "🍗",
+    "Fries & Sides": "🍟",
+    "Hot Dogs": "🌭",
+    "Sliders": "🍔",
+
+    // 🥘 Indian Regional & Specialties
+    "North Indian": "🍲",
+    "South Indian": "🍛",
+    "Biryani": "🥘",
+    "Dosa & Idli": "🥞",
+    "Thali": "🍛",
+    "Chaat & Street Food": "🥔",
+    "Mughlai": "🍖",
+    "Tandoori & Kebabs": "🍢",
+    "Pav Bhaji": "🍞",
+    "Chole Bhature": "🍲",
+    "Momos & Dumplings": "🥟",
+    "Gujarati": "🍛",
+    "Rajasthani": "🥘",
+    "Bengali": "🐟",
+    "Maharashtrian": "🍛",
+    "Indo-Chinese": "🍜",
+
+    // 🍚 Indian Breads & Staples
+    "Roti & Naan": "🫓",
+    "Parathas": "🫓",
+    "Rice & Pulao": "🍚",
+    "Khichdi": "🍛",
+    "Dal & Curry": "🍲",
+
+    // 🍱 Asian & Global Cuisines
+    "Chinese": "🥡",
+    "Sushi & Japanese": "🍣",
+    "Thai": "🍲",
+    "Korean": "🍜",
+    "Asian": "🍱",
+    "Italian": "🍝",
+    "Pasta": "🍝",
+    "Mexican": "🌮",
+    "Tacos & Burritos": "🌮",
+    "Middle Eastern": "🥙",
+    "Lebanese": "🥙",
+    "Mediterranean": "🥙",
+    "Continental": "🥩",
+    "American": "🍔",
+
+    // 🥗 Diet & Lifestyle
+    "Healthy": "🥗",
+    "Salads": "🥗",
+    "Vegan": "🥬",
+    "Vegetarian": "🥦",
+    "Keto": "🥑",
+    "Gluten-Free": "🌾",
+    "Organic": "🌱",
+    "Soups": "🥣",
+
+    // 🥩 Meat & Seafood
+    "Chicken": "🍗",
+    "Mutton": "🍖",
+    "Seafood": "🦐",
+    "Steak & BBQ": "🥩",
+    "Eggs": "🍳",
+
+    // 🥞 Breakfast & Bakery
+    "Breakfast": "🍳",
+    "Bakery": "🥐",
+    "Cakes & Pastries": "🎂",
+    "Pancakes & Crepes": "🥞",
+    "Waffles": "🧇",
+    "Donuts": "🍩",
+    "Cookies & Brownies": "🍪",
+    "Breads": "🥖",
+
+    // 🍦 Desserts & Sweets
+    "Desserts": "🍨",
+    "Ice Cream": "🍦",
+    "Gelato": "🍨",
+    "Indian Sweets": "🍬",
+    "Mithai": "🍡",
+    "Jalebi & Churros": "🥨",
+    "Chocolates": "🍫",
+
+    // 🥤 Beverages & Cafe
+    "Beverages": "🥤",
+    "Coffee & Espresso": "☕",
+    "Tea & Chai": "🍵",
+    "Boba & Bubble Tea": "🧋",
+    "Smoothies": "🥤",
+    "Shakes": "🥛",
+    "Fresh Juices": "🧃",
+    "Mocktails": "🍹",
+    "Sodas": "🥤",
+
+    // 📦 Menu Sections
+    "Starters": "🥟",
+    "Appetizers": "🥟",
+    "Main Course": "🍛",
+    "Snacks": "🍟",
+    "Combos": "🍱",
+    "Platters": "🍱",
+    "Kids Menu": "🧸",
+    "Dips & Sauces": "🥣"
 };
 
 /**
@@ -38,18 +121,28 @@ export const getCategoryEmoji = (categoryName) => {
     
     const normalized = categoryName.toLowerCase().trim();
     
-    // Direct match
-    if (categoryEmojiMap[normalized]) {
-        return categoryEmojiMap[normalized];
+    // Direct match (case insensitive)
+    const exactMatchKey = Object.keys(categoryEmojiMap).find(
+        key => key.toLowerCase() === normalized
+    );
+    if (exactMatchKey) {
+        return categoryEmojiMap[exactMatchKey];
     }
 
-    // Partial match (e.g., if category is "Ice Cream & Shakes", it finds "ice cream")
+    // Partial match (e.g., if backend sends "Ice Cream & Shakes", it finds "ice cream")
     for (const [key, emoji] of Object.entries(categoryEmojiMap)) {
-        if (normalized.includes(key)) {
+        if (normalized.includes(key.toLowerCase()) || key.toLowerCase().includes(normalized)) {
             return emoji;
         }
     }
 
     // Ultimate fallback
     return "🍽️"; 
+};
+
+/**
+ * Helper to get just the list of category names for dropdowns
+ */
+export const getCategoryNames = () => {
+    return Object.keys(categoryEmojiMap).sort();
 };

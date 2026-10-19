@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { getCategoryNames } from "../../utils/categoryEmojis"; // NEW: Import the category list
 
 export default function VendorMenu({ activeRestaurantId }) {
     const [inventory, setInventory] = useState([]);
@@ -22,13 +23,16 @@ export default function VendorMenu({ activeRestaurantId }) {
         description: "",
         price: "",
         category: "",
-        dietaryPreference: "0", 
-        imageUrl: "" 
+        dietaryPreference: "0",
+        imageUrl: ""
     });
 
     // Custom Delete Modal States
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+
+    // Get the standardized list of categories
+    const availableCategories = useMemo(() => getCategoryNames(), []);
 
     useEffect(() => {
         if (!activeRestaurantId) return;
@@ -239,7 +243,6 @@ export default function VendorMenu({ activeRestaurantId }) {
                         </button>
                     </div>
                     
-                    {/* NEW: Dropdown Category Filter */}
                     <div className="relative w-full md:w-48 shrink-0">
                         <select 
                             value={menuCategory}
@@ -404,14 +407,23 @@ export default function VendorMenu({ activeRestaurantId }) {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
-                                    <input 
-                                        type="text" 
-                                        required 
-                                        value={formData.category} 
-                                        onChange={(e) => setFormData({...formData, category: e.target.value})} 
-                                        className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white" 
-                                        placeholder="e.g. Dosa" 
-                                    />
+                                    {/* NEW: Replaced Text Input with Select Dropdown */}
+                                    <div className="relative">
+                                        <select 
+                                            required 
+                                            value={formData.category} 
+                                            onChange={(e) => setFormData({...formData, category: e.target.value})} 
+                                            className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none bg-slate-50 focus:bg-white appearance-none cursor-pointer"
+                                        >
+                                            <option value="" disabled>Select a category</option>
+                                            {availableCategories.map(cat => (
+                                                <option key={cat} value={cat}>{cat}</option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
