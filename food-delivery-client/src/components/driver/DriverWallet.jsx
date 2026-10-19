@@ -30,14 +30,13 @@ export default function DriverWallet() {
         fetchDeliveries();
     }, []);
 
-    // MVP Math logic based on the IsDriverSettled backend flag
+    // FIX: Reverted back to isDriverSettled
     const unsettledDeliveries = deliveries.filter(d => !d.isDriverSettled);
     const pendingPayout = unsettledDeliveries.length * payoutPerDelivery;
     const lifetimeEarnings = deliveries.length * payoutPerDelivery;
 
     return (
         <div className="p-6 animate-fade-in pb-24">
-            
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-extrabold text-slate-800">Earnings</h2>
             </div>
