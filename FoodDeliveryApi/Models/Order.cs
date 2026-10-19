@@ -19,6 +19,7 @@ namespace FoodDeliveryApi.Models
         public Address? Address { get; set; }
 
         public OrderStatus Status{get;set;} = OrderStatus.Pending; 
+        public Boolean IsDriverSettled {get;set;} = false;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
