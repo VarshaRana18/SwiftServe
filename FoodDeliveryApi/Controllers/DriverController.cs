@@ -129,7 +129,8 @@ namespace FoodDeliveryApi.Controllers
                 {
                     id = o.Id,
                     restaurant = new { name = o.Restaurant!.Name },
-                    updatedAt = o.UpdatedAt
+                    updatedAt = o.UpdatedAt,
+                    isDriverSettled = o.IsDriverSettled
                 })
                 .ToListAsync();
 
