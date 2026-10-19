@@ -1,9 +1,10 @@
 import { useState } from "react";
 
 export default function DriverRoute({ activeOrder, onComplete }) {
-    // Phase 1: Driving to Restaurant (Pickup)
-    // Phase 2: Driving to Customer (Delivery)
-    const [routePhase, setRoutePhase] = useState("pickup");
+    // Read the initial phase from local cache, fallback to "pickup"
+    const [routePhase, setRoutePhase] = useState(() => {
+        return localStorage.getItem(`routePhase_${activeOrder?.id}`) || "pickup";
+    });
     const [isProcessing, setIsProcessing] = useState(false);
 
     const handleAction = async () => {
@@ -25,6 +26,7 @@ export default function DriverRoute({ activeOrder, onComplete }) {
 
                 if (response.ok) {
                     setRoutePhase("delivery");
+                    localStorage.setItem(`routePhase_${activeOrder.id}`, "delivery");
                 }
             } 
             else if (routePhase === "delivery") {
@@ -39,6 +41,7 @@ export default function DriverRoute({ activeOrder, onComplete }) {
 
                 if (response.ok) {
                     setRoutePhase("completed");
+                    localStorage.setItem(`routePhase_${activeOrder.id}`, "completed");
                 }
             }
         } catch (error) {
@@ -47,6 +50,12 @@ export default function DriverRoute({ activeOrder, onComplete }) {
         } finally {
             setIsProcessing(false);
         }
+    };
+
+    // Clean up the cache when the order is entirely finished
+    const handleComplete = () => {
+        localStorage.removeItem(`routePhase_${activeOrder?.id}`);
+        onComplete();
     };
 
     if (routePhase === "completed") {
@@ -59,10 +68,9 @@ export default function DriverRoute({ activeOrder, onComplete }) {
                 </div>
                 <h2 className="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">Delivered!</h2>
                 <p className="text-slate-500 font-medium mb-10 text-lg">
-                    {/* FIX: Hardcoded fallback updated from 45 to 50 */}
                     You earned <span className="text-green-600 font-bold">₹{activeOrder?.driverFee || 50}</span> for this trip.
                 </p>
-                <button onClick={onComplete} className="w-full bg-slate-100 text-slate-700 font-bold px-8 py-4 rounded-2xl shadow-sm hover:bg-slate-200 transition-colors">
+                <button onClick={handleComplete} className="w-full bg-slate-100 text-slate-700 font-bold px-8 py-4 rounded-2xl shadow-sm hover:bg-slate-200 transition-colors">
                     Find Next Order
                 </button>
             </div>
@@ -105,7 +113,6 @@ export default function DriverRoute({ activeOrder, onComplete }) {
                         </p>
                     </div>
                     <div className="flex flex-col items-end shrink-0">
-                        {/* FIX: Hardcoded fallback updated from 45 to 50 */}
                         <span className="text-2xl font-extrabold text-slate-800">₹{activeOrder?.driverFee || 50}</span>
                         <span className="text-sm font-bold text-slate-400">2.4 km</span>
                     </div>
