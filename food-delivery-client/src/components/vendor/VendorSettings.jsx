@@ -11,7 +11,7 @@ export default function VendorSettings({ activeRestaurantId }) {
 
     // User Roles & Upgrade State
     const [userRoles, setUserRoles] = useState([]);
-    const [upgradeIntent, setUpgradeIntent] = useState(null);
+    const [upgradeIntent, setUpgradeIntent] = useState(null); // 'Customer', 'Driver', or null
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [upgradeError, setUpgradeError] = useState("");
 
@@ -152,7 +152,10 @@ export default function VendorSettings({ activeRestaurantId }) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('roles', JSON.stringify(data.roles));
                 setUserRoles(data.roles);
+                
+                setUpgradeIntent(null);
                 if (newRole === 'Customer') navigate('/');
+                if (newRole === 'Driver') navigate('/driver/dashboard');
             } else {
                 setUpgradeError(`Failed to activate ${newRole} profile.`);
             }
@@ -172,27 +175,40 @@ export default function VendorSettings({ activeRestaurantId }) {
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20 relative">
             
-            {/* UPGRADE CONFIRMATION MODAL (Customer) */}
-            {upgradeIntent === 'Customer' && (
+            {/* UPGRADE CONFIRMATION MODAL (Dynamic for Customer or Driver) */}
+            {upgradeIntent && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setUpgradeIntent(null)}></div>
                     <div className="relative bg-white rounded-3xl shadow-xl w-full max-w-sm overflow-hidden animate-slide-up p-8 text-center">
                         <button onClick={() => setUpgradeIntent(null)} disabled={isUpgrading} className="absolute top-4 right-4 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors disabled:opacity-50">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
-                        <div className="w-20 h-20 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                        
+                        <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${upgradeIntent === 'Customer' ? 'bg-orange-100 text-orange-500' : 'bg-blue-100 text-blue-600'}`}>
+                            {upgradeIntent === 'Customer' ? (
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                            ) : (
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                            )}
                         </div>
-                        <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Order food?</h2>
-                        <p className="text-slate-500 font-medium mb-8">Activate your Customer profile to start ordering from other SwiftServe partner restaurants.</p>
+                        
+                        <h2 className="text-2xl font-extrabold text-slate-800 mb-2">
+                            {upgradeIntent === 'Customer' ? "Order food?" : "Ready to hit the road?"}
+                        </h2>
+                        <p className="text-slate-500 font-medium mb-8">
+                            {upgradeIntent === 'Customer' 
+                                ? "Activate your Customer profile to start ordering from other SwiftServe partner restaurants."
+                                : "Upgrade to a Driver account to start delivering orders and earning payouts today."}
+                        </p>
+                        
                         {upgradeError && <p className="text-sm text-red-500 font-bold mb-4">{upgradeError}</p>}
                         
                         <button 
-                            onClick={() => handleRoleUpgrade('Customer')} 
+                            onClick={() => handleRoleUpgrade(upgradeIntent)} 
                             disabled={isUpgrading}
-                            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-orange-200 active:scale-95 disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2"
+                            className={`w-full text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2 ${upgradeIntent === 'Customer' ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-200' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'}`}
                         >
-                            {isUpgrading ? "Activating Profile..." : "Enable Customer Profile"}
+                            {isUpgrading ? "Activating Profile..." : `Enable ${upgradeIntent} Profile`}
                         </button>
                     </div>
                 </div>
@@ -308,6 +324,8 @@ export default function VendorSettings({ activeRestaurantId }) {
                     <h2 className="text-lg font-bold text-slate-800">Account & Profiles</h2>
                 </div>
                 <div className="p-6 space-y-3">
+                    
+                    {/* CUSTOMER SWITCH/UPGRADE */}
                     {userRoles.includes('Customer') ? (
                         <button onClick={() => navigate('/')} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors group">
                             <div className="flex items-center gap-3">
@@ -336,18 +354,34 @@ export default function VendorSettings({ activeRestaurantId }) {
                         </button>
                     )}
 
-                    <button disabled={true} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50 opacity-70 cursor-not-allowed">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-slate-300 p-2 rounded-lg text-white">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                    {/* DRIVER SWITCH/UPGRADE */}
+                    {userRoles.includes('Driver') ? (
+                        <button onClick={() => navigate('/driver/dashboard')} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-blue-600 p-2 rounded-lg text-white">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                </div>
+                                <div className="text-left">
+                                    <span className="block font-bold text-slate-800">Switch to Driver App</span>
+                                    <span className="block text-xs font-medium text-slate-500">Find active delivery routes</span>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <span className="block font-bold text-slate-500">Drive With Us</span>
-                                <span className="block text-xs font-medium text-slate-400">Add a driver dashboard</span>
+                            <svg className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                    ) : (
+                        <button onClick={() => setUpgradeIntent('Driver')} className="w-full flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50 hover:bg-blue-100 transition-colors group">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-blue-500 p-2 rounded-lg text-white">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                </div>
+                                <div className="text-left">
+                                    <span className="block font-bold text-blue-900">Drive With Us</span>
+                                    <span className="block text-xs font-medium text-blue-700">Add a driver dashboard</span>
+                                </div>
                             </div>
-                        </div>
-                        <span className="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-1 rounded-md uppercase">Coming Soon</span>
-                    </button>
+                            <svg className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                    )}
                 </div>
             </div>
 

@@ -5,14 +5,14 @@ import { useNavigate } from "react-router-dom";
 export default function SettingsModal() {
     const { isSettingsOpen, setIsSettingsOpen, isVegOnly, setIsVegOnly, setSelectedAddressId, setActiveLocation } = useCart();
 
-    // Real User State (Added Phone)
+    // Real User State
     const [realUser, setRealUser] = useState({ name: "Loading...", email: "Loading...", phone: "" });
     const [isEditing, setIsEditing] = useState(false);
     const [isSavingProfile, setIsSavingProfile] = useState(false);
     const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
 
     // Role Upgrade States
-    const [upgradeIntent, setUpgradeIntent] = useState(null); // 'Vendor' or null
+    const [upgradeIntent, setUpgradeIntent] = useState(null); // 'Vendor', 'Driver', or null
     const [isUpgrading, setIsUpgrading] = useState(false);
     const [upgradeError, setUpgradeError] = useState("");
     const [userRoles, setUserRoles] = useState(['Customer']);
@@ -38,7 +38,6 @@ export default function SettingsModal() {
                     const emailClaim = payload.email || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || "No Email";
                     const nameClaim = payload.fullName || payload.name || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "Customer";
                     
-                    // Pull phone from local storage cache since it might not be in the JWT claims
                     const phoneCache = localStorage.getItem('customerPhone') || "";
 
                     setRealUser({ name: nameClaim, email: emailClaim, phone: phoneCache });
@@ -80,7 +79,6 @@ export default function SettingsModal() {
             if (response.ok) {
                 setRealUser(formData);
                 setIsEditing(false);
-                // Keep the cart drawer in sync
                 localStorage.setItem('customerPhone', formData.phone);
             } else {
                 alert("Failed to update profile details.");
@@ -142,25 +140,36 @@ export default function SettingsModal() {
             <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
                 
                 {/* OVERLAY: VALUE-PROP CONFIRMATION MODAL */}
-                {upgradeIntent === 'Vendor' && (
+                {upgradeIntent && (
                     <div className="absolute inset-0 bg-white z-50 flex flex-col p-6 animate-slide-in-right">
                         <button onClick={() => setUpgradeIntent(null)} disabled={isUpgrading} className="absolute top-6 left-6 p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors disabled:opacity-50">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
                         </button>
                         
                         <div className="flex-1 flex flex-col items-center justify-center text-center mt-8">
-                            <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-6">
-                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                            <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${upgradeIntent === 'Vendor' ? 'bg-teal-100 text-teal-600' : 'bg-blue-100 text-blue-600'}`}>
+                                {upgradeIntent === 'Vendor' ? (
+                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                                ) : (
+                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                )}
                             </div>
-                            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Ready to grow your business?</h2>
-                            <p className="text-slate-500 font-medium mb-8">Upgrade to a Partner account to unlock your dedicated kitchen display, menu manager, and live order tracking.</p>
+                            
+                            <h2 className="text-2xl font-extrabold text-slate-800 mb-2">
+                                {upgradeIntent === 'Vendor' ? "Ready to grow your business?" : "Ready to hit the road?"}
+                            </h2>
+                            <p className="text-slate-500 font-medium mb-8">
+                                {upgradeIntent === 'Vendor' 
+                                    ? "Upgrade to a Partner account to unlock your dedicated kitchen display, menu manager, and live order tracking." 
+                                    : "Upgrade to a Driver account to start delivering orders and earning payouts today."}
+                            </p>
                             
                             {upgradeError && <p className="text-sm text-red-500 font-bold mb-4">{upgradeError}</p>}
                             
                             <button 
-                                onClick={() => handleRoleUpgrade('Vendor')} 
+                                onClick={() => handleRoleUpgrade(upgradeIntent)} 
                                 disabled={isUpgrading}
-                                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-teal-200 active:scale-95 disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2"
+                                className={`w-full text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-95 disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2 ${upgradeIntent === 'Vendor' ? 'bg-teal-600 hover:bg-teal-700 shadow-teal-200' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'}`}
                             >
                                 {isUpgrading ? (
                                     <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Upgrading Account...</>
@@ -249,10 +258,13 @@ export default function SettingsModal() {
                     <section>
                         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Expand Your Account</h3>
                         <div className="space-y-3">
+                            
+                            {/* VENDOR UPGRADE/SWITCH */}
                             {userRoles.includes('Vendor') ? (
                                 <button onClick={() => { setIsSettingsOpen(false); navigate('/vendor/dashboard'); }} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors group">
                                     <div className="flex items-center gap-3">
-                                        <div className="bg-slate-800 p-2 rounded-lg text-white">
+                                        {/* FIX: Set to bg-teal-600 for consistency */}
+                                        <div className="bg-teal-600 p-2 rounded-lg text-white">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -277,18 +289,34 @@ export default function SettingsModal() {
                                 </button>
                             )}
 
-                            <button disabled={true} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-100 bg-slate-50 opacity-70 cursor-not-allowed">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-slate-300 p-2 rounded-lg text-white">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                            {/* DRIVER UPGRADE/SWITCH */}
+                            {userRoles.includes('Driver') ? (
+                                <button onClick={() => { setIsSettingsOpen(false); navigate('/driver/dashboard'); }} className="w-full flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-blue-600 p-2 rounded-lg text-white">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block font-bold text-slate-800">Driver Dashboard</span>
+                                            <span className="block text-xs font-medium text-slate-500">Find active delivery routes</span>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <span className="block font-bold text-slate-500">Drive With Us</span>
-                                        <span className="block text-xs font-medium text-slate-400">Add a driver dashboard</span>
+                                    <svg className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                                </button>
+                            ) : (
+                                <button onClick={() => setUpgradeIntent('Driver')} className="w-full flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50 hover:bg-blue-100 transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-blue-500 p-2 rounded-lg text-white">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="block font-bold text-blue-900">Drive With Us</span>
+                                            <span className="block text-xs font-medium text-blue-700">Add a driver dashboard</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <span className="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-1 rounded-md uppercase">Coming Soon</span>
-                            </button>
+                                    <svg className="w-5 h-5 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                                </button>
+                            )}
                         </div>
                     </section>
 
