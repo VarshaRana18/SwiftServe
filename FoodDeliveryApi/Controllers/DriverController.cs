@@ -114,5 +114,26 @@ namespace FoodDeliveryApi.Controllers
 
             return Ok(new { message = "Driver profile updated", phoneNumber = driver.PhoneNumber });
         }
+
+        [HttpGet("history")]
+        [Authorize(Roles="Driver")]
+        public async Task<IActionResult> GetDriverHistory()
+        {
+            var driverId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var history = await _context.Orders
+                .Where(o => o.DriverId == driverId && 
+                        (o.Status == OrderStatus.Delivered || o.Status == OrderStatus.Cancelled))
+                .OrderByDescending(o => o.UpdatedAt)
+                .Select(o => new 
+                {
+                    id = o.Id,
+                    restaurant = new { name = o.Restaurant!.Name },
+                    updatedAt = o.UpdatedAt
+                })
+                .ToListAsync();
+
+            return Ok(history);
+        }
     }
 }
