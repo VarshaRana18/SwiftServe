@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder }) {
-    const [incomingOrder, setIncomingOrder] = useState(null);
-    const [timer, setTimer] = useState(100);
+    // Replaced single incomingOrder with an array of available orders
+    const [availableOrders, setAvailableOrders] = useState([]);
     const [isClaiming, setIsClaiming] = useState(false);
 
     // Poll for active orders
@@ -10,7 +10,8 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
         let pollInterval;
         
         const fetchAvailableOrders = async () => {
-            if (!isOnline || incomingOrder || hasActiveOrder) return;
+            // Stop polling if offline or busy
+            if (!isOnline || hasActiveOrder) return;
             
             try {
                 const token = localStorage.getItem('token');
@@ -20,65 +21,43 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
                 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data.length > 0) {
-                        setIncomingOrder(data[0]); // Pop up the first available order
-                        setTimer(100);
-                    }
+                    setAvailableOrders(data || []);
                 }
             } catch (error) {
                 console.error("Failed to poll orders:", error);
             }
         };
 
-        if (isOnline && !hasActiveOrder && !incomingOrder) {
-            pollInterval = setInterval(fetchAvailableOrders, 5000); // Check every 5 seconds
+        if (isOnline && !hasActiveOrder) {
+            fetchAvailableOrders(); // Fetch immediately on toggle
+            pollInterval = setInterval(fetchAvailableOrders, 5000); // Poll every 5 seconds
+        } else {
+            setAvailableOrders([]); // Clear the list if they go offline or take an order
         }
 
         return () => clearInterval(pollInterval);
-    }, [isOnline, incomingOrder, hasActiveOrder]);
+    }, [isOnline, hasActiveOrder]);
 
-    // UI Countdown Timer
-    useEffect(() => {
-        let countdown;
-        if (incomingOrder && !isClaiming) {
-            countdown = setInterval(() => {
-                setTimer(prev => {
-                    if (prev <= 1) {
-                        clearInterval(countdown);
-                        setIncomingOrder(null);
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 150); // Gives driver about 15 seconds to accept
-        }
-        return () => clearInterval(countdown);
-    }, [incomingOrder, isClaiming]);
-
-    const handleDecline = () => {
-        setIncomingOrder(null);
-    };
-
-    const handleAccept = async () => {
+    const handleAccept = async (order) => {
         setIsClaiming(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5121/api/driver/${incomingOrder.id}/claim`, {
+            const response = await fetch(`http://localhost:5121/api/driver/${order.id}/claim`, {
                 method: "PUT",
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (response.ok) {
-                onAcceptOrder(incomingOrder); // Send full order back to Dashboard
-                setIncomingOrder(null);
+                onAcceptOrder(order); // Send full order back to Dashboard
+                // The dashboard will immediately set hasActiveOrder = true, hiding this view
             } else {
                 alert("This order was claimed by another driver or is no longer available.");
-                setIncomingOrder(null);
+                // Remove the failed order from the list
+                setAvailableOrders(prev => prev.filter(o => o.id !== order.id));
             }
         } catch (error) {
             console.error("Failed to claim order:", error);
             alert("Network error while trying to claim the order.");
-            setIncomingOrder(null);
         } finally {
             setIsClaiming(false);
         }
@@ -86,10 +65,13 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
 
     return (
         <div className="h-full flex flex-col relative overflow-hidden">
+            {/* Background Pattern */}
             <div className="absolute inset-0 bg-blue-50" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
             
             <div className="relative z-10 flex flex-col h-full justify-between p-6">
-                <div className="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-white flex flex-col items-center text-center mt-2 transition-all">
+                
+                {/* Status Card */}
+                <div className="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-white flex flex-col items-center text-center mt-2 transition-all shrink-0">
                     {hasActiveOrder ? (
                         <>
                             <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-3 shadow-sm">
@@ -107,8 +89,12 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                 </svg>
                             </div>
-                            <h2 className="font-extrabold text-slate-800 text-xl tracking-tight mb-1">Finding Orders...</h2>
-                            <p className="text-sm font-medium text-slate-500">You are in a high-demand zone.</p>
+                            <h2 className="font-extrabold text-slate-800 text-xl tracking-tight mb-1">
+                                {availableOrders.length > 0 ? "New Requests Available!" : "Finding Orders..."}
+                            </h2>
+                            <p className="text-sm font-medium text-slate-500">
+                                {availableOrders.length > 0 ? "Select a delivery from the list below." : "Scanning area for new delivery requests."}
+                            </p>
                         </>
                     ) : (
                         <>
@@ -123,64 +109,58 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
                     )}
                 </div>
 
-                <div className="flex-1 flex items-center justify-center">
-                    {isOnline && !incomingOrder && !hasActiveOrder && (
-                        <div className="relative flex items-center justify-center">
-                            <div className="absolute w-64 h-64 bg-blue-500/10 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
-                            <div className="absolute w-40 h-40 bg-blue-500/20 rounded-full animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }}></div>
-                            <div className="w-16 h-16 bg-blue-600 rounded-full shadow-lg shadow-blue-600/40 border-4 border-white flex items-center justify-center z-10">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                {/* Main Dynamic Area */}
+                <div className="flex-1 overflow-y-auto py-6 space-y-4">
+                    
+                    {/* The Empty State Radar Animation */}
+                    {isOnline && !hasActiveOrder && availableOrders.length === 0 && (
+                        <div className="h-full flex items-center justify-center">
+                            <div className="relative flex items-center justify-center">
+                                <div className="absolute w-64 h-64 bg-blue-500/10 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
+                                <div className="absolute w-40 h-40 bg-blue-500/20 rounded-full animate-ping" style={{ animationDuration: '2s', animationDelay: '0.3s' }}></div>
+                                <div className="w-16 h-16 bg-blue-600 rounded-full shadow-lg shadow-blue-600/40 border-4 border-white flex items-center justify-center z-10">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     )}
+
+                    {/* The Available Orders List */}
+                    {isOnline && !hasActiveOrder && availableOrders.length > 0 && availableOrders.map((order) => (
+                        <div key={order.id} className="bg-white rounded-3xl shadow-lg shadow-slate-200/50 p-5 border border-slate-100 flex flex-col gap-4 animate-slide-up">
+                            <div className="flex justify-between items-start">
+                                <div className="flex flex-col pr-4">
+                                    <span className="bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-2 w-max">
+                                        Ready for Pickup
+                                    </span>
+                                    <h3 className="text-lg font-extrabold text-slate-800 leading-tight">
+                                        {order.restaurant?.name || "Restaurant"}
+                                    </h3>
+                                    <p className="text-sm font-medium text-slate-500 mt-1 flex items-start gap-1.5">
+                                        <svg className="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span className="line-clamp-2">{order.restaurant?.fullAddress || "Pickup Location"}</span>
+                                    </p>
+                                </div>
+                                <span className="text-2xl font-extrabold text-slate-800 shrink-0">₹{order.driverFee || 50}</span>
+                            </div>
+                            
+                            <button 
+                                onClick={() => handleAccept(order)} 
+                                disabled={isClaiming}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 rounded-xl shadow-md shadow-blue-600/20 transition-transform active:scale-95 disabled:bg-blue-400"
+                            >
+                                {isClaiming ? "Claiming..." : "Accept Delivery"}
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
-
-            {/* Incoming Order Popup */}
-            {incomingOrder && (
-                <div className="absolute inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex flex-col justify-end pb-6 px-4 animate-fade-in">
-                    <div className="bg-white rounded-3xl shadow-2xl p-6 border-b-4 border-b-blue-600 transform translate-y-0 animate-[slideUp_0.3s_ease-out]">
-                        
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg animate-pulse">
-                                New Request
-                            </span>
-                            {/* FIX: Hardcoded fallback updated from 45 to 50 */}
-                            <span className="text-2xl font-extrabold text-slate-800">₹{incomingOrder.driverFee || 50}</span>
-                        </div>
-                        
-                        <h3 className="text-xl font-extrabold text-slate-800 mb-1">{incomingOrder.restaurant?.name || "Restaurant"}</h3>
-                        <p className="text-slate-500 font-medium text-sm mb-6 flex items-center gap-2">
-                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            <span className="line-clamp-1">{incomingOrder.restaurant?.fullAddress || "Pickup Location"}</span>
-                        </p>
-                        
-                        <div className="grid grid-cols-2 gap-3 mb-4">
-                            <button 
-                                onClick={handleDecline} 
-                                disabled={isClaiming}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-2xl transition-colors disabled:opacity-50"
-                            >
-                                Decline
-                            </button>
-                            <button 
-                                onClick={handleAccept} 
-                                disabled={isClaiming}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 rounded-2xl shadow-lg shadow-blue-600/30 transition-transform active:scale-95 disabled:bg-blue-400"
-                            >
-                                {isClaiming ? "Claiming..." : "Accept"}
-                            </button>
-                        </div>
-                        
-                        <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                            <div className={`h-1.5 rounded-full transition-all duration-100 ease-linear ${timer > 50 ? 'bg-blue-500' : timer > 25 ? 'bg-orange-500' : 'bg-red-500'}`} style={{ width: `${timer}%` }}></div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
