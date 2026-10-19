@@ -59,7 +59,8 @@ export default function DriverRoute({ activeOrder, onComplete }) {
                 </div>
                 <h2 className="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">Delivered!</h2>
                 <p className="text-slate-500 font-medium mb-10 text-lg">
-                    You earned <span className="text-green-600 font-bold">₹{activeOrder?.driverFee || 45}</span> for this trip.
+                    {/* FIX: Hardcoded fallback updated from 45 to 50 */}
+                    You earned <span className="text-green-600 font-bold">₹{activeOrder?.driverFee || 50}</span> for this trip.
                 </p>
                 <button onClick={onComplete} className="w-full bg-slate-100 text-slate-700 font-bold px-8 py-4 rounded-2xl shadow-sm hover:bg-slate-200 transition-colors">
                     Find Next Order
@@ -104,7 +105,8 @@ export default function DriverRoute({ activeOrder, onComplete }) {
                         </p>
                     </div>
                     <div className="flex flex-col items-end shrink-0">
-                        <span className="text-2xl font-extrabold text-slate-800">₹{activeOrder?.driverFee || 45}</span>
+                        {/* FIX: Hardcoded fallback updated from 45 to 50 */}
+                        <span className="text-2xl font-extrabold text-slate-800">₹{activeOrder?.driverFee || 50}</span>
                         <span className="text-sm font-bold text-slate-400">2.4 km</span>
                     </div>
                 </div>

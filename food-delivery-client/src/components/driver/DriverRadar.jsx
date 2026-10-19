@@ -148,7 +148,8 @@ export default function DriverRadar({ isOnline, hasActiveOrder, onAcceptOrder })
                             <span className="bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg animate-pulse">
                                 New Request
                             </span>
-                            <span className="text-2xl font-extrabold text-slate-800">₹{incomingOrder.driverFee || 45}</span>
+                            {/* FIX: Hardcoded fallback updated from 45 to 50 */}
+                            <span className="text-2xl font-extrabold text-slate-800">₹{incomingOrder.driverFee || 50}</span>
                         </div>
                         
                         <h3 className="text-xl font-extrabold text-slate-800 mb-1">{incomingOrder.restaurant?.name || "Restaurant"}</h3>
