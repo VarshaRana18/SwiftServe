@@ -48,8 +48,8 @@ Content-Type: application/json
 #Added by Samiul
 ### Get Driver Delivery History (Requires Driver JWT)
 # Why: Fetches all orders successfully delivered by this specific driver.
-# GET {{host}}/api/driver/history
-# Authorization: Bearer YOUR_TOKEN_HERE
+GET {{host}}/api/driver/history
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODg2ZDhmNS04NWMwLTQ0MWMtYjNlNC05ZDZjYTIwMzg4MDQiLCJlbWFpbCI6IlNoYXJvbkBNYXMuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6IlNoYXJvbiBNYXNjYXJlbmhhcyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRyaXZlciIsImV4cCI6MTc5MzAxMTEzNywiaXNzIjoiRm9vZERlbGl2ZXJ5QXBpIiwiYXVkIjoiRm9vZERlbGl2ZXJ5Q2xpZW50In0.lSChlffGk2u4p_3-OpbFC5YxXgkMfQGxwX_O26zMI0g
 
 # EXPECTED RESPONSE FORMAT:
 # [
